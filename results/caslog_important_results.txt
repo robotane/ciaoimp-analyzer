@@ -1,0 +1,9 @@
+CasLog — contrats annotés : RESULTATS DES PREDICATS IMPORTANTS
+==============================================================
+
+--- CONTRAT : DISTRIBUTOR ---
+  - init/4 : Temps = [1]
+  - add_as_payee/5 : Temps = [1]
+  - len_list/2 : Temps = [$1+1]
+  - distribute/8 : Temps = [8*($7* $4)+8* $7+11* $4+13]
+

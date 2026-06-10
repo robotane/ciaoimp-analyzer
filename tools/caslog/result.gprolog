@@ -1,0 +1,3 @@
+#!/bin/sh
+rm -f resultats.gprolog
+for k in benchmark/*.pl; do ./caslog.gprolog $k >>resultats.gprolog; done

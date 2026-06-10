@@ -1,0 +1,1093 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/solution/comp_diff_equ.pl
+% date    : 2 6 2003
+% time    : 10:15:38
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/solution/comp_diff_equ.pl').
+
+
+predicate(solve_complexity_equ/6,13,static,private,user,1).
+
+
+clause(:-(solve_complexity_equ(A,B,C,D,E,F),','(find_symbol_field_size(B,A,size,G),','(find_symbol_field(B,A,mode,H),','(;(->(inconsistent_sizes(H,G),=(I,inf)),','(construct_clause_complexity_equs(A,B,E,D,J),;(->(mutual_exclusive_complexity(A,B,J,K),solve_comp_equs(B,A,K,I)),=(I,inf)))),simplification(I,F))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_atom(size,2),
+    put_variable(y(5),3),
+    call(find_symbol_field_size/4),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_atom(mode,2),
+    put_variable(y(6),3),
+    call(find_symbol_field/4),
+    put_value(y(6),0),
+    put_value(y(5),1),
+    put_variable(y(7),2),
+    put_value(y(0),3),
+    put_value(y(1),4),
+    put_value(y(3),5),
+    put_value(y(2),6),
+    call('$solve_complexity_equ/6_$aux1'/7),
+    put_unsafe_value(y(7),0),
+    put_value(y(4),1),
+    deallocate,
+    execute(simplification/2)]).
+
+
+predicate('$solve_complexity_equ/6_$aux1'/7,13,static,private,user,2).
+
+
+clause(:-('$solve_complexity_equ/6_$aux1'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(inconsistent_sizes(A,B),','('$cut'(H),=(C,inf))))),[
+    allocate(2),
+    get_variable(y(0),2),
+    get_variable(y(1),7),
+    call(inconsistent_sizes/2),
+    cut(y(1)),
+    put_value(y(0),0),
+    get_atom(inf,0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$solve_complexity_equ/6_$aux1'(A,B,C,D,E,F,G),','(construct_clause_complexity_equs(D,E,F,G,H),;(','('$get_cut_level'(I),','(mutual_exclusive_complexity(D,E,H,J),','('$cut'(I),solve_comp_equs(E,D,J,C)))),=(C,inf)))),[
+    allocate(4),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    put_value(x(5),2),
+    put_value(x(6),3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(3),4),
+    call(construct_clause_complexity_equs/5),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_unsafe_value(y(3),2),
+    put_value(y(0),3),
+    deallocate,
+    execute('$solve_complexity_equ/6_$aux2'/4)]).
+
+
+predicate('$solve_complexity_equ/6_$aux2'/4,13,static,private,user,2).
+
+
+clause(:-('$solve_complexity_equ/6_$aux2'(A,B,C,D),','('$get_cut_level'(E),','(mutual_exclusive_complexity(A,B,C,F),','('$cut'(E),solve_comp_equs(B,A,F,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(4),3),
+    call(mutual_exclusive_complexity/4),
+    cut(y(3)),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_unsafe_value(y(4),2),
+    put_value(y(2),3),
+    deallocate,
+    execute(solve_comp_equs/4)]).
+
+
+clause(:-('$solve_complexity_equ/6_$aux2'(A,B,C,D),=(D,inf)),[
+    get_atom(inf,3),
+    proceed]).
+
+
+predicate(inconsistent_sizes/2,30,static,private,user,1).
+
+
+clause(:-(inconsistent_sizes(A,B),inconsistent_sizes(A,B,1)),[
+    put_integer(1,2),
+    execute(inconsistent_sizes/3)]).
+
+
+predicate(inconsistent_sizes/3,33,static,private,user,4).
+
+
+clause(inconsistent_sizes([],[],0),[
+    get_nil(0),
+    get_nil(1),
+    get_integer(0,2),
+    proceed]).
+
+
+clause(:-(inconsistent_sizes('.'(+,A),'.'(bot,B),C),inconsistent_sizes(A,B,0)),[
+    get_list(0),
+    unify_atom(+),
+    unify_variable(x(0)),
+    get_list(1),
+    unify_atom(bot),
+    unify_variable(x(1)),
+    put_integer(0,2),
+    execute(inconsistent_sizes/3)]).
+
+
+clause(:-(inconsistent_sizes('.'(+,A),'.'(B,C),D),','(\==(B,bot),','(!,fail))),[
+    allocate(1),
+    get_list(0),
+    unify_atom(+),
+    unify_void(1),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_variable(y(0),3),
+    put_atom(bot,1),
+    call((\==)/2),
+    cut(y(0)),
+    fail]).
+
+
+clause(:-(inconsistent_sizes('.'(-,A),'.'(B,C),D),inconsistent_sizes(A,C,D)),[
+    get_list(0),
+    unify_atom(-),
+    unify_variable(x(0)),
+    get_list(1),
+    unify_void(1),
+    unify_variable(x(1)),
+    execute(inconsistent_sizes/3)]).
+
+
+predicate(construct_clause_complexity_equs/5,43,static,private,user,1).
+
+
+clause(:-(construct_clause_complexity_equs(A,B,C,D,E),','(find_symbol_field(B,A,mode,F),','(input_sizes(C,F,G),construct_comp_equs(G,D,1,E)))),[
+    allocate(5),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(x(2),1),
+    get_variable(x(1),0),
+    put_value(x(2),0),
+    put_atom(mode,2),
+    put_variable(y(3),3),
+    call(find_symbol_field/4),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_variable(y(4),2),
+    call(input_sizes/3),
+    put_unsafe_value(y(4),0),
+    put_value(y(1),1),
+    put_integer(1,2),
+    put_value(y(2),3),
+    deallocate,
+    execute(construct_comp_equs/4)]).
+
+
+predicate(mutual_exclusive_complexity/4,52,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_complexity(A,B,C,D),','(find_symbol_field_mutex(B,A,mutex,E),mutual_exclusive_comp(E,C,D))),[
+    allocate(3),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(x(2),1),
+    get_variable(x(1),0),
+    put_value(x(2),0),
+    put_atom(mutex,2),
+    put_variable(y(2),3),
+    call(find_symbol_field_mutex/4),
+    put_unsafe_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(mutual_exclusive_comp/3)]).
+
+
+predicate(mutual_exclusive_comp/3,56,static,private,user,2).
+
+
+clause(mutual_exclusive_comp([],A,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(mutual_exclusive_comp('.'(A,B),C,'.'(D,E)),','(mutual_exclusive_comp1(A,C,D),mutual_exclusive_comp(B,C,E))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    put_value(y(1),1),
+    call(mutual_exclusive_comp1/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(mutual_exclusive_comp/3)]).
+
+
+predicate(mutual_exclusive_comp1/3,63,static,private,user,2).
+
+
+clause(:-(mutual_exclusive_comp1([],A,equ(B,C,D)),normal_form(0,D)),[
+    get_nil(0),
+    get_structure(equ/3,2),
+    unify_void(2),
+    unify_variable(x(1)),
+    put_integer(0,0),
+    execute(normal_form/2)]).
+
+
+clause(:-(mutual_exclusive_comp1('.'(A,B),C,equ(A,D,E)),','(ith_list_cas_element(A,C,F),','(=(F,equ(A,D,G)),','(mutual_exclusive_comp1(B,C,H),','(=(H,equ(I,D,J)),add_expr(G,J,E)))))),[
+    allocate(8),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_structure(equ/3,2),
+    unify_value(y(0)),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_variable(y(5),2),
+    call(ith_list_cas_element/3),
+    put_value(y(5),0),
+    get_structure(equ/3,0),
+    unify_value(y(0)),
+    unify_value(y(3)),
+    unify_variable(y(6)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(7),2),
+    call(mutual_exclusive_comp1/3),
+    put_unsafe_value(y(7),0),
+    get_structure(equ/3,0),
+    unify_void(1),
+    unify_value(y(3)),
+    unify_variable(x(1)),
+    put_value(y(6),0),
+    put_value(y(4),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+predicate(solve_comp_equs/4,76,static,private,user,1).
+
+
+clause(:-(solve_comp_equs(A,B,C,D),','(classify_equs(C,E,F),','(solve_comp_equs1(A,B,E,F,G),general_form(G,D)))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),3),
+    put_value(x(2),0),
+    put_variable(y(3),1),
+    put_variable(y(4),2),
+    call(classify_equs/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    put_variable(y(5),4),
+    call(solve_comp_equs1/5),
+    put_unsafe_value(y(5),0),
+    put_value(y(2),1),
+    deallocate,
+    execute(general_form/2)]).
+
+
+predicate(solve_comp_equs1/5,81,static,private,user,1).
+
+
+clause(:-(solve_comp_equs1(A,B,C,D,E),','(abnormal_equs(D,F),;(->(general_form(F,0),solve_comp_equs2(C,D,A,B,E)),=(E,inf)))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(3),0),
+    put_variable(y(5),1),
+    call(abnormal_equs/2),
+    put_unsafe_value(y(5),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(0),3),
+    put_value(y(1),4),
+    put_value(y(4),5),
+    deallocate,
+    execute('$solve_comp_equs1/5_$aux1'/6)]).
+
+
+predicate('$solve_comp_equs1/5_$aux1'/6,81,static,private,user,2).
+
+
+clause(:-('$solve_comp_equs1/5_$aux1'(A,B,C,D,E,F),','('$get_cut_level'(G),','(general_form(A,0),','('$cut'(G),solve_comp_equs2(B,C,D,E,F))))),[
+    allocate(6),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    put_integer(0,1),
+    call(general_form/2),
+    cut(y(5)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    deallocate,
+    execute(solve_comp_equs2/5)]).
+
+
+clause(:-('$solve_comp_equs1/5_$aux1'(A,B,C,D,E,F),=(F,inf)),[
+    get_atom(inf,5),
+    proceed]).
+
+
+predicate(solve_comp_equs2/5,88,static,private,user,2).
+
+
+clause(:-(solve_comp_equs2([],A,B,C,D),solve_comp_non_diff_equs(A,D)),[
+    get_nil(0),
+    put_value(x(1),0),
+    put_value(x(4),1),
+    execute(solve_comp_non_diff_equs/2)]).
+
+
+clause(:-(solve_comp_equs2(A,B,C,D,E),','(\==(A,[]),;(->(indirect_recursion(A,D),','(solve_comp_non_diff_equs(A,F),','(solve_comp_non_diff_equs(B,G),max_expr(F,G,E)))),solve_comp_diff_equs(A,B,C,D,E)))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_value(y(1),2),
+    put_value(y(4),3),
+    put_value(y(2),4),
+    deallocate,
+    execute('$solve_comp_equs2/5_$aux1'/5)]).
+
+
+predicate('$solve_comp_equs2/5_$aux1'/5,90,static,private,user,2).
+
+
+clause(:-('$solve_comp_equs2/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(indirect_recursion(A,B),','('$cut'(F),','(solve_comp_non_diff_equs(A,G),','(solve_comp_non_diff_equs(C,H),max_expr(G,H,D))))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),5),
+    put_value(y(0),0),
+    call(indirect_recursion/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_variable(y(4),1),
+    call(solve_comp_non_diff_equs/2),
+    put_value(y(1),0),
+    put_variable(y(5),1),
+    call(solve_comp_non_diff_equs/2),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(max_expr/3)]).
+
+
+clause(:-('$solve_comp_equs2/5_$aux1'(A,B,C,D,E),solve_comp_diff_equs(A,C,E,B,D)),[
+    get_variable(x(5),4),
+    get_variable(x(4),3),
+    get_variable(x(3),1),
+    put_value(x(2),1),
+    put_value(x(5),2),
+    execute(solve_comp_diff_equs/5)]).
+
+
+predicate(solve_comp_diff_equs/5,101,static,private,user,3).
+
+
+clause(:-(solve_comp_diff_equs(A,B,C,D,E),','(exprs_one_index_reducible(A,D,1,F,G,H),','(;(->(==(B,[]),implicit_boundary_condition(C,D,H,I)),boundary_condition_one_index_reducible(B,F,H,I)),','(solve_one_index_comp_diff_equs(G,I,C,D,H,E),!)))),[
+    allocate(9),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    put_value(y(2),1),
+    put_integer(1,2),
+    put_variable(y(5),3),
+    put_variable(y(6),4),
+    put_variable(y(7),5),
+    call(exprs_one_index_reducible/6),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(7),3),
+    put_variable(y(8),4),
+    put_value(y(5),5),
+    call('$solve_comp_diff_equs/5_$aux1'/6),
+    put_value(y(6),0),
+    put_value(y(8),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(7),4),
+    put_value(y(3),5),
+    call(solve_one_index_comp_diff_equs/6),
+    cut(y(4)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(solve_comp_diff_equs(A,B,C,D,E),','(exprs_two_indices_reducible(A,D,1,F,G),','(adjust_pos(G,H),','(reduce_two_indices_exprs(A,D,1,F,H,I),','(=(H,'.'(J,'.'(K,[]))),','(is(L,-(J,2)),','(is(M,-(K,2)),','(boundary_condition_two_indices_reducible(B,F,'.'(L,'.'(M,[])),N),','(solve_two_indices_diff_equs(I,N,D,E),!))))))))),[
+    allocate(13),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_integer(1,2),
+    put_variable(y(5),3),
+    put_variable(y(6),4),
+    call(exprs_two_indices_reducible/5),
+    put_value(y(6),0),
+    put_variable(y(7),1),
+    call(adjust_pos/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_integer(1,2),
+    put_value(y(5),3),
+    put_value(y(7),4),
+    put_variable(y(8),5),
+    call(reduce_two_indices_exprs/6),
+    put_value(y(7),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_list,
+    unify_variable(y(9)),
+    unify_nil,
+    put_structure((-)/2,1),
+    unify_value(x(0)),
+    unify_integer(2),
+    put_variable(y(10),0),
+    call((is)/2),
+    put_variable(y(11),0),
+    put_structure((-)/2,1),
+    unify_value(y(9)),
+    unify_integer(2),
+    call((is)/2),
+    put_value(y(1),0),
+    put_value(y(5),1),
+    put_list(2),
+    unify_local_value(y(10)),
+    unify_list,
+    unify_local_value(y(11)),
+    unify_nil,
+    put_variable(y(12),3),
+    call(boundary_condition_two_indices_reducible/4),
+    put_value(y(8),0),
+    put_value(y(12),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    call(solve_two_indices_diff_equs/4),
+    cut(y(4)),
+    deallocate,
+    proceed]).
+
+
+clause(solve_comp_diff_equs(A,B,C,D,inf),[
+    get_atom(inf,4),
+    proceed]).
+
+
+predicate('$solve_comp_diff_equs/5_$aux1'/6,101,static,private,user,2).
+
+
+clause(:-('$solve_comp_diff_equs/5_$aux1'(A,B,C,D,E,F),','('$get_cut_level'(G),','(==(A,[]),','('$cut'(G),implicit_boundary_condition(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),6),
+    put_nil(1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(implicit_boundary_condition/4)]).
+
+
+clause(:-('$solve_comp_diff_equs/5_$aux1'(A,B,C,D,E,F),boundary_condition_one_index_reducible(A,F,D,E)),[
+    put_value(x(5),1),
+    put_value(x(3),2),
+    put_value(x(4),3),
+    execute(boundary_condition_one_index_reducible/4)]).
+
+
+predicate(solve_one_index_comp_diff_equs/6,131,static,private,user,2).
+
+
+clause(:-(solve_one_index_comp_diff_equs([],A,B,C,D,E),normal_form(0,E)),[
+    get_nil(0),
+    put_value(x(5),1),
+    put_integer(0,0),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_one_index_comp_diff_equs('.'(equ(A,B,C),D),E,F,G,H,I),','(;(->(indirect_recursion_expr(C,G),=(J,C)),solve_typed_diff_equ(comp,C,E,B,F,G,H,J)),','(solve_one_index_comp_diff_equs(D,E,F,G,H,K),max_expr(J,K,I)))),[
+    allocate(8),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(equ/3,0),
+    unify_void(1),
+    unify_variable(x(4)),
+    unify_variable(x(0)),
+    put_value(y(3),1),
+    put_variable(y(6),2),
+    put_value(y(1),3),
+    put_value(y(2),5),
+    put_value(y(4),6),
+    call('$solve_one_index_comp_diff_equs/6_$aux1'/7),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_variable(y(7),5),
+    call(solve_one_index_comp_diff_equs/6),
+    put_unsafe_value(y(6),0),
+    put_unsafe_value(y(7),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(max_expr/3)]).
+
+
+predicate('$solve_one_index_comp_diff_equs/6_$aux1'/7,132,static,private,user,2).
+
+
+clause(:-('$solve_one_index_comp_diff_equs/6_$aux1'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(indirect_recursion_expr(A,B),','('$cut'(H),=(C,A))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),7),
+    put_value(y(0),0),
+    call(indirect_recursion_expr/2),
+    cut(y(2)),
+    put_value(y(1),0),
+    get_value(y(0),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$solve_one_index_comp_diff_equs/6_$aux1'(A,B,C,D,E,F,G),solve_typed_diff_equ(comp,A,D,E,F,B,G,C)),[
+    get_variable(x(8),5),
+    get_variable(x(7),2),
+    get_variable(x(5),1),
+    put_value(x(0),1),
+    put_value(x(3),2),
+    put_value(x(4),3),
+    put_value(x(8),4),
+    put_atom(comp,0),
+    execute(solve_typed_diff_equ/8)]).
+
+
+predicate(solve_one_index_comp_diff_equ/10,146,static,private,user,2).
+
+
+clause(:-(solve_one_index_comp_diff_equ(second_order,A,B,C,D,E,F,G,H,I),','(!,','(boundary_conds(A,J),solve_diff_equ(second_order,B,C,D,E,J,I)))),[
+    allocate(6),
+    get_atom(second_order,0),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),9),
+    cut(x(10)),
+    put_value(x(1),0),
+    put_variable(y(5),1),
+    call(boundary_conds/2),
+    put_atom(second_order,0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(3),4),
+    put_unsafe_value(y(5),5),
+    put_value(y(4),6),
+    deallocate,
+    execute(solve_diff_equ/7)]).
+
+
+clause(:-(solve_one_index_comp_diff_equ(A,B,C,D,E,F,G,H,I,J),solve_one_index_comp_diff_equ1(B,A,C,D,E,F,G,H,I,J)),[
+    get_variable(x(10),1),
+    get_variable(x(1),0),
+    put_value(x(10),0),
+    execute(solve_one_index_comp_diff_equ1/10)]).
+
+
+predicate(solve_one_index_comp_diff_equ1/10,154,static,private,user,2).
+
+
+clause(:-(solve_one_index_comp_diff_equ1([],A,B,C,D,E,F,G,H,I),normal_form(0,I)),[
+    get_nil(0),
+    put_value(x(9),1),
+    put_integer(0,0),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_one_index_comp_diff_equ1('.'(A,B),C,D,E,F,G,H,I,J,K),','(=(A,equ(L,M,N)),','(;(->(integer(M),','(boundary_conds('.'(A,[]),O),solve_diff_equ(C,D,E,F,G,O,P))),','(comp_boundary_cond(A,H,I,J,O),','(solve_diff_equ(C,D,E,F,G,O,Q),max_expr(Q,N,P)))),','(solve_one_index_comp_diff_equ1(B,C,D,E,F,G,H,I,J,R),max_expr(P,R,K))))),[
+    allocate(12),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),8),
+    get_variable(y(9),9),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    get_structure(equ/3,1),
+    unify_void(1),
+    unify_variable(x(0)),
+    unify_variable(x(11)),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(3),4),
+    put_value(y(4),5),
+    put_value(y(5),6),
+    put_variable(y(10),7),
+    put_value(y(6),8),
+    put_value(y(7),9),
+    put_value(y(8),10),
+    call('$solve_one_index_comp_diff_equ1/10_$aux1'/12),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(6),6),
+    put_value(y(7),7),
+    put_value(y(8),8),
+    put_variable(y(11),9),
+    call(solve_one_index_comp_diff_equ1/10),
+    put_unsafe_value(y(10),0),
+    put_unsafe_value(y(11),1),
+    put_value(y(9),2),
+    deallocate,
+    execute(max_expr/3)]).
+
+
+predicate('$solve_one_index_comp_diff_equ1/10_$aux1'/12,155,static,private,user,2).
+
+
+clause(:-('$solve_one_index_comp_diff_equ1/10_$aux1'(A,B,C,D,E,F,G,H,I,J,K,L),','('$get_cut_level'(M),','(integer(A),','('$cut'(M),','(boundary_conds('.'(B,[]),N),solve_diff_equ(C,D,E,F,G,N,H)))))),[
+    allocate(9),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    get_variable(y(7),12),
+    call(integer/1),
+    cut(y(7)),
+    put_list(0),
+    unify_local_value(y(0)),
+    unify_nil,
+    put_variable(y(8),1),
+    call(boundary_conds/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    put_value(y(5),4),
+    put_unsafe_value(y(8),5),
+    put_value(y(6),6),
+    deallocate,
+    execute(solve_diff_equ/7)]).
+
+
+clause(:-('$solve_one_index_comp_diff_equ1/10_$aux1'(A,B,C,D,E,F,G,H,I,J,K,L),','(comp_boundary_cond(B,I,J,K,M),','(solve_diff_equ(C,D,E,F,G,M,N),max_expr(N,L,H)))),[
+    allocate(9),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),6),
+    get_variable(y(5),7),
+    get_variable(y(6),11),
+    put_value(x(1),0),
+    put_value(x(8),1),
+    put_value(x(9),2),
+    put_value(x(10),3),
+    put_variable(y(7),4),
+    call(comp_boundary_cond/5),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(7),5),
+    put_variable(y(8),6),
+    call(solve_diff_equ/7),
+    put_unsafe_value(y(8),0),
+    put_value(y(6),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(max_expr/3)]).
+
+
+predicate(comp_boundary_cond/5,177,static,private,user,1).
+
+
+clause(:-(comp_boundary_cond(equ(A,B,C),D,E,F,'.'(val(G,H),[])),','(min_unifiable_term_sizes(D,E,A,F,I),;(->(integer(I),','(normal_form(I,G),','(general_form(C,J),','(substitute(J,B,I,K),normal_form(K,H))))),','(=(G,bot),=(H,bot))))),[
+    allocate(5),
+    get_list(4),
+    unify_variable(x(4)),
+    unify_nil,
+    get_structure(val/2,4),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_variable(x(4),2),
+    get_structure(equ/3,0),
+    unify_variable(x(2)),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    put_value(x(1),0),
+    put_value(x(4),1),
+    put_variable(y(4),4),
+    call(min_unifiable_term_sizes/5),
+    put_unsafe_value(y(4),0),
+    put_value(y(2),1),
+    put_value(y(1),2),
+    put_value(y(0),3),
+    put_value(y(3),4),
+    deallocate,
+    execute('$comp_boundary_cond/5_$aux1'/5)]).
+
+
+predicate('$comp_boundary_cond/5_$aux1'/5,177,static,private,user,2).
+
+
+clause(:-('$comp_boundary_cond/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(integer(A),','('$cut'(F),','(normal_form(A,B),','(general_form(C,G),','(substitute(G,D,A,H),normal_form(H,E)))))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    call(integer/1),
+    cut(y(5)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call(normal_form/2),
+    put_value(y(2),0),
+    put_variable(y(6),1),
+    call(general_form/2),
+    put_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(0),2),
+    put_variable(y(7),3),
+    call(substitute/4),
+    put_unsafe_value(y(7),0),
+    put_value(y(4),1),
+    deallocate,
+    execute(normal_form/2)]).
+
+
+clause(:-('$comp_boundary_cond/5_$aux1'(A,B,C,D,E),','(=(B,bot),=(E,bot))),[
+    get_atom(bot,1),
+    get_atom(bot,4),
+    proceed]).
+
+
+predicate(min_unifiable_term_sizes/5,190,static,private,user,1).
+
+
+clause(:-(min_unifiable_term_sizes(A,B,C,D,E),','(find_symbol_field_mutex(A,B,mutex,F),','(mutex_cluster(F,C,G),;(->(min_unifiable_term_sizes1(G,A,B,D,H,I),=(E,I)),=(E,bot))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_atom(mutex,2),
+    put_variable(y(5),3),
+    call(find_symbol_field_mutex/4),
+    put_value(y(5),0),
+    put_value(y(2),1),
+    put_variable(y(6),2),
+    call(mutex_cluster/3),
+    put_unsafe_value(y(6),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$min_unifiable_term_sizes/5_$aux1'/5)]).
+
+
+predicate('$min_unifiable_term_sizes/5_$aux1'/5,190,static,private,user,2).
+
+
+clause(:-('$min_unifiable_term_sizes/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(min_unifiable_term_sizes1(A,B,C,D,G,H),','('$cut'(F),=(E,H))))),[
+    allocate(3),
+    get_variable(y(0),4),
+    get_variable(y(1),5),
+    put_void(4),
+    put_variable(y(2),5),
+    call(min_unifiable_term_sizes1/6),
+    cut(y(1)),
+    put_value(y(0),0),
+    get_value(y(2),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$min_unifiable_term_sizes/5_$aux1'(A,B,C,D,E),=(E,bot)),[
+    get_atom(bot,4),
+    proceed]).
+
+
+predicate(mutex_cluster/3,197,static,private,user,2).
+
+
+clause(mutex_cluster([],A,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(mutex_cluster('.'(A,B),C,D),;(->(member_cas(A,C),=(D,A)),mutex_cluster(B,C,D))),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(3)),
+    execute('$mutex_cluster/3_$aux1'/4)]).
+
+
+predicate('$mutex_cluster/3_$aux1'/4,198,static,private,user,2).
+
+
+clause(:-('$mutex_cluster/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(member_cas(A,B),','('$cut'(E),=(C,A))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    put_value(y(0),0),
+    call(member_cas/2),
+    cut(y(2)),
+    put_value(y(1),0),
+    get_value(y(0),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutex_cluster/3_$aux1'(A,B,C,D),mutex_cluster(D,B,C)),[
+    put_value(x(3),0),
+    execute(mutex_cluster/3)]).
+
+
+predicate(min_unifiable_term_sizes1/6,203,static,private,user,2).
+
+
+clause(:-(min_unifiable_term_sizes1([],A,B,C,D,D),integer(D)),[
+    get_nil(0),
+    get_value(x(5),4),
+    put_value(x(5),0),
+    execute(integer/1)]).
+
+
+clause(:-(min_unifiable_term_sizes1('.'(A,B),C,D,E,F,G),','(min_unifiable_term_size(C,D,A,E,H),;(->(var(F),','(integer(H),min_unifiable_term_sizes1(B,C,D,E,H,G))),','(integer(H),','(=:=(F,H),min_unifiable_term_sizes1(B,C,D,E,H,G)))))),[
+    allocate(7),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_list(0),
+    unify_variable(x(2)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),3),
+    put_variable(y(6),4),
+    call(min_unifiable_term_size/5),
+    put_value(y(4),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(0),2),
+    put_value(y(1),3),
+    put_value(y(2),4),
+    put_value(y(3),5),
+    put_value(y(5),6),
+    deallocate,
+    execute('$min_unifiable_term_sizes1/6_$aux1'/7)]).
+
+
+predicate('$min_unifiable_term_sizes1/6_$aux1'/7,204,static,private,user,2).
+
+
+clause(:-('$min_unifiable_term_sizes1/6_$aux1'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(var(A),','('$cut'(H),','(integer(B),min_unifiable_term_sizes1(C,D,E,F,B,G)))))),[
+    allocate(7),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    call(var/1),
+    cut(y(6)),
+    put_value(y(0),0),
+    call(integer/1),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    put_value(y(0),4),
+    put_value(y(5),5),
+    deallocate,
+    execute(min_unifiable_term_sizes1/6)]).
+
+
+clause(:-('$min_unifiable_term_sizes1/6_$aux1'(A,B,C,D,E,F,G),','(integer(B),','(=:=(A,B),min_unifiable_term_sizes1(C,D,E,F,B,G)))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    put_value(y(1),0),
+    call(integer/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((=:=)/2),
+    put_value(y(2),0),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    put_value(y(1),4),
+    put_value(y(6),5),
+    deallocate,
+    execute(min_unifiable_term_sizes1/6)]).
+
+
+predicate(implicit_boundary_condition/4,215,static,private,user,1).
+
+
+clause(:-(implicit_boundary_condition(A,B,C,'.'(equ(D,E,F),[])),','(find_symbol_field_measure(A,B,measure,G),','(find_symbol_field(A,B,mode,H),','(real_pos(H,C,1,I),','(ith_list_cas_element(I,G,J),','(find_symbol_field_clause(A,B,clause,K),','(min_unifiable_implicit_term_size(K,J,I,L),','(is(E,-(L,1)),normal_form(0,F))))))))),[
+    allocate(11),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(3),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(equ/3,0),
+    unify_void(1),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_atom(measure,2),
+    put_variable(y(5),3),
+    call(find_symbol_field_measure/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_atom(mode,2),
+    put_variable(y(6),3),
+    call(find_symbol_field/4),
+    put_value(y(6),0),
+    put_value(y(2),1),
+    put_integer(1,2),
+    put_variable(y(7),3),
+    call(real_pos/4),
+    put_value(y(7),0),
+    put_value(y(5),1),
+    put_variable(y(8),2),
+    call(ith_list_cas_element/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_atom(clause,2),
+    put_variable(y(9),3),
+    call(find_symbol_field_clause/4),
+    put_value(y(9),0),
+    put_value(y(8),1),
+    put_value(y(7),2),
+    put_variable(y(10),3),
+    call(min_unifiable_implicit_term_size/4),
+    put_value(y(3),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(10)),
+    unify_integer(1),
+    call((is)/2),
+    put_integer(0,0),
+    put_value(y(4),1),
+    deallocate,
+    execute(normal_form/2)]).
+
+
+predicate(min_unifiable_implicit_term_size/4,225,static,private,user,2).
+
+
+clause(:-(min_unifiable_implicit_term_size(A,B,C,inf),var(A)),[
+    get_atom(inf,3),
+    execute(var/1)]).
+
+
+clause(:-(min_unifiable_implicit_term_size(A,B,C,D),','(nonvar(A),','(=(A,'.'(E,F)),','(min_unifiable_term_size1(B,E,C,G),','(min_unifiable_implicit_term_size(F,B,C,H),minimum(G,H,D)))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),2),
+    put_variable(y(5),3),
+    call(min_unifiable_term_size1/4),
+    put_value(y(4),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(6),3),
+    call(min_unifiable_implicit_term_size/4),
+    put_unsafe_value(y(5),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(3),2),
+    deallocate,
+    execute(minimum/3)]).

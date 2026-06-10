@@ -1,0 +1,569 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/diff_equation/explicit_size.pl
+% date    : 2 6 2003
+% time    : 10:15:41
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/diff_equation/explicit_size.pl').
+
+
+predicate(explicit_size_diff_equ/6,7,static,private,user,1).
+
+
+clause(:-(explicit_size_diff_equ(A,B,/(C,D),E,F,G),','(=(A,expr(H,G)),explicit_size_terms(H,B,C))),[
+    get_structure((/)/2,2),
+    unify_variable(x(2)),
+    unify_void(1),
+    get_structure(expr/2,0),
+    unify_variable(x(0)),
+    unify_local_value(x(5)),
+    execute(explicit_size_terms/3)]).
+
+
+predicate(explicit_size_terms/3,12,static,private,user,2).
+
+
+clause(explicit_size_terms([],A,B),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(explicit_size_terms('.'(A,B),C,D),','(explicit_size_term(A,C,D),explicit_size_terms(B,C,D))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    call(explicit_size_term/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(explicit_size_terms/3)]).
+
+
+predicate(explicit_size_term/3,17,static,private,user,1).
+
+
+clause(:-(explicit_size_term(term('.'(A,[]),'.'(factor([],1),[])),B,C),','(userfunc(A),','(functor(A,C,1),','(arg(1,A,D),','(nl,','(write('\nArg='),','(write(D),','(nl,','(general_form(D,arg(B,E)),integer(E)))))))))),[
+    allocate(5),
+    get_structure(term/2,0),
+    unify_variable(x(3)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(3),
+    unify_variable(y(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_integer(1),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(userfunc/1),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_integer(1,2),
+    call(functor/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call(arg/3),
+    call(nl/0),
+    put_atom('\nArg=',0),
+    call(write/1),
+    put_value(y(3),0),
+    call(write/1),
+    call(nl/0),
+    put_value(y(3),0),
+    put_structure(arg/2,1),
+    unify_local_value(y(1)),
+    unify_variable(y(4)),
+    call(general_form/2),
+    put_value(y(4),0),
+    deallocate,
+    execute(integer/1)]).
+
+
+predicate(solve_esde/4,26,static,private,user,2).
+
+
+clause(:-(solve_esde(A,B,C,D),','(explicit_size_solvable(C,A),','(!,','(=(B,'.'(val(E,F),[])),','(general_form(F,G),solve_esde1(A,C,G,D)))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    call(explicit_size_solvable/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(val/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    put_variable(y(5),1),
+    call(general_form/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_unsafe_value(y(5),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(solve_esde1/4)]).
+
+
+clause(solve_esde(A,B,C,inf),[
+    get_atom(inf,3),
+    proceed]).
+
+
+predicate(solve_esde1/4,37,static,private,user,2).
+
+
+clause(:-(solve_esde1(A,[],B,C),','(!,normal_form(*(B,A),C))),[
+    get_nil(1),
+    get_variable(x(1),0),
+    cut(x(4)),
+    put_structure((*)/2,0),
+    unify_local_value(x(2)),
+    unify_local_value(x(1)),
+    put_value(x(3),1),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_esde1(A,B,C,D),','(\==(B,[]),solve_esde2(B,A,C,D))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(1),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(solve_esde2/4)]).
+
+
+predicate(solve_esde2/4,40,static,private,user,2).
+
+
+clause(:-(solve_esde2([],A,B,C),normal_form(0,C)),[
+    get_nil(0),
+    put_value(x(3),1),
+    put_integer(0,0),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_esde2('.'(A,B),C,D,E),','(solve_esde3(A,C,D,F),','(solve_esde2(B,C,D,G),add_expr(F,G,E)))),[
+    allocate(6),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(4),3),
+    call(solve_esde3/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(5),3),
+    call(solve_esde2/4),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(3),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+predicate(solve_esde3/4,49,static,private,user,5).
+
+
+clause(:-(solve_esde3(factor([],A),B,C,D),','(!,normal_form(*(max(A,C),B),D))),[
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    cut(x(4)),
+    put_structure(max/2,4),
+    unify_value(x(0)),
+    unify_local_value(x(2)),
+    put_structure((*)/2,0),
+    unify_value(x(4)),
+    unify_local_value(x(1)),
+    put_value(x(3),1),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_esde3(factor('.'(A,[]),B),A,C,D),','(!,normal_form(*(*(/(max(B,C),2),A),+(A,1)),D))),[
+    get_structure(factor/2,0),
+    unify_variable(x(5)),
+    unify_variable(x(0)),
+    get_list(5),
+    unify_local_value(x(1)),
+    unify_nil,
+    cut(x(4)),
+    put_structure(max/2,4),
+    unify_value(x(0)),
+    unify_local_value(x(2)),
+    put_structure((/)/2,0),
+    unify_value(x(4)),
+    unify_integer(2),
+    put_structure((*)/2,2),
+    unify_value(x(0)),
+    unify_local_value(x(1)),
+    put_structure((*)/2,0),
+    unify_value(x(2)),
+    unify_structure((+)/2),
+    unify_local_value(x(1)),
+    unify_integer(1),
+    put_value(x(3),1),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_esde3(factor('.'(arg(A,B),[]),C),D,E,F),','(!,normal_form(*(*(/(max(C,E),2),D),+(D,1)),F))),[
+    get_structure(factor/2,0),
+    unify_variable(x(5)),
+    unify_variable(x(0)),
+    get_list(5),
+    unify_variable(x(5)),
+    unify_nil,
+    get_structure(arg/2,5),
+    unify_void(2),
+    cut(x(4)),
+    put_structure(max/2,4),
+    unify_value(x(0)),
+    unify_local_value(x(2)),
+    put_structure((/)/2,0),
+    unify_value(x(4)),
+    unify_integer(2),
+    put_structure((*)/2,2),
+    unify_value(x(0)),
+    unify_local_value(x(1)),
+    put_structure((*)/2,0),
+    unify_value(x(2)),
+    unify_structure((+)/2),
+    unify_local_value(x(1)),
+    unify_integer(1),
+    put_value(x(3),1),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_esde3(factor('.'(exp(A,B),[]),C),D,E,F),','(normal_form(D,B),','(general_form(A,G),','(integer(G),','(!,;(->(number(E),normal_form(/(*(max(C,E),-(exp(G,+(D,1)),1)),-(G,1)),F)),normal_form(+(/(*(C,-(exp(G,+(D,1)),1)),-(G,1)),*(E,D)),F))))))),[
+    allocate(7),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_variable(y(4),3),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(exp/2,0),
+    unify_variable(y(0)),
+    unify_variable(x(1)),
+    get_variable(y(5),4),
+    put_value(y(2),0),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(6),1),
+    call(general_form/2),
+    put_value(y(6),0),
+    call(integer/1),
+    cut(y(5)),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(6),2),
+    put_value(y(2),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$solve_esde3/4_$aux1'/5)]).
+
+
+clause(:-(solve_esde3(factor('.'(exp(A,B),[]),C),D,E,F),','(general_form(B,arg(D,G)),','(integer(G),','(general_form(A,H),','(integer(H),;(->(number(E),normal_form(/(*(max(C,E),-(exp(H,+(D,1)),1)),-(H,1)),F)),normal_form(+(/(*(C,-(exp(H,+(D,1)),1)),-(H,1)),*(E,D)),F))))))),[
+    allocate(7),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_variable(y(4),3),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(exp/2,0),
+    unify_variable(y(0)),
+    unify_variable(x(0)),
+    put_structure(arg/2,1),
+    unify_local_value(y(2)),
+    unify_variable(y(5)),
+    call(general_form/2),
+    put_value(y(5),0),
+    call(integer/1),
+    put_value(y(0),0),
+    put_variable(y(6),1),
+    call(general_form/2),
+    put_value(y(6),0),
+    call(integer/1),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(6),2),
+    put_value(y(2),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$solve_esde3/4_$aux2'/5)]).
+
+
+predicate('$solve_esde3/4_$aux2'/5,60,static,private,user,2).
+
+
+clause(:-('$solve_esde3/4_$aux2'(A,B,C,D,E),','('$get_cut_level'(F),','(number(A),','('$cut'(F),normal_form(/(*(max(B,A),-(exp(C,+(D,1)),1)),-(C,1)),E))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    call(number/1),
+    cut(y(5)),
+    put_structure(max/2,2),
+    unify_local_value(y(1)),
+    unify_local_value(y(0)),
+    put_structure(exp/2,0),
+    unify_local_value(y(2)),
+    unify_structure((+)/2),
+    unify_local_value(y(3)),
+    unify_integer(1),
+    put_structure((*)/2,1),
+    unify_value(x(2)),
+    unify_structure((-)/2),
+    unify_value(x(0)),
+    unify_integer(1),
+    put_structure((/)/2,0),
+    unify_value(x(1)),
+    unify_structure((-)/2),
+    unify_local_value(y(2)),
+    unify_integer(1),
+    put_value(y(4),1),
+    deallocate,
+    execute(normal_form/2)]).
+
+
+clause(:-('$solve_esde3/4_$aux2'(A,B,C,D,E),normal_form(+(/(*(B,-(exp(C,+(D,1)),1)),-(C,1)),*(A,D)),E)),[
+    get_variable(x(5),0),
+    put_structure(exp/2,6),
+    unify_local_value(x(2)),
+    unify_structure((+)/2),
+    unify_local_value(x(3)),
+    unify_integer(1),
+    put_structure((*)/2,0),
+    unify_local_value(x(1)),
+    unify_structure((-)/2),
+    unify_value(x(6)),
+    unify_integer(1),
+    put_structure((/)/2,1),
+    unify_value(x(0)),
+    unify_structure((-)/2),
+    unify_local_value(x(2)),
+    unify_integer(1),
+    put_structure((+)/2,0),
+    unify_value(x(1)),
+    unify_structure((*)/2),
+    unify_local_value(x(5)),
+    unify_local_value(x(3)),
+    put_value(x(4),1),
+    execute(normal_form/2)]).
+
+
+predicate('$solve_esde3/4_$aux1'/5,55,static,private,user,2).
+
+
+clause(:-('$solve_esde3/4_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(number(A),','('$cut'(F),normal_form(/(*(max(B,A),-(exp(C,+(D,1)),1)),-(C,1)),E))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    call(number/1),
+    cut(y(5)),
+    put_structure(max/2,2),
+    unify_local_value(y(1)),
+    unify_local_value(y(0)),
+    put_structure(exp/2,0),
+    unify_local_value(y(2)),
+    unify_structure((+)/2),
+    unify_local_value(y(3)),
+    unify_integer(1),
+    put_structure((*)/2,1),
+    unify_value(x(2)),
+    unify_structure((-)/2),
+    unify_value(x(0)),
+    unify_integer(1),
+    put_structure((/)/2,0),
+    unify_value(x(1)),
+    unify_structure((-)/2),
+    unify_local_value(y(2)),
+    unify_integer(1),
+    put_value(y(4),1),
+    deallocate,
+    execute(normal_form/2)]).
+
+
+clause(:-('$solve_esde3/4_$aux1'(A,B,C,D,E),normal_form(+(/(*(B,-(exp(C,+(D,1)),1)),-(C,1)),*(A,D)),E)),[
+    get_variable(x(5),0),
+    put_structure(exp/2,6),
+    unify_local_value(x(2)),
+    unify_structure((+)/2),
+    unify_local_value(x(3)),
+    unify_integer(1),
+    put_structure((*)/2,0),
+    unify_local_value(x(1)),
+    unify_structure((-)/2),
+    unify_value(x(6)),
+    unify_integer(1),
+    put_structure((/)/2,1),
+    unify_value(x(0)),
+    unify_structure((-)/2),
+    unify_local_value(x(2)),
+    unify_integer(1),
+    put_structure((+)/2,0),
+    unify_value(x(1)),
+    unify_structure((*)/2),
+    unify_local_value(x(5)),
+    unify_local_value(x(3)),
+    put_value(x(4),1),
+    execute(normal_form/2)]).
+
+
+predicate(explicit_size_solvable/2,68,static,private,user,2).
+
+
+clause(explicit_size_solvable([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(explicit_size_solvable('.'(A,B),C),','(explicit_size_solvable1(A,C),explicit_size_solvable(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    call(explicit_size_solvable1/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(explicit_size_solvable/2)]).
+
+
+predicate(explicit_size_solvable1/2,73,static,private,user,5).
+
+
+clause(explicit_size_solvable1(factor([],A),B),[
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_void(1),
+    proceed]).
+
+
+clause(explicit_size_solvable1(factor('.'(A,[]),B),A),[
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_nil,
+    proceed]).
+
+
+clause(:-(explicit_size_solvable1(factor('.'(arg(A,B),[]),C),D),','(normal_form(D,A),','(general_form(B,E),integer(E)))),[
+    allocate(2),
+    get_variable(x(2),1),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(arg/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(x(2),0),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(1),1),
+    call(general_form/2),
+    put_unsafe_value(y(1),0),
+    deallocate,
+    execute(integer/1)]).
+
+
+clause(:-(explicit_size_solvable1(factor('.'(exp(A,B),[]),C),D),','(normal_form(D,B),','(general_form(A,E),','(integer(E),!)))),[
+    allocate(3),
+    get_variable(x(3),1),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(exp/2,0),
+    unify_variable(y(0)),
+    unify_variable(x(1)),
+    get_variable(y(1),2),
+    put_value(x(3),0),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    call(general_form/2),
+    put_value(y(2),0),
+    call(integer/1),
+    cut(y(1)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(explicit_size_solvable1(factor('.'(exp(A,B),[]),C),D),','(general_form(B,arg(D,E)),','(integer(E),','(general_form(A,F),integer(F))))),[
+    allocate(3),
+    get_variable(x(2),1),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(exp/2,0),
+    unify_variable(y(0)),
+    unify_variable(x(0)),
+    put_structure(arg/2,1),
+    unify_local_value(x(2)),
+    unify_variable(y(1)),
+    call(general_form/2),
+    put_value(y(1),0),
+    call(integer/1),
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    call(general_form/2),
+    put_unsafe_value(y(2),0),
+    deallocate,
+    execute(integer/1)]).

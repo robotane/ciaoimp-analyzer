@@ -1,0 +1,1135 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/init/symtable.pl
+% date    : 2 6 2003
+% time    : 10:15:29
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/init/symtable.pl').
+
+
+predicate(insert_symbol_entry/3,32,static,private,user,1).
+
+
+clause(:-(insert_symbol_entry(A,B,C),;(->(var(A),','(=(C,st(B,D,E,F,G,H,I,J,K,L)),=(A,'.'(C,M)))),->(nonvar(A),','(=(A,'.'(N,O)),;(->(=(N,st(B,P,Q,R,S,T,U,V,W,X)),=(C,N)),->(\==(N,st(B,Y,Z,A1,B1,C1,D1,E1,F1,G1)),insert_symbol_entry(O,B,C))))))),[
+    get_variable(x(3),2),
+    get_variable(x(2),1),
+    put_value(x(3),1),
+    execute('$insert_symbol_entry/3_$aux1'/3)]).
+
+
+predicate('$insert_symbol_entry/3_$aux1'/3,32,static,private,user,2).
+
+
+clause(:-('$insert_symbol_entry/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(var(A),','('$cut'(D),','(=(B,st(C,E,F,G,H,I,J,K,L,M)),=(A,'.'(B,N))))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(var/1),
+    cut(y(3)),
+    put_value(y(1),0),
+    get_structure(st/10,0),
+    unify_local_value(y(2)),
+    unify_void(9),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$insert_symbol_entry/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(nonvar(A),','('$cut'(D),','(=(A,'.'(E,F)),;(','('$get_cut_level'(G),','(=(E,st(C,H,I,J,K,L,M,N,O,P)),','('$cut'(G),=(B,E)))),;(','('$get_cut_level'(Q),','(\==(E,st(C,R,S,T,U,V,W,X,Y,Z)),','('$cut'(Q),insert_symbol_entry(F,C,B)))),fail))))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(nonvar/1),
+    cut(y(3)),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(3)),
+    put_value(y(2),1),
+    put_value(y(1),2),
+    deallocate,
+    execute('$insert_symbol_entry/3_$aux2'/4)]).
+
+
+predicate('$insert_symbol_entry/3_$aux2'/4,32,static,private,user,2).
+
+
+clause(:-('$insert_symbol_entry/3_$aux2'(A,B,C,D),','('$get_cut_level'(E),','(=(A,st(B,F,G,H,I,J,K,L,M,N)),','('$cut'(E),=(C,A))))),[
+    get_structure(st/10,0),
+    unify_local_value(x(1)),
+    unify_void(9),
+    cut(x(4)),
+    get_value(x(0),2),
+    proceed]).
+
+
+clause(:-('$insert_symbol_entry/3_$aux2'(A,B,C,D),','('$get_cut_level'(E),','(\==(A,st(B,F,G,H,I,J,K,L,M,N)),','('$cut'(E),insert_symbol_entry(D,B,C))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_structure(st/10,1),
+    unify_local_value(y(0)),
+    unify_void(9),
+    call((\==)/2),
+    cut(y(3)),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(insert_symbol_entry/3)]).
+
+
+predicate(insert_symbol_field_clause/4,56,static,private,user,1).
+
+
+clause(:-(insert_symbol_field_clause(A,B,clause,C),','(insert_symbol_entry(A,B,st(B,D,E,F,G,H,I,J,K,L)),insert_symbol_clause(D,C))),[
+    allocate(2),
+    get_atom(clause,2),
+    get_variable(y(0),3),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_variable(y(1)),
+    unify_void(8),
+    call(insert_symbol_entry/3),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(insert_symbol_clause/2)]).
+
+
+predicate(insert_symbol_clause/2,61,static,private,user,3).
+
+
+clause(:-(insert_symbol_clause(A,B),','(var(A),=(A,'.'(B,C)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_symbol_clause(A,B),','(nonvar(A),','(=(A,'.'(C,D)),==(C,B)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+clause(:-(insert_symbol_clause(A,B),','(nonvar(A),','(=(A,'.'(C,D)),','(\==(C,B),insert_symbol_clause(D,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(insert_symbol_clause/2)]).
+
+
+predicate(insert_symbol_field_mode/4,77,static,private,user,1).
+
+
+clause(:-(insert_symbol_field_mode(A,B,mode,C),insert_symbol_entry(A,B,st(B,D,C,E,F,G,H,I,J,K))),[
+    get_atom(mode,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(1),
+    unify_local_value(x(3)),
+    unify_void(7),
+    execute(insert_symbol_entry/3)]).
+
+
+predicate(insert_symbol_field_measure/4,80,static,private,user,1).
+
+
+clause(:-(insert_symbol_field_measure(A,B,measure,C),insert_symbol_entry(A,B,st(B,D,E,C,F,G,H,I,J,K))),[
+    get_atom(measure,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(2),
+    unify_local_value(x(3)),
+    unify_void(6),
+    execute(insert_symbol_entry/3)]).
+
+
+predicate(insert_symbol_field_mutex/4,83,static,private,user,1).
+
+
+clause(:-(insert_symbol_field_mutex(A,B,mutex,C),insert_symbol_entry(A,B,st(B,D,E,F,C,G,H,I,J,K))),[
+    get_atom(mutex,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(3),
+    unify_local_value(x(3)),
+    unify_void(5),
+    execute(insert_symbol_entry/3)]).
+
+
+predicate(insert_symbol_field_det/4,85,static,private,user,1).
+
+
+clause(:-(insert_symbol_field_det(A,B,det,C),insert_symbol_entry(A,B,st(B,D,E,F,G,C,H,I,J,K))),[
+    get_atom(det,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(4),
+    unify_local_value(x(3)),
+    unify_void(4),
+    execute(insert_symbol_entry/3)]).
+
+
+predicate(insert_symbol_field_size/4,87,static,private,user,1).
+
+
+clause(:-(insert_symbol_field_size(A,B,size,C),insert_symbol_entry(A,B,st(B,D,E,F,G,H,C,I,J,K))),[
+    get_atom(size,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(5),
+    unify_local_value(x(3)),
+    unify_void(3),
+    execute(insert_symbol_entry/3)]).
+
+
+predicate(insert_symbol_field_relation/4,89,static,private,user,1).
+
+
+clause(:-(insert_symbol_field_relation(A,B,relation,C),insert_symbol_entry(A,B,st(B,D,E,F,G,H,I,C,J,K))),[
+    get_atom(relation,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(6),
+    unify_local_value(x(3)),
+    unify_void(2),
+    execute(insert_symbol_entry/3)]).
+
+
+predicate(insert_symbol_field_time/4,91,static,private,user,1).
+
+
+clause(:-(insert_symbol_field_time(A,B,time,C),insert_symbol_entry(A,B,st(B,D,E,F,G,H,I,J,C,K))),[
+    get_atom(time,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(7),
+    unify_local_value(x(3)),
+    unify_void(1),
+    execute(insert_symbol_entry/3)]).
+
+
+predicate(insert_symbol_field_domain/4,93,static,private,user,1).
+
+
+clause(:-(insert_symbol_field_domain(A,B,domain,C),insert_symbol_entry(A,B,st(B,D,E,F,G,H,I,J,K,C))),[
+    get_atom(domain,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(8),
+    unify_local_value(x(3)),
+    execute(insert_symbol_entry/3)]).
+
+
+predicate(find_symbol_entry/3,102,static,private,user,3).
+
+
+clause(:-(find_symbol_entry(A,B,C),','(var(A),!)),[
+    allocate(1),
+    get_variable(y(0),3),
+    call(var/1),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(find_symbol_entry(A,B,C),','(nonvar(A),','(=(A,'.'(C,D)),','(=(C,st(B,E,F,G,H,I,J,K,L,M)),!)))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_void(1),
+    put_value(y(2),0),
+    get_structure(st/10,0),
+    unify_local_value(y(1)),
+    unify_void(9),
+    cut(y(3)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(find_symbol_entry(A,B,C),','(nonvar(A),','(=(A,'.'(D,E)),','(=(D,st(F,G,H,I,J,K,L,M,N,O)),','(\==(B,F),','(find_symbol_entry(E,B,C),!)))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(4)),
+    get_structure(st/10,0),
+    unify_variable(x(1)),
+    unify_void(9),
+    put_value(y(1),0),
+    call((\==)/2),
+    put_value(y(4),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    call(find_symbol_entry/3),
+    cut(y(3)),
+    deallocate,
+    proceed]).
+
+
+predicate(find_symbol_field_clause/4,135,static,private,user,1).
+
+
+clause(:-(find_symbol_field_clause(A,B,clause,C),','(find_symbol_entry(A,B,st(B,C,D,E,F,G,H,I,J,K)),!)),[
+    allocate(1),
+    get_atom(clause,2),
+    get_variable(y(0),4),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_local_value(x(3)),
+    unify_void(8),
+    call(find_symbol_entry/3),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+predicate(find_symbol_field/4,137,static,private,user,1).
+
+
+clause(:-(find_symbol_field(A,B,mode,C),find_symbol_entry(A,B,st(B,D,C,E,F,G,H,I,J,K))),[
+    get_atom(mode,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(1),
+    unify_local_value(x(3)),
+    unify_void(7),
+    execute(find_symbol_entry/3)]).
+
+
+predicate(find_symbol_field_measure/4,139,static,private,user,1).
+
+
+clause(:-(find_symbol_field_measure(A,B,measure,C),find_symbol_entry(A,B,st(B,D,E,C,F,G,H,I,J,K))),[
+    get_atom(measure,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(2),
+    unify_local_value(x(3)),
+    unify_void(6),
+    execute(find_symbol_entry/3)]).
+
+
+predicate(find_symbol_field_mutex/4,141,static,private,user,1).
+
+
+clause(:-(find_symbol_field_mutex(A,B,mutex,C),find_symbol_entry(A,B,st(B,D,E,F,C,G,H,I,J,K))),[
+    get_atom(mutex,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(3),
+    unify_local_value(x(3)),
+    unify_void(5),
+    execute(find_symbol_entry/3)]).
+
+
+predicate(find_symbol_field_det/4,143,static,private,user,1).
+
+
+clause(:-(find_symbol_field_det(A,B,det,C),find_symbol_entry(A,B,st(B,D,E,F,G,C,H,I,J,K))),[
+    get_atom(det,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(4),
+    unify_local_value(x(3)),
+    unify_void(4),
+    execute(find_symbol_entry/3)]).
+
+
+predicate(find_symbol_field_size/4,145,static,private,user,1).
+
+
+clause(:-(find_symbol_field_size(A,B,size,C),find_symbol_entry(A,B,st(B,D,E,F,G,H,C,I,J,K))),[
+    get_atom(size,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(5),
+    unify_local_value(x(3)),
+    unify_void(3),
+    execute(find_symbol_entry/3)]).
+
+
+predicate(find_symbol_field_relation/4,147,static,private,user,1).
+
+
+clause(:-(find_symbol_field_relation(A,B,relation,C),find_symbol_entry(A,B,st(B,D,E,F,G,H,I,C,J,K))),[
+    get_atom(relation,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(6),
+    unify_local_value(x(3)),
+    unify_void(2),
+    execute(find_symbol_entry/3)]).
+
+
+predicate(find_symbol_field_time/4,149,static,private,user,1).
+
+
+clause(:-(find_symbol_field_time(A,B,time,C),find_symbol_entry(A,B,st(B,D,E,F,G,H,I,J,C,K))),[
+    get_atom(time,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(7),
+    unify_local_value(x(3)),
+    unify_void(1),
+    execute(find_symbol_entry/3)]).
+
+
+predicate(find_symbol_field_domain/4,151,static,private,user,1).
+
+
+clause(:-(find_symbol_field_domain(A,B,domain,C),find_symbol_entry(A,B,st(B,D,E,F,G,H,I,J,K,C))),[
+    get_atom(domain,2),
+    put_structure(st/10,2),
+    unify_local_value(x(1)),
+    unify_void(8),
+    unify_local_value(x(3)),
+    execute(find_symbol_entry/3)]).
+
+
+predicate(literal_property/5,169,static,private,user,1).
+
+
+clause(:-(literal_property(A,B,C,D,E),;(->(==(D,clause),','(find_symbol_field_clause(A,C,D,F),;(->(var(F),find_symbol_field_clause(B,C,D,E)),=(E,F)))),;(->(==(D,mode),','(find_symbol_field(A,C,D,F),;(->(var(F),find_symbol_field(B,C,D,E)),=(E,F)))),;(->(==(D,measure),','(find_symbol_field_measure(A,C,D,F),;(->(var(F),find_symbol_field_measure(B,C,D,E)),=(E,F)))),;(->(==(D,mutex),','(find_symbol_field_mutex(A,C,D,F),;(->(var(F),find_symbol_field_mutex(B,C,D,E)),=(E,F)))),;(->(==(D,det),','(find_symbol_field_det(A,C,D,F),;(->(var(F),find_symbol_field_det(B,C,D,E)),=(E,F)))),;(->(==(D,size),','(find_symbol_field_size(A,C,D,F),;(->(var(F),find_symbol_field_size(B,C,D,E)),=(E,F)))),;(->(==(D,relation),','(find_symbol_field_relation(A,C,D,F),;(->(var(F),find_symbol_field_relation(B,C,D,E)),=(E,F)))),;(->(==(D,time),','(find_symbol_field_time(A,C,D,F),;(->(var(F),find_symbol_field_time(B,C,D,E)),=(E,F)))),->(==(D,domain),','(find_symbol_field_domain(A,C,D,F),;(->(var(F),find_symbol_field_domain(B,C,D,E)),=(E,F))))))))))))),[
+    get_variable(x(5),3),
+    get_variable(x(3),1),
+    get_variable(x(1),0),
+    put_value(x(5),0),
+    execute('$literal_property/5_$aux1'/5)]).
+
+
+predicate('$literal_property/5_$aux1'/5,169,static,private,user,9).
+
+
+clause(:-('$literal_property/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,clause),','('$cut'(F),','(find_symbol_field_clause(B,C,A,G),;(','('$get_cut_level'(H),','(var(G),','('$cut'(H),find_symbol_field_clause(D,C,A,E)))),=(E,G))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    put_atom(clause,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    call(find_symbol_field_clause/4),
+    put_unsafe_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$literal_property/5_$aux2'/5)]).
+
+
+clause(:-('$literal_property/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,mode),','('$cut'(F),','(find_symbol_field(B,C,A,G),;(','('$get_cut_level'(H),','(var(G),','('$cut'(H),find_symbol_field(D,C,A,E)))),=(E,G))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    put_atom(mode,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    call(find_symbol_field/4),
+    put_unsafe_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$literal_property/5_$aux3'/5)]).
+
+
+clause(:-('$literal_property/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,measure),','('$cut'(F),','(find_symbol_field_measure(B,C,A,G),;(','('$get_cut_level'(H),','(var(G),','('$cut'(H),find_symbol_field_measure(D,C,A,E)))),=(E,G))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    put_atom(measure,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    call(find_symbol_field_measure/4),
+    put_unsafe_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$literal_property/5_$aux4'/5)]).
+
+
+clause(:-('$literal_property/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,mutex),','('$cut'(F),','(find_symbol_field_mutex(B,C,A,G),;(','('$get_cut_level'(H),','(var(G),','('$cut'(H),find_symbol_field_mutex(D,C,A,E)))),=(E,G))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    put_atom(mutex,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    call(find_symbol_field_mutex/4),
+    put_unsafe_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$literal_property/5_$aux5'/5)]).
+
+
+clause(:-('$literal_property/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,det),','('$cut'(F),','(find_symbol_field_det(B,C,A,G),;(','('$get_cut_level'(H),','(var(G),','('$cut'(H),find_symbol_field_det(D,C,A,E)))),=(E,G))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    put_atom(det,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    call(find_symbol_field_det/4),
+    put_unsafe_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$literal_property/5_$aux6'/5)]).
+
+
+clause(:-('$literal_property/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,size),','('$cut'(F),','(find_symbol_field_size(B,C,A,G),;(','('$get_cut_level'(H),','(var(G),','('$cut'(H),find_symbol_field_size(D,C,A,E)))),=(E,G))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    put_atom(size,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    call(find_symbol_field_size/4),
+    put_unsafe_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$literal_property/5_$aux7'/5)]).
+
+
+clause(:-('$literal_property/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,relation),','('$cut'(F),','(find_symbol_field_relation(B,C,A,G),;(','('$get_cut_level'(H),','(var(G),','('$cut'(H),find_symbol_field_relation(D,C,A,E)))),=(E,G))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    put_atom(relation,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    call(find_symbol_field_relation/4),
+    put_unsafe_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$literal_property/5_$aux8'/5)]).
+
+
+clause(:-('$literal_property/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,time),','('$cut'(F),','(find_symbol_field_time(B,C,A,G),;(','('$get_cut_level'(H),','(var(G),','('$cut'(H),find_symbol_field_time(D,C,A,E)))),=(E,G))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    put_atom(time,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    call(find_symbol_field_time/4),
+    put_unsafe_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$literal_property/5_$aux9'/5)]).
+
+
+clause(:-('$literal_property/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,domain),','('$cut'(F),','(find_symbol_field_domain(B,C,A,G),;(','('$get_cut_level'(H),','(var(G),','('$cut'(H),find_symbol_field_domain(D,C,A,E)))),=(E,G))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(0),0),
+    put_atom(domain,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    call(find_symbol_field_domain/4),
+    put_unsafe_value(y(6),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(4),4),
+    deallocate,
+    execute('$literal_property/5_$aux10'/5)]).
+
+
+predicate('$literal_property/5_$aux10'/5,169,static,private,user,2).
+
+
+clause(:-('$literal_property/5_$aux10'(A,B,C,D,E),','('$get_cut_level'(F),','(var(A),','('$cut'(F),find_symbol_field_domain(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    call(var/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_domain/4)]).
+
+
+clause(:-('$literal_property/5_$aux10'(A,B,C,D,E),=(E,A)),[
+    get_value(x(0),4),
+    proceed]).
+
+
+predicate('$literal_property/5_$aux9'/5,169,static,private,user,2).
+
+
+clause(:-('$literal_property/5_$aux9'(A,B,C,D,E),','('$get_cut_level'(F),','(var(A),','('$cut'(F),find_symbol_field_time(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    call(var/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_time/4)]).
+
+
+clause(:-('$literal_property/5_$aux9'(A,B,C,D,E),=(E,A)),[
+    get_value(x(0),4),
+    proceed]).
+
+
+predicate('$literal_property/5_$aux8'/5,169,static,private,user,2).
+
+
+clause(:-('$literal_property/5_$aux8'(A,B,C,D,E),','('$get_cut_level'(F),','(var(A),','('$cut'(F),find_symbol_field_relation(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    call(var/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_relation/4)]).
+
+
+clause(:-('$literal_property/5_$aux8'(A,B,C,D,E),=(E,A)),[
+    get_value(x(0),4),
+    proceed]).
+
+
+predicate('$literal_property/5_$aux7'/5,169,static,private,user,2).
+
+
+clause(:-('$literal_property/5_$aux7'(A,B,C,D,E),','('$get_cut_level'(F),','(var(A),','('$cut'(F),find_symbol_field_size(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    call(var/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_size/4)]).
+
+
+clause(:-('$literal_property/5_$aux7'(A,B,C,D,E),=(E,A)),[
+    get_value(x(0),4),
+    proceed]).
+
+
+predicate('$literal_property/5_$aux6'/5,169,static,private,user,2).
+
+
+clause(:-('$literal_property/5_$aux6'(A,B,C,D,E),','('$get_cut_level'(F),','(var(A),','('$cut'(F),find_symbol_field_det(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    call(var/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_det/4)]).
+
+
+clause(:-('$literal_property/5_$aux6'(A,B,C,D,E),=(E,A)),[
+    get_value(x(0),4),
+    proceed]).
+
+
+predicate('$literal_property/5_$aux5'/5,169,static,private,user,2).
+
+
+clause(:-('$literal_property/5_$aux5'(A,B,C,D,E),','('$get_cut_level'(F),','(var(A),','('$cut'(F),find_symbol_field_mutex(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    call(var/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_mutex/4)]).
+
+
+clause(:-('$literal_property/5_$aux5'(A,B,C,D,E),=(E,A)),[
+    get_value(x(0),4),
+    proceed]).
+
+
+predicate('$literal_property/5_$aux4'/5,169,static,private,user,2).
+
+
+clause(:-('$literal_property/5_$aux4'(A,B,C,D,E),','('$get_cut_level'(F),','(var(A),','('$cut'(F),find_symbol_field_measure(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    call(var/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_measure/4)]).
+
+
+clause(:-('$literal_property/5_$aux4'(A,B,C,D,E),=(E,A)),[
+    get_value(x(0),4),
+    proceed]).
+
+
+predicate('$literal_property/5_$aux3'/5,169,static,private,user,2).
+
+
+clause(:-('$literal_property/5_$aux3'(A,B,C,D,E),','('$get_cut_level'(F),','(var(A),','('$cut'(F),find_symbol_field(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    call(var/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field/4)]).
+
+
+clause(:-('$literal_property/5_$aux3'(A,B,C,D,E),=(E,A)),[
+    get_value(x(0),4),
+    proceed]).
+
+
+predicate('$literal_property/5_$aux2'/5,169,static,private,user,2).
+
+
+clause(:-('$literal_property/5_$aux2'(A,B,C,D,E),','('$get_cut_level'(F),','(var(A),','('$cut'(F),find_symbol_field_clause(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    call(var/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_clause/4)]).
+
+
+clause(:-('$literal_property/5_$aux2'(A,B,C,D,E),=(E,A)),[
+    get_value(x(0),4),
+    proceed]).
+
+
+predicate(find_symbol_field_property/4,236,static,private,user,1).
+
+
+clause(:-(find_symbol_field_property(A,B,C,D),;(->(==(C,clause),find_symbol_field_clause(A,B,C,D)),;(->(==(C,mode),find_symbol_field(A,B,C,D)),;(->(==(C,measure),find_symbol_field_measure(A,B,C,D)),;(->(==(C,mutex),find_symbol_field_mutex(A,B,C,D)),;(->(==(C,det),find_symbol_field_det(A,B,C,D)),;(->(==(C,size),find_symbol_field_size(A,B,C,D)),;(->(==(C,relation),find_symbol_field_relation(A,B,C,D)),;(->(==(C,time),find_symbol_field_time(A,B,C,D)),->(==(C,domain),find_symbol_field_domain(A,B,C,D))))))))))),[
+    get_variable(x(4),2),
+    get_variable(x(2),1),
+    get_variable(x(1),0),
+    put_value(x(4),0),
+    execute('$find_symbol_field_property/4_$aux1'/4)]).
+
+
+predicate('$find_symbol_field_property/4_$aux1'/4,236,static,private,user,9).
+
+
+clause(:-('$find_symbol_field_property/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,clause),','('$cut'(E),find_symbol_field_clause(B,C,A,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(clause,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_clause/4)]).
+
+
+clause(:-('$find_symbol_field_property/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,mode),','('$cut'(E),find_symbol_field(B,C,A,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(mode,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field/4)]).
+
+
+clause(:-('$find_symbol_field_property/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,measure),','('$cut'(E),find_symbol_field_measure(B,C,A,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(measure,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_measure/4)]).
+
+
+clause(:-('$find_symbol_field_property/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,mutex),','('$cut'(E),find_symbol_field_mutex(B,C,A,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(mutex,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_mutex/4)]).
+
+
+clause(:-('$find_symbol_field_property/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,det),','('$cut'(E),find_symbol_field_det(B,C,A,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(det,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_det/4)]).
+
+
+clause(:-('$find_symbol_field_property/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,size),','('$cut'(E),find_symbol_field_size(B,C,A,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(size,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_size/4)]).
+
+
+clause(:-('$find_symbol_field_property/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,relation),','('$cut'(E),find_symbol_field_relation(B,C,A,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(relation,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_relation/4)]).
+
+
+clause(:-('$find_symbol_field_property/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,time),','('$cut'(E),find_symbol_field_time(B,C,A,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(time,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_time/4)]).
+
+
+clause(:-('$find_symbol_field_property/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,domain),','('$cut'(E),find_symbol_field_domain(B,C,A,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(domain,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(find_symbol_field_domain/4)]).
+
+
+predicate(print_symbol_table/1,277,static,private,user,1).
+
+
+clause(:-(print_symbol_table(A),','(tell(symbol_table),','(p_symbol_table(A),told))),[
+    allocate(1),
+    get_variable(y(0),0),
+    put_atom(symbol_table,0),
+    call(tell/1),
+    put_value(y(0),0),
+    call(p_symbol_table/1),
+    deallocate,
+    execute(told/0)]).
+
+
+predicate(p_symbol_table/1,282,static,private,user,2).
+
+
+clause(:-(p_symbol_table(A),var(A)),[
+    execute(var/1)]).
+
+
+clause(:-(p_symbol_table(A),','(nonvar(A),','(=(A,'.'(B,C)),','(write(B),','(nl,p_symbol_table(C)))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    call(write/1),
+    call(nl/0),
+    put_value(y(1),0),
+    deallocate,
+    execute(p_symbol_table/1)]).

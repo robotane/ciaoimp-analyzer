@@ -1,0 +1,464 @@
+VAR, REF, PAIR, CONST = 1,2,3,4
+
+# unnamed variable
+def var() : return [None]
+
+# named variable
+def nvar(name): return [None,name]
+
+# return type of data object
+def type_of(x) :
+  if isinstance(x,list) :
+    if x[0] is None : return VAR
+    return REF
+  elif isinstance(x,tuple) :
+    return PAIR
+  else:
+    return CONST
+
+# finding the reference of a variable
+def deref(x) :
+  while True :
+    t=type_of(x)
+    if t==REF:
+      x=x[0]
+    else:
+     return x,t
+
+# return term with all vars in it dereferenced
+def iron(a,size=200) :
+  def iron0(a, k):
+    if k <= 0: return ".?."
+    x, t = deref(a)
+    if t == PAIR:
+      u, v = x
+      k -= 1
+      return iron0(u, k), iron0(v, k)
+    else:
+      return x
+  return iron0(a,size)
+
+def to_pterm(x) :
+  x,t=deref(x)
+  if VAR==t : return x
+  elif CONST==t : return x
+  else :
+    assert PAIR==t
+    a, b = x
+    args=[None,to_pterm(a)]
+    while True:
+      b, t = deref(b)
+      if PAIR == t :
+        a,b=b
+        args.append(to_pterm(a))
+      else :
+        args[0]=to_pterm(b)
+        return list(args)
+
+# converts a "."/2 lists to actual lists
+def dot2list(a):
+  def is_dot_list(a):
+    return isinstance(a,list) and len(a)>0 and '.'==a[0]
+  def walk(x) :
+    if is_dot_list(x) :
+      args=[]
+      while is_dot_list(x) :
+        e=dot2list(x[1])
+        args.append(e)
+        y=x
+        x=x[2]
+      if x=='[]' :
+        return args
+      else :
+        y=(y[0],dot2list(y[1]),dot2list(y[2]))
+        args.append(y)
+        return args
+    elif VAR==type_of(x) :
+      return x
+    elif isinstance(x,tuple) or isinstance(x,list) :
+      return tuple(map(dot2list,x))
+    else :
+      return x
+  return walk(a)
+
+def pp(x) : return dot2list(to_pterm(x))
+
+# turn term into more readable string
+def pt(a,size=200) :
+  def pt0(a, k):
+    if k <= 0: return ".?."
+    x, t = deref(a)
+    if t == PAIR:
+      u, v = x
+      k -= 1
+      #return f'({pt0(u, k)}=>{pt0(v, k)})'
+      return str(pt0(u, k))+'=>'+str(pt0(v, k))
+    elif t == VAR:
+      if len(x) == 2:
+        return str(x[1])
+      else:
+        return "_" + str(id(x))
+    else:
+      return str(x)
+  return pt0(a,size)
+
+
+# creates actual variables from code skeletons
+def activate(instr,vars,vids) :
+  newinstr=[]
+  #l=len(vars)
+  for c in instr :
+    if isinstance(c,list): # a variable
+      n=c[0]
+      if n<len(vars) :
+        d=vars[n]
+      else:
+        d=nvar(c[1])
+        #print('D=',d,id(d),type(vids))
+        vids.add(id(d))
+        vars.append(d)
+    else: # const
+      d=c
+    newinstr.append(d)
+  return newinstr
+
+# undo bindings on the trail
+def unwind(trail,ttop) :
+  #print('UNWIND',pt(trail[-1]),':',len(trail),'-',ttop)
+  for _ in range(len(trail)-ttop):
+    v = trail.pop()
+    v[0] = None
+
+# unify two terms
+def unify(x,y,trail,vids) :
+  #print(f"UNIFY: {pp(x)} with {pp(y)}")
+  ustack=[]
+  ustack.append(y)
+  ustack.append(x)
+  while ustack :
+    x1,t1=deref(ustack.pop())
+    x2,t2=deref(ustack.pop())
+    if x1 is x2:
+      pass
+    elif VAR is t1 :
+      x1[0]=x2
+      if id(x1) not in vids:
+        trail.append(x1)
+    elif VAR is t2:
+      x2[0]=x1
+      if id(x2) not in vids:
+        trail.append(x2)
+    elif t1!=t2 :
+      return False
+    elif t1 is CONST:
+      if x1!=x2 :
+        return False
+    else :
+      if not (isinstance(x1, tuple) and len(x1) == 2 and isinstance(x2, tuple) and len(x2) == 2):
+          #print(f"DEBUG UNIFY FAIL: x1={pp(x1)} t1={t1} x2={pp(x2)} t2={t2}")
+          return False
+      a1,b1=x1
+      a2,b2=x2   
+      ustack.append(b2)
+      ustack.append(b1)
+      ustack.append(a2)
+      ustack.append(a1)
+  return True
+
+# builds goal assuming goal(X):- ... is
+# a clause in the source program
+def get_goal() :
+  answer= nvar('Answer')
+  cont = 'true'
+  # G should be (NewG, OldG)
+  # When step is called with (NewG, OldG), it binds A = (NewG, OldG)
+  # We want A = (Answer, (Cont, 'goal'))
+  # So NewG = Answer, OldG = (Cont, 'goal')
+  G = (answer, (cont, 'goal'))
+  return G, answer
+
+FAIL, DONE, DO, UNDO, CUT = 0, 1, 2, 3, 4
+opnames=["FAIL", "DONE", "DO", "UNDO", "CUT"]
+
+# inner loop of at most len(code) steps
+def step(G, i, code, trail, K):
+    G_d, tg = deref(G)
+    if G_d == 'true' and tg == CONST:
+        return (DONE, G, len(trail), len(code), K)
+
+    res, built_in = is_built_in(G)
+    if res:
+        if i > 0:
+            return (FAIL, None, len(trail), i, K)
+
+        name = built_in[3]
+        if name == '$cut':
+            Kvar, Cont = built_in[0], built_in[1]
+            Kval, _ = deref(Kvar)
+            return (CUT, (Cont, G), len(trail), len(code), Kval)
+
+        vids = set()
+        if handle_built_in(built_in, trail, vids):
+            cont, ct = deref(built_in[2])
+            if cont == 'true' and ct == CONST:
+                return (DONE, G, len(trail), len(code), K)
+            return (DO, (cont, G), len(trail), len(code), K)
+        else:
+            return (FAIL, None, len(trail), len(code), K)
+
+    ttop = len(trail)
+    while i < len(code):
+      unwind(trail, ttop)
+      clause = code[i]
+      i += 1 # next clause
+      vars, vids = [], set()
+      for instr in clause:
+        c = activate(instr, vars, vids)
+        op = c[0]
+        if op == 'u':
+          old, oldt = deref(c[3])
+          if VAR == oldt:
+            old[0] = c[1], c[2]
+            continue
+          else:
+            assert PAIR == oldt
+            if not (unify(c[1], old[0], trail, vids) and \
+                    unify(c[2], old[1], trail, vids)): break
+        elif op == 'b':
+          old, oldt = deref(c[3])
+          old[0] = c[1], c[2]
+          continue
+        elif op == 'd':
+          assert VAR == type_of(c[1])
+          c[1][0] = G
+          continue
+        elif op == 'k':
+          assert VAR == type_of(c[1])
+          c[1][0] = K
+          continue
+        else: # p(..)
+          CurrentG, tg = deref(c[1])
+          if CurrentG == 'true' and CONST == tg:
+            return (DONE, G, ttop, i, K)
+          else:
+            assert PAIR == tg
+            return (DO, (CurrentG, G), ttop, i, K)
+    return (FAIL, None, ttop, i, K)
+
+def is_built_in(G):
+    g, t = deref(G)
+    if t != PAIR: return False, None
+    g1, t1 = deref(g[1])
+    if t1 != PAIR: return False, None
+    inner, tinner = deref(g1[1])
+    if tinner == CONST and inner == '$cut':
+        return True, (g[0], g1[0], None, '$cut')
+    if tinner != PAIR: return False, None
+    name, tn = deref(inner[1])
+    if tn != CONST: return False, None
+    if name in ['is', '>', '>=', '<', '=<', r'\=', r'\==', '=', 'is_']:
+        return True, (g[0], g1[0], inner[0], name)
+    return False, None
+
+def handle_built_in(built_in, trail, vids):
+    arg1, arg2, cont, name = built_in
+
+    if name == 'is' or name == 'is_':
+        expr = pp(arg2)
+        try:
+            val = evaluate(expr)
+            res = unify(arg1, val, trail, vids)
+            return res
+        except Exception:
+            return False
+    elif name == '>':
+        try: 
+            v1, v2 = evaluate(pp(arg1)), evaluate(pp(arg2))
+            return v1 > v2
+        except Exception: 
+            return False
+    elif name == '>=':
+        try: 
+            v1, v2 = evaluate(pp(arg1)), evaluate(pp(arg2))
+            return v1 >= v2
+        except Exception: 
+            return False
+    elif name == '<':
+        try: 
+            v1, v2 = evaluate(pp(arg1)), evaluate(pp(arg2))
+            return v1 < v2
+        except Exception: 
+            return False
+    elif name == '=<':
+        try: 
+            v1, v2 = evaluate(pp(arg1)), evaluate(pp(arg2))
+            return v1 <= v2
+        except Exception: 
+            return False
+    elif name == r'\=' or name == r'\==':
+        return not unify(arg1, arg2, [], set())
+    elif name == '=':
+        return unify(arg1, arg2, trail, vids)
+    return False
+
+def evaluate(expr):
+    if isinstance(expr, (int, float)):
+        return expr
+    if (isinstance(expr, list) or isinstance(expr, tuple)) and len(expr) > 1:
+        op = expr[0]
+        args = [evaluate(a) for a in expr[1:]]
+        if op == '+': return sum(args)
+        if len(args) >= 2:
+            if op == '-': return args[0] - args[1]
+            if op == '*': return args[0] * args[1]
+            if op == '/': return args[0] / args[1]
+            if op == '//': return args[0] // args[1]
+    return expr
+
+def ensure_undo(G, todo, ttop, i, l, K):
+    instr = (UNDO, G, ttop, i, K)
+    if todo:
+        (op, G1, ttop1, i1, K1) = todo[-1]
+        if (op, i1, G) == (UNDO, i, G1) and ttop >= ttop1:
+            return
+    todo.append(instr)
+
+def show_todo(todo) :
+  k=len(todo)
+  while k>0:
+    k-=1
+    (op,G,ttop,i,Ki)=todo[k]
+    print("v",opnames[op],ttop,i,Ki)
+    if(op==UNDO) : print(pp(todo[k][1]))
+  print("-----------\n")
+
+
+
+# code interpreter
+def interp(code) :
+
+  # trampoline, ensures LCO, no recursion etc.
+
+  goal_pair, answer = get_goal()
+  l = len(code)
+  todo = [(DO, (goal_pair, None), 0, l, 0)]
+  ctr, maxctr = 0, 500000
+  max_trail, max_todo = 0, 0
+  trail=[]
+  while ctr<maxctr and todo :
+
+    ctr+=1
+    max_trail=max(max_trail,len(trail))
+    max_todo = max(max_todo, len(todo))
+    op,G,ttop,i,K_saved=todo.pop()
+
+    if DO==op :
+      (NewG,OldG)=G
+      if i<l : ensure_undo(OldG,todo,ttop,i,l,K_saved);
+      K_new = len(todo)
+      todo.append(step(NewG, 0, code, trail, K_new))
+
+    elif DONE==op:
+      yield iron(answer), max_trail, max_todo
+      if i<l: ensure_undo(G,todo,ttop,i,l,K_saved)
+
+    elif UNDO==op :
+      unwind(trail, ttop)
+      if i<l: todo.append(step(G, i, code, trail, K_saved))
+
+    elif CUT==op :
+      (NewG, OldG) = G
+      del todo[K_saved:]
+      NewG_d, tg = deref(NewG)
+      if NewG_d == 'true' and tg == CONST:
+        yield iron(answer), max_trail, max_todo
+      else:
+        K_new = len(todo)
+        todo.append(step(NewG, 0, code, trail, K_new))
+
+    else: # FAIL == op:
+      pass
+
+  if ctr==maxctr: print('*** TOO MANY STEPS? ',ctr)
+  print('max_trail=',max_trail,'max_todo=',max_todo)
+
+# tests
+def go() :
+  code=tload()
+  ctr=0
+  max_ctr=10000000000
+  for a,mtr,mtd in interp(code):
+    ctr+=1
+    print('ANSWER=',ctr,'trail=',mtr,'todo=',mtd,'-->',pp(a))
+    if ctr>=max_ctr :
+      print('TOO MANY ANSWERS?')
+      break
+  print('TOTAL ANSWERS:',ctr)
+
+# load from an "assembler" code file
+def tload(fname='out/tnf_asm.txt'):
+  def to_const(x) :
+    try :
+      return int(x)
+    except ValueError:
+      try:
+        return float(x)
+      except ValueError:
+        return x
+  with open(fname,'r') as f: txt=f.read()
+  ls = txt.split('\n')
+  code = []
+  vars=dict()
+  cs=[]
+  for l in ls:
+    xs=l.split(' ')
+    if len(xs)<=1 :continue # skip extra new lines
+    for j,x in enumerate(xs) :
+      if x[0].isupper():
+        if x in vars:
+          v=vars[x]
+        else:
+          v=[len(vars),x]
+          vars[x]=v
+        xs[j]=v
+      elif x[0]=="_":
+        v = [len(vars), x]
+        vars[x] = v
+        xs[j] = v
+      elif x=='[|]':
+        xs[j]='.'
+      else :
+        xs[j] = to_const(x)
+    cs.append(xs)
+    if xs[0]=='p' :
+      code.append(cs)
+      vars=dict() # new vars scoped over next clause
+      cs=[]
+  return code
+
+# tests unification
+def utest() :
+  X=var()
+  Y=var()
+  a=(X,'a')
+  b=('b',Y)
+  print('AB',a,type_of(a),b,type_of(b))
+  trail=[]
+  r=unify(a,b,trail,set())
+  print(r)
+  print('FINAL AB',a,type_of(a),b,type_of(b))
+  print('TR',trail)
+  print("PT",pt((a,(nvar("X"),var()))))
+
+# tests conversion to Horn form
+def ptest():
+  A = nvar('A')
+  B = nvar('B')
+  print(to_pterm((((A, (A, 'b')), 'a'), (B, 'c'))))
+  print(to_pterm(((1, 'g'), (2, (3, 'f')))))
+
+# also works with gc disabled
+#import gc
+#gc.disable()
+go()
+#utest()

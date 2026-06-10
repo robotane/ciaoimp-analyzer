@@ -1,0 +1,64 @@
+GNU Prolog 1.5.0 (64 bits)
+Compiled Mar 31 2026, 12:54:16 with gcc
+Copyright (C) 1999-2026 Daniel Diaz
+
+| ?- 
+
+(81 ms) yes
+| ?- 
+Caslog 1.0, April 1992.
+* Caslog error: mode is not declared for predicate: aux_cond_3/5
+  
+* Caslog error: measure is not declared for predicate: aux_cond_3/5
+  
+* Caslog error: mode is not declared for predicate: loop_aux_1/4
+  
+* Caslog error: measure is not declared for predicate: loop_aux_1/4
+  
+* Caslog error: mode is not declared for predicate: get_bal/3
+  
+* Caslog error: measure is not declared for predicate: get_bal/3
+  
+* Caslog error: mode is not declared for predicate: aux_cond_4/5
+  
+* Caslog error: measure is not declared for predicate: aux_cond_4/5
+  
+* Caslog error: mode is not declared for predicate: loop_aux_2/4
+  
+* Caslog error: measure is not declared for predicate: loop_aux_2/4
+  
+* Caslog error: mode is not declared for predicate: set_bal/4
+  
+* Caslog error: measure is not declared for predicate: set_bal/4
+  
+* Caslog error: mode is not declared for predicate: transfer/5
+  
+* Caslog error: measure is not declared for predicate: transfer/5
+  
+* Caslog error: mode is not declared for predicate: init/3
+  
+* Caslog error: measure is not declared for predicate: init/3
+  
+* Caslog error: mode is not declared for predicate: neq/2
+  
+* Caslog error: measure is not declared for predicate: neq/2
+  
+* Caslog error: mode is not declared for predicate: aux_cond_2/4
+  
+* Caslog error: measure is not declared for predicate: aux_cond_2/4
+  
+* Caslog error: mode is not declared for predicate: aux_cond_1/10
+  
+* Caslog error: measure is not declared for predicate: aux_cond_1/10
+  
+* Caslog error: mode is not declared for predicate: invest/8
+  
+* Caslog error: measure is not declared for predicate: invest/8
+  
+
+{Exexution Time: 1 msec}
+
+{End of Caslog execution.}
+
+(1 ms) yes
+| ?- 

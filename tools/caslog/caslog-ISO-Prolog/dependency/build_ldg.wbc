@@ -1,0 +1,317 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/dependency/build_ldg.pl
+% date    : 2 6 2003
+% time    : 10:15:31
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/dependency/build_ldg.pl').
+
+
+predicate(literal_dependency_graph/2,10,static,private,user,1).
+
+
+clause(:-(literal_dependency_graph(A,B),','(gen_clause_pos(A,C),literal_dependency_graph(C,A,B))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    call(gen_clause_pos/2),
+    put_unsafe_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(literal_dependency_graph/3)]).
+
+
+predicate(literal_dependency_graph/3,14,static,private,user,2).
+
+
+clause(literal_dependency_graph([],A,B),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(literal_dependency_graph('.'(A,B),C,D),','(insert_ldg_node(C,D,A),','(find_adg_field(C,A,pred,E),','(insert_ldg_arcs(C,D,A,E),literal_dependency_graph(B,C,D))))),[
+    allocate(5),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    put_value(y(2),0),
+    put_value(y(3),1),
+    put_value(y(0),2),
+    call(insert_ldg_node/3),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_atom(pred,2),
+    put_variable(y(4),3),
+    call(find_adg_field/4),
+    put_value(y(2),0),
+    put_value(y(3),1),
+    put_value(y(0),2),
+    put_value(y(4),3),
+    call(insert_ldg_arcs/4),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    deallocate,
+    execute(literal_dependency_graph/3)]).
+
+
+predicate(insert_ldg_node/3,24,static,private,user,2).
+
+
+clause(:-(insert_ldg_node(A,B,C),','(pos_litnum(C,0),','(find_adg_field(A,C,mode,D),','(new_lit(D,E),insert_ldg_entry(B,E,F))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(2),0),
+    put_integer(0,1),
+    call(pos_litnum/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_atom(mode,2),
+    put_variable(y(3),3),
+    call(find_adg_field/4),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call(new_lit/2),
+    put_value(y(1),0),
+    put_unsafe_value(y(4),1),
+    put_void(2),
+    deallocate,
+    execute(insert_ldg_entry/3)]).
+
+
+clause(:-(insert_ldg_node(A,B,C),','(pos_litnum(C,D),','(>(D,0),','(new_lit(D,E),insert_ldg_entry(B,E,F))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    put_value(x(2),0),
+    put_variable(y(1),1),
+    call(pos_litnum/2),
+    put_value(y(1),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(1),0),
+    put_variable(y(2),1),
+    call(new_lit/2),
+    put_value(y(0),0),
+    put_unsafe_value(y(2),1),
+    put_void(2),
+    deallocate,
+    execute(insert_ldg_entry/3)]).
+
+
+predicate(insert_ldg_arcs/4,39,static,private,user,2).
+
+
+clause(:-(insert_ldg_arcs(A,B,C,D),var(D)),[
+    put_value(x(3),0),
+    execute(var/1)]).
+
+
+clause(:-(insert_ldg_arcs(A,B,C,D),','(nonvar(D),','(=(D,'.'(E,F)),','(insert_ldg_arc(A,B,C,E),insert_ldg_arcs(A,B,C,F))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(3),0),
+    call(nonvar/1),
+    put_value(y(3),0),
+    get_list(0),
+    unify_variable(x(3)),
+    unify_variable(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    call(insert_ldg_arc/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(4),3),
+    deallocate,
+    execute(insert_ldg_arcs/4)]).
+
+
+predicate(insert_ldg_arc/4,50,static,private,user,5).
+
+
+clause(:-(insert_ldg_arc(A,B,C,D),','(pos_litnum(C,0),','(pos_litnum(D,0),','(find_adg_field(A,C,mode,E),','(new_lit(E,F),','(find_adg_field(A,D,mode,G),','(new_lit(G,H),','(insert_ldg_field(B,F,pred,H),insert_ldg_field(B,H,succ,F))))))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(2),0),
+    put_integer(0,1),
+    call(pos_litnum/2),
+    put_value(y(3),0),
+    put_integer(0,1),
+    call(pos_litnum/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_atom(mode,2),
+    put_variable(y(4),3),
+    call(find_adg_field/4),
+    put_value(y(4),0),
+    put_variable(y(5),1),
+    call(new_lit/2),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_atom(mode,2),
+    put_variable(y(6),3),
+    call(find_adg_field/4),
+    put_value(y(6),0),
+    put_variable(y(7),1),
+    call(new_lit/2),
+    put_value(y(1),0),
+    put_value(y(5),1),
+    put_atom(pred,2),
+    put_value(y(7),3),
+    call(insert_ldg_field/4),
+    put_value(y(1),0),
+    put_unsafe_value(y(7),1),
+    put_atom(succ,2),
+    put_unsafe_value(y(5),3),
+    deallocate,
+    execute(insert_ldg_field/4)]).
+
+
+clause(:-(insert_ldg_arc(A,B,C,D),','(pos_litnum(C,0),','(pos_litnum(D,E),','(>(E,0),','(find_adg_field(A,C,mode,F),','(new_lit(F,G),','(new_lit(E,H),','(insert_ldg_field(B,G,pred,H),insert_ldg_field(B,H,succ,G))))))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(2),0),
+    put_integer(0,1),
+    call(pos_litnum/2),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call(pos_litnum/2),
+    put_value(y(4),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_atom(mode,2),
+    put_variable(y(5),3),
+    call(find_adg_field/4),
+    put_value(y(5),0),
+    put_variable(y(6),1),
+    call(new_lit/2),
+    put_value(y(4),0),
+    put_variable(y(7),1),
+    call(new_lit/2),
+    put_value(y(1),0),
+    put_value(y(6),1),
+    put_atom(pred,2),
+    put_value(y(7),3),
+    call(insert_ldg_field/4),
+    put_value(y(1),0),
+    put_unsafe_value(y(7),1),
+    put_atom(succ,2),
+    put_unsafe_value(y(6),3),
+    deallocate,
+    execute(insert_ldg_field/4)]).
+
+
+clause(:-(insert_ldg_arc(A,B,C,D),','(pos_litnum(C,E),','(>(E,0),','(pos_litnum(D,0),','(new_lit(E,F),','(find_adg_field(A,D,mode,G),','(new_lit(G,H),','(insert_ldg_field(B,F,pred,H),insert_ldg_field(B,H,succ,F))))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),3),
+    put_value(x(2),0),
+    put_variable(y(3),1),
+    call(pos_litnum/2),
+    put_value(y(3),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(2),0),
+    put_integer(0,1),
+    call(pos_litnum/2),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call(new_lit/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_atom(mode,2),
+    put_variable(y(5),3),
+    call(find_adg_field/4),
+    put_value(y(5),0),
+    put_variable(y(6),1),
+    call(new_lit/2),
+    put_value(y(1),0),
+    put_value(y(4),1),
+    put_atom(pred,2),
+    put_value(y(6),3),
+    call(insert_ldg_field/4),
+    put_value(y(1),0),
+    put_unsafe_value(y(6),1),
+    put_atom(succ,2),
+    put_unsafe_value(y(4),3),
+    deallocate,
+    execute(insert_ldg_field/4)]).
+
+
+clause(:-(insert_ldg_arc(A,B,C,D),','(pos_litnum(C,E),','(>(E,0),','(pos_litnum(D,F),','(>(F,0),','(=\=(E,F),','(new_lit(E,G),','(new_lit(F,H),','(insert_ldg_field(B,G,pred,H),insert_ldg_field(B,H,succ,G)))))))))),[
+    allocate(6),
+    get_variable(y(0),1),
+    get_variable(y(1),3),
+    put_value(x(2),0),
+    put_variable(y(2),1),
+    call(pos_litnum/2),
+    put_value(y(2),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(1),0),
+    put_variable(y(3),1),
+    call(pos_litnum/2),
+    put_value(y(3),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(2),0),
+    put_value(y(3),1),
+    call((=\=)/2),
+    put_value(y(2),0),
+    put_variable(y(4),1),
+    call(new_lit/2),
+    put_value(y(3),0),
+    put_variable(y(5),1),
+    call(new_lit/2),
+    put_value(y(0),0),
+    put_value(y(4),1),
+    put_atom(pred,2),
+    put_value(y(5),3),
+    call(insert_ldg_field/4),
+    put_value(y(0),0),
+    put_unsafe_value(y(5),1),
+    put_atom(succ,2),
+    put_unsafe_value(y(4),3),
+    deallocate,
+    execute(insert_ldg_field/4)]).
+
+
+clause(:-(insert_ldg_arc(A,B,C,D),','(pos_litnum(C,E),','(>(E,0),','(pos_litnum(D,F),','(>(F,0),=:=(E,F)))))),[
+    allocate(3),
+    get_variable(y(0),3),
+    put_value(x(2),0),
+    put_variable(y(1),1),
+    call(pos_litnum/2),
+    put_value(y(1),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    call(pos_litnum/2),
+    put_value(y(2),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_unsafe_value(y(1),0),
+    put_unsafe_value(y(2),1),
+    deallocate,
+    execute((=:=)/2)]).

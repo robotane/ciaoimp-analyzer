@@ -1,0 +1,310 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/dependency/ldg.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/dependency/ldg.pl').
+
+
+predicate(insert_ldg_entry/3,16,static,private,monofile,global,3).
+
+
+clause(:-(insert_ldg_entry(A,B,C),','(var(A),','(=(C,ldg(B,_,_,_,_,_,_)),=(A,'.'(C,_))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((var)/1),
+    put_value(y(2),0),
+    get_structure((ldg)/7,0),
+    unify_local_value(y(1)),
+    unify_void(6),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_ldg_entry(A,B,C),','(nonvar(A),','(=(A,'.'(C,_)),=(C,ldg(B,_,_,_,_,_,_))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_void(1),
+    put_value(y(2),0),
+    get_structure((ldg)/7,0),
+    unify_local_value(y(1)),
+    unify_void(6),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_ldg_entry(A,B,C),','(nonvar(A),','(=(A,'.'(ldg(D,_,_,_,_,_,_),E)),','(\==(B,D),insert_ldg_entry(E,B,C))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure((ldg)/7,0),
+    unify_variable(x(1)),
+    unify_void(6),
+    put_value(y(1),0),
+    call((\==)/2),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((insert_ldg_entry)/3)]).
+
+
+predicate(insert_ldg_field/4,34,static,private,monofile,global,6).
+
+
+clause(:-(insert_ldg_field(A,B,pred,C),','(insert_ldg_entry(A,B,ldg(B,D,_,_,_,_,_)),insert_ldg_edge(D,C))),[
+    allocate(2),
+    get_atom(pred,2),
+    get_variable(y(0),3),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_variable(y(1)),
+    unify_void(5),
+    call((insert_ldg_entry)/3),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute((insert_ldg_edge)/2)]).
+
+
+clause(:-(insert_ldg_field(A,B,succ,C),','(insert_ldg_entry(A,B,ldg(B,_,D,_,_,_,_)),insert_ldg_edge(D,C))),[
+    allocate(2),
+    get_atom(succ,2),
+    get_variable(y(0),3),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(1),
+    unify_variable(y(1)),
+    unify_void(4),
+    call((insert_ldg_entry)/3),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute((insert_ldg_edge)/2)]).
+
+
+clause(:-(insert_ldg_field(A,B,relation,C),insert_ldg_entry(A,B,ldg(B,_,_,C,_,_,_))),[
+    get_atom(relation,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(2),
+    unify_local_value(x(3)),
+    unify_void(3),
+    execute((insert_ldg_entry)/3)]).
+
+
+clause(:-(insert_ldg_field(A,B,det,C),insert_ldg_entry(A,B,ldg(B,_,_,_,C,_,_))),[
+    get_atom(det,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(3),
+    unify_local_value(x(3)),
+    unify_void(2),
+    execute((insert_ldg_entry)/3)]).
+
+
+clause(:-(insert_ldg_field(A,B,redge,C),insert_ldg_entry(A,B,ldg(B,_,_,_,_,C,_))),[
+    get_atom(redge,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(4),
+    unify_local_value(x(3)),
+    unify_void(1),
+    execute((insert_ldg_entry)/3)]).
+
+
+clause(:-(insert_ldg_field(A,B,sedge,C),insert_ldg_entry(A,B,ldg(B,_,_,_,_,_,C))),[
+    get_atom(sedge,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(5),
+    unify_local_value(x(3)),
+    execute((insert_ldg_entry)/3)]).
+
+
+predicate(insert_ldg_edge/2,49,static,private,monofile,global,3).
+
+
+clause(:-(insert_ldg_edge(A,B),','(var(A),=(A,'.'(B,_)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call((var)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_ldg_edge(A,B),','(nonvar(A),=(A,'.'(B,_)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_ldg_edge(A,B),','(nonvar(A),','(=(A,'.'(C,D)),','(\==(C,B),insert_ldg_edge(D,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((insert_ldg_edge)/2)]).
+
+
+predicate(find_ldg_entry/3,66,static,private,monofile,global,3).
+
+
+clause(:-(find_ldg_entry(A,_,_),var(A)),[
+    execute((var)/1)]).
+
+
+clause(:-(find_ldg_entry(A,B,C),','(nonvar(A),','(=(A,'.'(C,_)),=(C,ldg(B,_,_,_,_,_,_))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_void(1),
+    put_value(y(2),0),
+    get_structure((ldg)/7,0),
+    unify_local_value(y(1)),
+    unify_void(6),
+    deallocate,
+    proceed]).
+
+
+clause(:-(find_ldg_entry(A,B,C),','(nonvar(A),','(=(A,'.'(ldg(D,_,_,_,_,_,_),E)),','(\==(B,D),find_ldg_entry(E,B,C))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure((ldg)/7,0),
+    unify_variable(x(1)),
+    unify_void(6),
+    put_value(y(1),0),
+    call((\==)/2),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((find_ldg_entry)/3)]).
+
+
+predicate(find_ldg_field/4,81,static,private,monofile,global,6).
+
+
+clause(:-(find_ldg_field(A,B,pred,C),find_ldg_entry(A,B,ldg(B,C,_,_,_,_,_))),[
+    get_atom(pred,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_local_value(x(3)),
+    unify_void(5),
+    execute((find_ldg_entry)/3)]).
+
+
+clause(:-(find_ldg_field(A,B,succ,C),find_ldg_entry(A,B,ldg(B,_,C,_,_,_,_))),[
+    get_atom(succ,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(1),
+    unify_local_value(x(3)),
+    unify_void(4),
+    execute((find_ldg_entry)/3)]).
+
+
+clause(:-(find_ldg_field(A,B,relation,C),find_ldg_entry(A,B,ldg(B,_,_,C,_,_,_))),[
+    get_atom(relation,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(2),
+    unify_local_value(x(3)),
+    unify_void(3),
+    execute((find_ldg_entry)/3)]).
+
+
+clause(:-(find_ldg_field(A,B,det,C),find_ldg_entry(A,B,ldg(B,_,_,_,C,_,_))),[
+    get_atom(det,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(3),
+    unify_local_value(x(3)),
+    unify_void(2),
+    execute((find_ldg_entry)/3)]).
+
+
+clause(:-(find_ldg_field(A,B,redge,C),find_ldg_entry(A,B,ldg(B,_,_,_,_,C,_))),[
+    get_atom(redge,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(4),
+    unify_local_value(x(3)),
+    unify_void(1),
+    execute((find_ldg_entry)/3)]).
+
+
+clause(:-(find_ldg_field(A,B,sedge,C),find_ldg_entry(A,B,ldg(B,_,_,_,_,_,C))),[
+    get_atom(sedge,2),
+    put_structure((ldg)/7,2),
+    unify_local_value(x(1)),
+    unify_void(5),
+    unify_local_value(x(3)),
+    execute((find_ldg_entry)/3)]).
+
+
+predicate(new_lit/2,97,static,private,monofile,global,1).
+
+
+clause(new_lit(A,$(A)),[
+    get_structure(($)/1,1),
+    unify_local_value(x(0)),
+    proceed]).

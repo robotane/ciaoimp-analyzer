@@ -1,0 +1,263 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/diff_equation/mutual_size.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/diff_equation/mutual_size.pl').
+
+
+predicate(solve_msde/5,4,static,private,monofile,global,2).
+
+
+clause(:-(solve_msde(A,B,C,D,E),','(normal_form(0,F),','(=(B,'.'(val(F,_),[])),','(!,','(normal_form(1,G),','(solve_fovde(A,B,G,D,H),','(substitute(C,A,$(i),I),','(normal_form(A,J),','(sum_expr($(i),G,J,I,K),add_expr(H,K,E)))))))))),[
+    allocate(12),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_integer(0,0),
+    put_variable(y(6),1),
+    call((normal_form)/2),
+    put_value(y(1),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((val)/2,0),
+    unify_local_value(y(6)),
+    unify_void(1),
+    cut(y(5)),
+    put_integer(1,0),
+    put_variable(y(7),1),
+    call((normal_form)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(7),2),
+    put_value(y(3),3),
+    put_variable(y(8),4),
+    call((solve_fovde)/5),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_structure(($)/1,2),
+    unify_atom(i),
+    put_variable(y(9),3),
+    call((substitute)/4),
+    put_value(y(0),0),
+    put_variable(y(10),1),
+    call((normal_form)/2),
+    put_structure(($)/1,0),
+    unify_atom(i),
+    put_value(y(7),1),
+    put_value(y(10),2),
+    put_value(y(9),3),
+    put_variable(y(11),4),
+    call((sum_expr)/5),
+    put_unsafe_value(y(8),0),
+    put_unsafe_value(y(11),1),
+    put_value(y(4),2),
+    deallocate,
+    execute((add_expr)/3)]).
+
+
+clause(solve_msde(_,_,_,_,inf),[
+    get_atom(inf,4),
+    proceed]).
+
+
+predicate(mutual_size_diff_equ/6,26,static,private,monofile,global,1).
+
+
+clause(:-(mutual_size_diff_equ(A,B,C,D,_,E),','(=(A,expr(F,G)),','(primary_term(F,C,B,H),','(mutual_size_solvable(G,B),','(=(D,expr('.'(H,[]),[])),=(E,expr([],G))))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),3),
+    get_variable(y(2),5),
+    get_structure((expr)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    put_value(x(2),1),
+    put_value(y(0),2),
+    put_variable(y(4),3),
+    call((primary_term)/4),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    call((mutual_size_solvable)/2),
+    put_value(y(1),0),
+    get_structure((expr)/2,0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(0),
+    unify_local_value(y(4)),
+    unify_nil,
+    put_value(y(2),0),
+    get_structure((expr)/2,0),
+    unify_nil,
+    unify_value(y(3)),
+    deallocate,
+    proceed]).
+
+
+predicate(primary_term/4,35,static,private,monofile,global,2).
+
+
+clause(:-(primary_term('.'(A,'.'(B,[])),C,D,B),','(primary_term(A,C,D),nonprimary_term(B))),[
+    allocate(1),
+    get_variable(y(0),3),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_list,
+    unify_local_value(y(0)),
+    unify_nil,
+    call((primary_term)/3),
+    put_value(y(0),0),
+    deallocate,
+    execute((nonprimary_term)/1)]).
+
+
+clause(:-(primary_term('.'(A,'.'(B,[])),C,D,A),','(primary_term(B,C,D),nonprimary_term(A))),[
+    allocate(1),
+    get_variable(y(0),3),
+    get_list(0),
+    unify_local_value(y(0)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    call((primary_term)/3),
+    put_value(y(0),0),
+    deallocate,
+    execute((nonprimary_term)/1)]).
+
+
+predicate(primary_term/3,42,static,private,monofile,global,1).
+
+
+clause(:-(primary_term(term('.'(A,[]),'.'(factor([],1),[])),B,C),','(userfunc(A),','(functor(A,D,1),','(=(B,/(D,_)),','(arg(1,A,E),','(=(E,expr([],'.'(factor('.'(C,[]),1),'.'(factor([],F),[])))),=:=(F,-1))))))),[
+    allocate(5),
+    get_structure((term)/2,0),
+    unify_variable(x(3)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(3),
+    unify_variable(y(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_integer(1),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((userfunc)/1),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    put_integer(1,2),
+    call((functor)/3),
+    put_value(y(1),0),
+    get_structure((/)/2,0),
+    unify_local_value(y(3)),
+    unify_void(1),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(4),2),
+    call((arg)/3),
+    put_unsafe_value(y(4),0),
+    get_structure((expr)/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,1),
+    unify_variable(x(1)),
+    unify_integer(1),
+    get_list(1),
+    unify_local_value(y(2)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    put_integer(-1,1),
+    deallocate,
+    execute((=:=)/2)]).
+
+
+predicate(nonprimary_term/1,49,static,private,monofile,global,1).
+
+
+clause(:-(nonprimary_term(term('.'(A,[]),'.'(factor([],1),[]))),','(userfunc(A),','(functor(A,_,B),=\=(B,1)))),[
+    allocate(2),
+    get_structure((term)/2,0),
+    unify_variable(x(1)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(1),
+    unify_variable(y(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_integer(1),
+    put_value(y(0),0),
+    call((userfunc)/1),
+    put_value(y(0),0),
+    put_void(1),
+    put_variable(y(1),2),
+    call((functor)/3),
+    put_unsafe_value(y(1),0),
+    put_integer(1,1),
+    deallocate,
+    execute((=\=)/2)]).
+
+
+predicate(mutual_size_solvable/2,56,static,private,monofile,global,3).
+
+
+clause(mutual_size_solvable([],_),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(mutual_size_solvable('.'(factor(A,_),B),C),','(const_coeff_solvable(A,C),mutual_size_solvable(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((factor)/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_value(y(1),1),
+    call((const_coeff_solvable)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((mutual_size_solvable)/2)]).
+
+
+clause(:-(mutual_size_solvable('.'(factor(A,_),B),C),','(=(A,'.'(arg(D,E),[])),','(general_form(D,F),','(variable(F),','(normal_form(C,E),mutual_size_solvable(B,C)))))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((factor)/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((arg)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    put_variable(y(3),1),
+    call((general_form)/2),
+    put_value(y(3),0),
+    call((variable)/1),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    call((normal_form)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((mutual_size_solvable)/2)]).

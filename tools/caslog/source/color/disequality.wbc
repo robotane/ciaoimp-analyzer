@@ -1,0 +1,236 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/color/disequality.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/color/disequality.pl').
+
+
+predicate(binary_disequality/4,10,static,private,monofile,global,1).
+
+
+clause(:-(binary_disequality(A,B,C,D),','(find_symbol_field_domain(B,A,domain,E),','(nonvar(E),','(domain_sizes(E,D),disj_bi_disequality(C))))),[
+    allocate(3),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(x(2),1),
+    get_variable(x(1),0),
+    put_value(x(2),0),
+    put_atom(domain,2),
+    put_variable(y(2),3),
+    call((find_symbol_field_domain)/4),
+    put_value(y(2),0),
+    call((nonvar)/1),
+    put_value(y(2),0),
+    put_value(y(1),1),
+    call((domain_sizes)/2),
+    put_value(y(0),0),
+    deallocate,
+    execute((disj_bi_disequality)/1)]).
+
+
+predicate(disj_bi_disequality/1,18,static,private,monofile,global,2).
+
+
+clause(disj_bi_disequality([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(disj_bi_disequality('.'(A,[])),conj_bi_disequality(A)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    execute((conj_bi_disequality)/1)]).
+
+
+predicate(conj_bi_disequality/1,23,static,private,monofile,global,2).
+
+
+clause(conj_bi_disequality([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(conj_bi_disequality('.'(A,B)),','(;(->(list_cas(A),disj_bi_disequality(A)),atom_bi_disequality(A)),conj_bi_disequality(B))),[
+    allocate(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(('$conj_bi_disequality/1_$aux1')/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((conj_bi_disequality)/1)]).
+
+
+predicate('$conj_bi_disequality/1_$aux1'/1,24,static,private,monofile,local,2).
+
+
+clause(:-('$conj_bi_disequality/1_$aux1'(A),','('$get_cut_level'(B),','(list_cas(A),','('$cut'(B),disj_bi_disequality(A))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call((list_cas)/1),
+    cut(y(1)),
+    put_value(y(0),0),
+    deallocate,
+    execute((disj_bi_disequality)/1)]).
+
+
+clause(:-('$conj_bi_disequality/1_$aux1'(A),atom_bi_disequality(A)),[
+    execute((atom_bi_disequality)/1)]).
+
+
+predicate(atom_bi_disequality/1,31,static,private,monofile,global,2).
+
+
+clause(atom_bi_disequality(true),[
+    get_atom(true,0),
+    proceed]).
+
+
+clause(:-(atom_bi_disequality(A),','(\==(A,true),','(functor(A,B,C),->(disequality(/(B,C)),','(arg(1,A,D),','(var(D),','(arg(2,A,E),','(var(E),\==(D,E))))))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    put_value(y(0),0),
+    put_atom(true,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_variable(y(1),1),
+    put_variable(y(2),2),
+    call((functor)/3),
+    get_current_choice(y(3)),
+    put_structure((/)/2,0),
+    unify_local_value(y(1)),
+    unify_local_value(y(2)),
+    call((disequality)/1),
+    cut(y(3)),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(4),2),
+    call((arg)/3),
+    put_value(y(4),0),
+    call((var)/1),
+    put_integer(2,0),
+    put_value(y(0),1),
+    put_variable(y(5),2),
+    call((arg)/3),
+    put_value(y(5),0),
+    call((var)/1),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(5),1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+predicate(domain_sizes/2,46,static,private,monofile,global,1).
+
+
+clause(:-(domain_sizes('.'(A,B),C),','(domain_type(A,D),','(domain_size(D,A,E),domain_sizes(B,D,E,C)))),[
+    allocate(5),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call((domain_type)/2),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    put_variable(y(4),2),
+    call((domain_size)/3),
+    put_value(y(1),0),
+    put_unsafe_value(y(3),1),
+    put_unsafe_value(y(4),2),
+    put_value(y(2),3),
+    deallocate,
+    execute((domain_sizes)/4)]).
+
+
+predicate(domain_sizes/4,51,static,private,monofile,global,2).
+
+
+clause(domain_sizes([],_,A,A),[
+    get_nil(0),
+    get_value(x(3),2),
+    proceed]).
+
+
+clause(:-(domain_sizes('.'(A,B),C,D,E),','(domain_type(A,C),','(domain_size(C,A,D),domain_sizes(B,C,D,E)))),[
+    allocate(5),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_variable(y(4),3),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    call((domain_type)/2),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(3),2),
+    call((domain_size)/3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    deallocate,
+    execute((domain_sizes)/4)]).
+
+
+predicate(domain_type/2,60,static,private,monofile,global,2).
+
+
+clause(domain_type(-(_,_),interval),[
+    get_structure((-)/2,0),
+    unify_void(2),
+    get_atom(interval,1),
+    proceed]).
+
+
+clause(:-(domain_type(A,set),list_cas(A)),[
+    get_atom(set,1),
+    execute((list_cas)/1)]).
+
+
+predicate(domain_size/3,66,static,private,monofile,global,2).
+
+
+clause(:-(domain_size(interval,-(A,B),C),is(C,+(-(B,A),1))),[
+    get_atom(interval,0),
+    get_structure((-)/2,1),
+    unify_variable(x(1)),
+    unify_variable(x(3)),
+    put_structure((-)/2,0),
+    unify_value(x(3)),
+    unify_value(x(1)),
+    put_structure((+)/2,1),
+    unify_value(x(0)),
+    unify_integer(1),
+    put_value(x(2),0),
+    execute((is)/2)]).
+
+
+clause(:-(domain_size(set,A,B),length_list(A,B)),[
+    get_atom(set,0),
+    put_value(x(1),0),
+    put_value(x(2),1),
+    execute((length_list)/2)]).
+
+
+predicate(disequality/1,74,static,private,monofile,global,2).
+
+
+clause(disequality(/(=\=,2)),[
+    get_structure((/)/2,0),
+    unify_atom(=\=),
+    unify_integer(2),
+    proceed]).
+
+
+clause(disequality(/(\==,2)),[
+    get_structure((/)/2,0),
+    unify_atom(\==),
+    unify_integer(2),
+    proceed]).

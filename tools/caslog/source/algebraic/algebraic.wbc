@@ -1,0 +1,2019 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/algebraic/algebraic.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/algebraic/algebraic.pl').
+
+
+predicate(add_expr/3,11,static,private,monofile,global,5).
+
+
+clause(add_expr(_,bot,bot),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(add_expr(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(add_expr(A,inf,inf),\==(A,bot)),[
+    get_atom(inf,1),
+    get_atom(inf,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(add_expr(inf,A,inf),','(\==(A,bot),\==(A,inf))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(add_expr(expr(A,B),expr(C,D),expr(E,F)),','(add_terms(A,C,E),add_factors(B,D,F))),[
+    allocate(3),
+    get_structure((expr)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((expr)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_structure((expr)/2,2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    call((add_terms)/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((add_factors)/3)]).
+
+
+predicate(add_terms/3,26,static,private,monofile,global,3).
+
+
+clause(add_terms(A,[],A),[
+    get_nil(1),
+    get_value(x(2),0),
+    proceed]).
+
+
+clause(:-(add_terms([],A,A),\==(A,[])),[
+    get_nil(0),
+    get_value(x(2),1),
+    put_value(x(2),0),
+    put_nil(1),
+    execute((\==)/2)]).
+
+
+clause(:-(add_terms('.'(A,B),C,D),','(\==(C,[]),','(add_terms(B,C,E),add_term(E,A,D)))),[
+    allocate(5),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    put_value(y(2),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(4),2),
+    call((add_terms)/3),
+    put_unsafe_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((add_term)/3)]).
+
+
+predicate(add_term/3,34,static,private,monofile,global,4).
+
+
+clause(add_term([],A,'.'(A,[])),[
+    get_nil(0),
+    get_list(2),
+    unify_local_value(x(1)),
+    unify_nil,
+    proceed]).
+
+
+clause(:-(add_term('.'(term(A,B),C),term(D,E),F),','(==(A,D),','(add_factors(B,E,G),;(->(==(G,[]),=(F,C)),=(F,'.'(term(A,G),C)))))),[
+    allocate(6),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure((term)/2,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(4),2),
+    get_structure((term)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(3)),
+    put_value(y(0),0),
+    call((==)/2),
+    put_value(y(1),0),
+    put_value(y(3),1),
+    put_variable(y(5),2),
+    call((add_factors)/3),
+    put_unsafe_value(y(5),0),
+    put_value(y(4),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    deallocate,
+    execute(('$add_term/3_$aux1')/4)]).
+
+
+clause(:-(add_term('.'(term(A,B),C),term(D,E),'.'(term(D,E),'.'(term(A,B),C))),@<(A,D)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(6)),
+    get_structure((term)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(3)),
+    get_structure((term)/2,1),
+    unify_variable(x(1)),
+    unify_variable(x(4)),
+    get_list(2),
+    unify_variable(x(5)),
+    unify_list,
+    unify_variable(x(2)),
+    unify_value(x(6)),
+    get_structure((term)/2,5),
+    unify_value(x(1)),
+    unify_value(x(4)),
+    get_structure((term)/2,2),
+    unify_value(x(0)),
+    unify_value(x(3)),
+    execute((@<)/2)]).
+
+
+clause(:-(add_term('.'(term(A,B),C),term(D,E),'.'(term(A,B),F)),','(@>(A,D),add_term(C,term(D,E),F))),[
+    allocate(4),
+    get_structure((term)/2,1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((term)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(3)),
+    get_structure((term)/2,2),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    put_value(y(1),1),
+    call((@>)/2),
+    put_value(y(0),0),
+    put_structure((term)/2,1),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_value(y(3),2),
+    deallocate,
+    execute((add_term)/3)]).
+
+
+predicate('$add_term/3_$aux1'/4,35,static,private,monofile,local,2).
+
+
+clause(:-('$add_term/3_$aux1'(A,B,C,_),','('$get_cut_level'(D),','(==(A,[]),','('$cut'(D),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    put_nil(1),
+    call((==)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$add_term/3_$aux1'(A,B,C,D),=(B,'.'(term(D,A),C))),[
+    get_list(1),
+    unify_variable(x(1)),
+    unify_local_value(x(2)),
+    get_structure((term)/2,1),
+    unify_local_value(x(3)),
+    unify_local_value(x(0)),
+    proceed]).
+
+
+predicate(add_factors/3,50,static,private,monofile,global,3).
+
+
+clause(add_factors(A,[],A),[
+    get_nil(1),
+    get_value(x(2),0),
+    proceed]).
+
+
+clause(:-(add_factors([],A,A),\==(A,[])),[
+    get_nil(0),
+    get_value(x(2),1),
+    put_value(x(2),0),
+    put_nil(1),
+    execute((\==)/2)]).
+
+
+clause(:-(add_factors('.'(A,B),C,D),','(\==(C,[]),','(add_factors(B,C,E),add_factor(E,A,D)))),[
+    allocate(5),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    put_value(y(2),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(4),2),
+    call((add_factors)/3),
+    put_unsafe_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((add_factor)/3)]).
+
+
+predicate(add_factor/3,58,static,private,monofile,global,4).
+
+
+clause(add_factor([],A,'.'(A,[])),[
+    get_nil(0),
+    get_list(2),
+    unify_local_value(x(1)),
+    unify_nil,
+    proceed]).
+
+
+clause(:-(add_factor('.'(factor(A,B),C),factor(D,E),F),','(==(A,D),','(is(G,+(B,E)),;(->(=:=(G,0),=(F,C)),=(F,'.'(factor(A,G),C)))))),[
+    allocate(6),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure((factor)/2,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(4),2),
+    get_structure((factor)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(3)),
+    put_value(y(0),0),
+    call((==)/2),
+    put_variable(y(5),0),
+    put_structure((+)/2,1),
+    unify_value(y(1)),
+    unify_value(y(3)),
+    call((is)/2),
+    put_unsafe_value(y(5),0),
+    put_value(y(4),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    deallocate,
+    execute(('$add_factor/3_$aux1')/4)]).
+
+
+clause(:-(add_factor('.'(factor(A,B),C),factor(D,E),'.'(factor(D,E),'.'(factor(A,B),C))),@<(A,D)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(6)),
+    get_structure((factor)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(3)),
+    get_structure((factor)/2,1),
+    unify_variable(x(1)),
+    unify_variable(x(4)),
+    get_list(2),
+    unify_variable(x(5)),
+    unify_list,
+    unify_variable(x(2)),
+    unify_value(x(6)),
+    get_structure((factor)/2,5),
+    unify_value(x(1)),
+    unify_value(x(4)),
+    get_structure((factor)/2,2),
+    unify_value(x(0)),
+    unify_value(x(3)),
+    execute((@<)/2)]).
+
+
+clause(:-(add_factor('.'(factor(A,B),C),factor(D,E),'.'(factor(A,B),F)),','(@>(A,D),add_factor(C,factor(D,E),F))),[
+    allocate(4),
+    get_structure((factor)/2,1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((factor)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(3)),
+    get_structure((factor)/2,2),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    put_value(y(1),1),
+    call((@>)/2),
+    put_value(y(0),0),
+    put_structure((factor)/2,1),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_value(y(3),2),
+    deallocate,
+    execute((add_factor)/3)]).
+
+
+predicate('$add_factor/3_$aux1'/4,59,static,private,monofile,local,2).
+
+
+clause(:-('$add_factor/3_$aux1'(A,B,C,_),','('$get_cut_level'(D),','(=:=(A,0),','('$cut'(D),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    put_integer(0,1),
+    call((=:=)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$add_factor/3_$aux1'(A,B,C,D),=(B,'.'(factor(D,A),C))),[
+    get_list(1),
+    unify_variable(x(1)),
+    unify_local_value(x(2)),
+    get_structure((factor)/2,1),
+    unify_local_value(x(3)),
+    unify_local_value(x(0)),
+    proceed]).
+
+
+predicate(subtract_expr/3,74,static,private,monofile,global,5).
+
+
+clause(subtract_expr(_,bot,bot),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(subtract_expr(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(subtract_expr(A,inf,bot),\==(A,bot)),[
+    get_atom(inf,1),
+    get_atom(bot,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(subtract_expr(inf,A,inf),','(\==(A,bot),\==(A,inf))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(subtract_expr(A,B,C),','(is(D,-1),','(normal_form(D,E),','(multiply_expr(E,B,F),add_expr(A,F,C))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_variable(y(3),0),
+    put_integer(-1,1),
+    call((is)/2),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call((normal_form)/2),
+    put_value(y(4),0),
+    put_value(y(1),1),
+    put_variable(y(5),2),
+    call((multiply_expr)/3),
+    put_value(y(0),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((add_expr)/3)]).
+
+
+predicate(multiply_expr/3,91,static,private,monofile,global,5).
+
+
+clause(multiply_expr(_,bot,bot),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(multiply_expr(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_expr(A,inf,inf),\==(A,bot)),[
+    get_atom(inf,1),
+    get_atom(inf,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_expr(inf,A,inf),','(\==(A,bot),\==(A,inf))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_expr(expr(A,B),expr(C,D),expr(E,F)),','(multiply_terms(A,C,G),','(multiply_term_factor(A,D,H),','(multiply_term_factor(C,B,I),','(add_terms(G,H,J),','(add_terms(I,J,E),multiply_factors(B,D,F))))))),[
+    allocate(10),
+    get_structure((expr)/2,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_structure((expr)/2,1),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_structure((expr)/2,2),
+    unify_variable(y(4)),
+    unify_variable(y(5)),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_variable(y(6),2),
+    call((multiply_terms)/3),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_variable(y(7),2),
+    call((multiply_term_factor)/3),
+    put_value(y(2),0),
+    put_value(y(1),1),
+    put_variable(y(8),2),
+    call((multiply_term_factor)/3),
+    put_value(y(6),0),
+    put_value(y(7),1),
+    put_variable(y(9),2),
+    call((add_terms)/3),
+    put_value(y(8),0),
+    put_value(y(9),1),
+    put_value(y(4),2),
+    call((add_terms)/3),
+    put_value(y(1),0),
+    put_value(y(3),1),
+    put_value(y(5),2),
+    deallocate,
+    execute((multiply_factors)/3)]).
+
+
+predicate(multiply_terms/3,110,static,private,monofile,global,3).
+
+
+clause(multiply_terms(_,[],[]),[
+    get_nil(1),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(multiply_terms([],A,[]),\==(A,[])),[
+    get_nil(0),
+    get_nil(2),
+    put_value(x(1),0),
+    put_nil(1),
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_terms('.'(A,B),C,D),','(\==(C,[]),','(multiply_term(C,A,E),','(multiply_terms(B,C,F),add_terms(E,F,D))))),[
+    allocate(6),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    put_value(y(2),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_variable(y(4),2),
+    call((multiply_term)/3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(5),2),
+    call((multiply_terms)/3),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((add_terms)/3)]).
+
+
+predicate(multiply_term/3,119,static,private,monofile,global,2).
+
+
+clause(multiply_term([],_,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(multiply_term('.'(term(A,B),C),term(D,E),'.'(term(F,G),H)),','(multiply_factors(B,E,G),','(multiply_primaries(A,D,F),multiply_term(C,term(D,E),H)))),[
+    allocate(6),
+    get_structure((term)/2,1),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure((term)/2,0),
+    unify_variable(y(0)),
+    unify_variable(x(0)),
+    get_list(2),
+    unify_variable(x(1)),
+    unify_variable(y(5)),
+    get_structure((term)/2,1),
+    unify_variable(y(4)),
+    unify_variable(x(2)),
+    put_value(y(3),1),
+    call((multiply_factors)/3),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(4),2),
+    call((multiply_primaries)/3),
+    put_value(y(1),0),
+    put_structure((term)/2,1),
+    unify_value(y(2)),
+    unify_value(y(3)),
+    put_value(y(5),2),
+    deallocate,
+    execute((multiply_term)/3)]).
+
+
+predicate(multiply_primaries/3,128,static,private,monofile,global,3).
+
+
+clause(multiply_primaries(A,[],A),[
+    get_nil(1),
+    get_value(x(2),0),
+    proceed]).
+
+
+clause(:-(multiply_primaries([],A,A),\==(A,[])),[
+    get_nil(0),
+    get_value(x(2),1),
+    put_value(x(2),0),
+    put_nil(1),
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_primaries('.'(A,B),C,D),','(\==(C,[]),','(multiply_primaries(B,C,E),multiply_primary(E,A,D)))),[
+    allocate(5),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    put_value(y(2),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(4),2),
+    call((multiply_primaries)/3),
+    put_unsafe_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((multiply_primary)/3)]).
+
+
+predicate(multiply_primary/3,136,static,private,monofile,global,1).
+
+
+clause(:-(multiply_primary(A,B,C),','(multiply_primary(A,B,D,E),;(->(==(D,1),=(C,E)),insert_order_list_cas(A,B,C)))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(3),2),
+    put_variable(y(4),3),
+    call((multiply_primary)/4),
+    put_unsafe_value(y(3),0),
+    put_value(y(2),1),
+    put_unsafe_value(y(4),2),
+    put_value(y(0),3),
+    put_value(y(1),4),
+    deallocate,
+    execute(('$multiply_primary/3_$aux1')/5)]).
+
+
+predicate('$multiply_primary/3_$aux1'/5,136,static,private,monofile,local,2).
+
+
+clause(:-('$multiply_primary/3_$aux1'(A,B,C,_,_),','('$get_cut_level'(D),','(==(A,1),','('$cut'(D),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),5),
+    put_integer(1,1),
+    call((==)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$multiply_primary/3_$aux1'(_,A,_,B,C),insert_order_list_cas(B,C,A)),[
+    get_variable(x(2),1),
+    put_value(x(3),0),
+    put_value(x(4),1),
+    execute((insert_order_list_cas)/3)]).
+
+
+predicate(multiply_primary/4,142,static,private,monofile,global,9).
+
+
+clause(multiply_primary([],_,0,[]),[
+    get_nil(0),
+    get_integer(0,2),
+    get_nil(3),
+    proceed]).
+
+
+clause(:-(multiply_primary('.'(A,B),A,1,'.'(exp(expr('.'(A,[]),'.'(factor([],1),[])),expr([],'.'(factor([],2),[]))),B)),','(functor(A,C,D),\==(','(C,D),','(exp,2)))),[
+    allocate(2),
+    get_integer(1,2),
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_variable(x(2)),
+    get_list(3),
+    unify_variable(x(0)),
+    unify_value(x(2)),
+    get_structure((exp)/2,0),
+    unify_variable(x(2)),
+    unify_structure((expr)/2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((expr)/2,2),
+    unify_variable(x(3)),
+    unify_list,
+    unify_variable(x(2)),
+    unify_nil,
+    get_list(3),
+    unify_local_value(x(1)),
+    unify_nil,
+    get_structure((factor)/2,2),
+    unify_nil,
+    unify_integer(1),
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_integer(2),
+    put_value(x(1),0),
+    put_variable(y(0),1),
+    put_variable(y(1),2),
+    call((functor)/3),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(exp),
+    unify_integer(2),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_primary('.'(exp(A,B),C),exp(A,D),1,'.'(exp(A,E),C)),add_expr(B,D,E)),[
+    get_integer(1,2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(4)),
+    get_structure((exp)/2,0),
+    unify_variable(x(2)),
+    unify_variable(x(0)),
+    get_structure((exp)/2,1),
+    unify_value(x(2)),
+    unify_variable(x(1)),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_value(x(4)),
+    get_structure((exp)/2,3),
+    unify_value(x(2)),
+    unify_variable(x(2)),
+    execute((add_expr)/3)]).
+
+
+clause(:-(multiply_primary('.'(A,B),exp(C,D),1,'.'(exp(C,E),B)),','(=(C,expr('.'(A,[]),'.'(factor([],1),[]))),','(normal_form(1,F),add_expr(F,D,E)))),[
+    allocate(3),
+    get_integer(1,2),
+    get_list(0),
+    unify_variable(x(2)),
+    unify_variable(x(4)),
+    get_structure((exp)/2,1),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(3),
+    unify_variable(x(1)),
+    unify_value(x(4)),
+    get_structure((exp)/2,1),
+    unify_value(x(0)),
+    unify_variable(y(1)),
+    get_structure((expr)/2,0),
+    unify_variable(x(1)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(1),
+    unify_value(x(2)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_integer(1),
+    put_integer(1,0),
+    put_variable(y(2),1),
+    call((normal_form)/2),
+    put_unsafe_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute((add_expr)/3)]).
+
+
+clause(:-(multiply_primary('.'(exp(A,B),C),D,1,'.'(exp(A,E),C)),','(=(A,expr('.'(D,[]),'.'(factor([],1),[]))),','(normal_form(1,F),add_expr(F,B,E)))),[
+    allocate(3),
+    get_integer(1,2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(4)),
+    get_structure((exp)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(3),
+    unify_variable(x(2)),
+    unify_value(x(4)),
+    get_structure((exp)/2,2),
+    unify_value(x(0)),
+    unify_variable(y(1)),
+    get_structure((expr)/2,0),
+    unify_variable(x(2)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(2),
+    unify_local_value(x(1)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_integer(1),
+    put_integer(1,0),
+    put_variable(y(2),1),
+    call((normal_form)/2),
+    put_unsafe_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute((add_expr)/3)]).
+
+
+clause(:-(multiply_primary('.'(A,B),C,D,'.'(A,E)),','(functor(A,F,G),','(\==(','(F,G),','(exp,2)),','(functor(C,H,I),','(\==(','(H,I),','(exp,2)),','(\==(A,C),multiply_primary(B,C,D,E))))))),[
+    allocate(9),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_list(3),
+    unify_value(y(0)),
+    unify_variable(y(4)),
+    put_value(y(0),0),
+    put_variable(y(5),1),
+    put_variable(y(6),2),
+    call((functor)/3),
+    put_structure((',')/2,0),
+    unify_local_value(y(5)),
+    unify_local_value(y(6)),
+    put_structure((',')/2,1),
+    unify_atom(exp),
+    unify_integer(2),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_variable(y(7),1),
+    put_variable(y(8),2),
+    call((functor)/3),
+    put_structure((',')/2,0),
+    unify_local_value(y(7)),
+    unify_local_value(y(8)),
+    put_structure((',')/2,1),
+    unify_atom(exp),
+    unify_integer(2),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    deallocate,
+    execute((multiply_primary)/4)]).
+
+
+clause(:-(multiply_primary('.'(exp(A,B),C),exp(D,E),F,'.'(exp(A,B),G)),','(\==(A,D),multiply_primary(C,exp(D,E),F,G))),[
+    allocate(5),
+    get_structure((exp)/2,1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_variable(y(3),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((exp)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(3),
+    unify_variable(x(2)),
+    unify_variable(y(4)),
+    get_structure((exp)/2,2),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_structure((exp)/2,1),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    deallocate,
+    execute((multiply_primary)/4)]).
+
+
+clause(:-(multiply_primary('.'(A,B),exp(C,D),E,'.'(A,F)),','(\==(C,expr('.'(A,[]),'.'(factor([],1),[]))),multiply_primary(B,exp(C,D),E,F))),[
+    allocate(5),
+    get_structure((exp)/2,1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_variable(y(3),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(3),
+    unify_value(x(0)),
+    unify_variable(y(4)),
+    put_list(2),
+    unify_value(x(0)),
+    unify_nil,
+    put_structure((factor)/2,0),
+    unify_nil,
+    unify_integer(1),
+    put_structure((expr)/2,1),
+    unify_value(x(2)),
+    unify_list,
+    unify_value(x(0)),
+    unify_nil,
+    put_value(y(1),0),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_structure((exp)/2,1),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    deallocate,
+    execute((multiply_primary)/4)]).
+
+
+clause(:-(multiply_primary('.'(exp(A,B),C),D,E,'.'(exp(A,B),F)),','(\==(A,expr('.'(D,[]),'.'(factor([],1),[]))),multiply_primary(C,D,E,F))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((exp)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(3),
+    unify_variable(x(2)),
+    unify_variable(y(3)),
+    get_structure((exp)/2,2),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    put_list(3),
+    unify_local_value(y(1)),
+    unify_nil,
+    put_structure((factor)/2,2),
+    unify_nil,
+    unify_integer(1),
+    put_structure((expr)/2,1),
+    unify_value(x(3)),
+    unify_list,
+    unify_value(x(2)),
+    unify_nil,
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((multiply_primary)/4)]).
+
+
+predicate(multiply_term_factor/3,178,static,private,monofile,global,3).
+
+
+clause(multiply_term_factor(_,[],[]),[
+    get_nil(1),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(multiply_term_factor([],A,[]),\==(A,[])),[
+    get_nil(0),
+    get_nil(2),
+    put_value(x(1),0),
+    put_nil(1),
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_term_factor('.'(term(A,B),C),D,'.'(term(A,E),F)),','(\==(D,[]),','(multiply_factors(B,D,E),multiply_term_factor(C,D,F)))),[
+    allocate(5),
+    get_variable(y(2),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure((term)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_variable(x(1)),
+    unify_variable(y(4)),
+    get_structure((term)/2,1),
+    unify_value(x(0)),
+    unify_variable(y(3)),
+    put_value(y(2),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    call((multiply_factors)/3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(4),2),
+    deallocate,
+    execute((multiply_term_factor)/3)]).
+
+
+predicate(multiply_factors/3,189,static,private,monofile,global,3).
+
+
+clause(multiply_factors(_,[],[]),[
+    get_nil(1),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(multiply_factors([],A,[]),\==(A,[])),[
+    get_nil(0),
+    get_nil(2),
+    put_value(x(1),0),
+    put_nil(1),
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_factors('.'(A,B),C,D),','(\==(C,[]),','(multiply_factor(C,A,E),','(multiply_factors(B,C,F),add_factors(E,F,D))))),[
+    allocate(6),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    put_value(y(2),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_variable(y(4),2),
+    call((multiply_factor)/3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(5),2),
+    call((multiply_factors)/3),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((add_factors)/3)]).
+
+
+predicate(multiply_factor/3,198,static,private,monofile,global,2).
+
+
+clause(multiply_factor([],_,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(multiply_factor('.'(factor(A,B),C),factor(D,E),'.'(factor(F,G),H)),','(is(G,*(B,E)),','(multiply_items(A,D,F),multiply_factor(C,factor(D,E),H)))),[
+    allocate(6),
+    get_structure((factor)/2,1),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure((factor)/2,0),
+    unify_variable(y(0)),
+    unify_variable(x(3)),
+    get_list(2),
+    unify_variable(x(0)),
+    unify_variable(y(5)),
+    get_structure((factor)/2,0),
+    unify_variable(y(4)),
+    unify_variable(x(0)),
+    put_structure((*)/2,1),
+    unify_value(x(3)),
+    unify_value(y(3)),
+    call((is)/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(4),2),
+    call((multiply_items)/3),
+    put_value(y(1),0),
+    put_structure((factor)/2,1),
+    unify_value(y(2)),
+    unify_value(y(3)),
+    put_value(y(5),2),
+    deallocate,
+    execute((multiply_factor)/3)]).
+
+
+predicate(multiply_items/3,208,static,private,monofile,global,3).
+
+
+clause(multiply_items(A,[],A),[
+    get_nil(1),
+    get_value(x(2),0),
+    proceed]).
+
+
+clause(:-(multiply_items([],A,A),\==(A,[])),[
+    get_nil(0),
+    get_value(x(2),1),
+    put_value(x(2),0),
+    put_nil(1),
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_items('.'(A,B),C,D),','(\==(C,[]),','(multiply_items(B,C,E),multiply_item(E,A,D)))),[
+    allocate(5),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    put_value(y(2),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(4),2),
+    call((multiply_items)/3),
+    put_unsafe_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((multiply_item)/3)]).
+
+
+predicate(multiply_item/3,216,static,private,monofile,global,1).
+
+
+clause(:-(multiply_item(A,B,C),','(multiply_item(A,B,D,E),;(->(==(D,1),=(C,E)),insert_order_list_cas(A,B,C)))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(3),2),
+    put_variable(y(4),3),
+    call((multiply_item)/4),
+    put_unsafe_value(y(3),0),
+    put_value(y(2),1),
+    put_unsafe_value(y(4),2),
+    put_value(y(0),3),
+    put_value(y(1),4),
+    deallocate,
+    execute(('$multiply_item/3_$aux1')/5)]).
+
+
+predicate('$multiply_item/3_$aux1'/5,216,static,private,monofile,local,2).
+
+
+clause(:-('$multiply_item/3_$aux1'(A,B,C,_,_),','('$get_cut_level'(D),','(==(A,1),','('$cut'(D),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),5),
+    put_integer(1,1),
+    call((==)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$multiply_item/3_$aux1'(_,A,_,B,C),insert_order_list_cas(B,C,A)),[
+    get_variable(x(2),1),
+    put_value(x(3),0),
+    put_value(x(4),1),
+    execute((insert_order_list_cas)/3)]).
+
+
+predicate(multiply_item/4,222,static,private,monofile,global,9).
+
+
+clause(multiply_item([],_,0,[]),[
+    get_nil(0),
+    get_integer(0,2),
+    get_nil(3),
+    proceed]).
+
+
+clause(:-(multiply_item('.'(A,B),A,1,'.'(exp(expr([],'.'(factor('.'(A,[]),1),[])),expr([],'.'(factor([],2),[]))),B)),','(functor(A,C,D),\==(','(C,D),','(exp,2)))),[
+    allocate(2),
+    get_integer(1,2),
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_variable(x(2)),
+    get_list(3),
+    unify_variable(x(0)),
+    unify_value(x(2)),
+    get_structure((exp)/2,0),
+    unify_variable(x(2)),
+    unify_structure((expr)/2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure((factor)/2,2),
+    unify_variable(x(2)),
+    unify_integer(1),
+    get_list(2),
+    unify_local_value(x(1)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_integer(2),
+    put_value(x(1),0),
+    put_variable(y(0),1),
+    put_variable(y(1),2),
+    call((functor)/3),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(exp),
+    unify_integer(2),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(multiply_item('.'(exp(A,B),C),exp(A,D),1,'.'(exp(A,E),C)),add_expr(B,D,E)),[
+    get_integer(1,2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(4)),
+    get_structure((exp)/2,0),
+    unify_variable(x(2)),
+    unify_variable(x(0)),
+    get_structure((exp)/2,1),
+    unify_value(x(2)),
+    unify_variable(x(1)),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_value(x(4)),
+    get_structure((exp)/2,3),
+    unify_value(x(2)),
+    unify_variable(x(2)),
+    execute((add_expr)/3)]).
+
+
+clause(:-(multiply_item('.'(A,B),exp(C,D),1,'.'(exp(C,E),B)),','(=(C,expr([],'.'(factor('.'(A,[]),1),[]))),','(normal_form(1,F),add_expr(F,D,E)))),[
+    allocate(3),
+    get_integer(1,2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(4)),
+    get_structure((exp)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    get_list(3),
+    unify_variable(x(2)),
+    unify_value(x(4)),
+    get_structure((exp)/2,2),
+    unify_value(x(1)),
+    unify_variable(y(1)),
+    get_structure((expr)/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure((factor)/2,1),
+    unify_variable(x(1)),
+    unify_integer(1),
+    get_list(1),
+    unify_value(x(0)),
+    unify_nil,
+    put_integer(1,0),
+    put_variable(y(2),1),
+    call((normal_form)/2),
+    put_unsafe_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute((add_expr)/3)]).
+
+
+clause(:-(multiply_item('.'(exp(A,B),C),D,1,'.'(exp(A,E),C)),','(=(A,expr([],'.'(factor('.'(D,[]),1),[]))),','(normal_form(1,F),add_expr(F,B,E)))),[
+    allocate(3),
+    get_integer(1,2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(4)),
+    get_structure((exp)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(3),
+    unify_variable(x(2)),
+    unify_value(x(4)),
+    get_structure((exp)/2,2),
+    unify_value(x(0)),
+    unify_variable(y(1)),
+    get_structure((expr)/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_variable(x(0)),
+    unify_integer(1),
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_nil,
+    put_integer(1,0),
+    put_variable(y(2),1),
+    call((normal_form)/2),
+    put_unsafe_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute((add_expr)/3)]).
+
+
+clause(:-(multiply_item('.'(A,B),C,D,'.'(A,E)),','(functor(A,F,G),','(\==(','(F,G),','(exp,2)),','(functor(C,H,I),','(\==(','(H,I),','(exp,2)),','(\==(A,C),multiply_item(B,C,D,E))))))),[
+    allocate(9),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_list(3),
+    unify_value(y(0)),
+    unify_variable(y(4)),
+    put_value(y(0),0),
+    put_variable(y(5),1),
+    put_variable(y(6),2),
+    call((functor)/3),
+    put_structure((',')/2,0),
+    unify_local_value(y(5)),
+    unify_local_value(y(6)),
+    put_structure((',')/2,1),
+    unify_atom(exp),
+    unify_integer(2),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_variable(y(7),1),
+    put_variable(y(8),2),
+    call((functor)/3),
+    put_structure((',')/2,0),
+    unify_local_value(y(7)),
+    unify_local_value(y(8)),
+    put_structure((',')/2,1),
+    unify_atom(exp),
+    unify_integer(2),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    deallocate,
+    execute((multiply_item)/4)]).
+
+
+clause(:-(multiply_item('.'(exp(A,B),C),exp(D,E),F,'.'(exp(A,B),G)),','(\==(A,D),multiply_item(C,exp(D,E),F,G))),[
+    allocate(5),
+    get_structure((exp)/2,1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_variable(y(3),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((exp)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(3),
+    unify_variable(x(2)),
+    unify_variable(y(4)),
+    get_structure((exp)/2,2),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_structure((exp)/2,1),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    deallocate,
+    execute((multiply_item)/4)]).
+
+
+clause(:-(multiply_item('.'(A,B),exp(C,D),E,'.'(A,F)),','(\==(C,expr([],'.'(factor('.'(A,[]),1),[]))),multiply_item(B,exp(C,D),E,F))),[
+    allocate(5),
+    get_structure((exp)/2,1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_variable(y(3),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(3),
+    unify_value(x(0)),
+    unify_variable(y(4)),
+    put_list(1),
+    unify_value(x(0)),
+    unify_nil,
+    put_structure((factor)/2,0),
+    unify_value(x(1)),
+    unify_integer(1),
+    put_structure((expr)/2,1),
+    unify_nil,
+    unify_list,
+    unify_value(x(0)),
+    unify_nil,
+    put_value(y(1),0),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_structure((exp)/2,1),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    deallocate,
+    execute((multiply_item)/4)]).
+
+
+clause(:-(multiply_item('.'(exp(A,B),C),D,E,'.'(exp(A,B),F)),','(\==(A,expr([],'.'(factor('.'(D,[]),1),[]))),multiply_item(C,D,E,F))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((exp)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(3),
+    unify_variable(x(2)),
+    unify_variable(y(3)),
+    get_structure((exp)/2,2),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    put_list(1),
+    unify_local_value(y(1)),
+    unify_nil,
+    put_structure((factor)/2,2),
+    unify_value(x(1)),
+    unify_integer(1),
+    put_structure((expr)/2,1),
+    unify_nil,
+    unify_list,
+    unify_value(x(2)),
+    unify_nil,
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((multiply_item)/4)]).
+
+
+predicate(divide_expr/3,257,static,private,monofile,global,5).
+
+
+clause(divide_expr(_,bot,bot),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(divide_expr(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(divide_expr(A,inf,B),','(\==(A,bot),normal_form(0,B))),[
+    allocate(1),
+    get_atom(inf,1),
+    get_variable(y(0),2),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_integer(0,0),
+    put_value(y(0),1),
+    deallocate,
+    execute((normal_form)/2)]).
+
+
+clause(:-(divide_expr(inf,A,inf),','(\==(A,bot),\==(A,inf))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(divide_expr(A,B,C),','(general_form(B,D),','(;(->(number(D),','(is(E,/(1,D)),normal_form(E,F))),','(is(G,-1),','(normal_form(G,H),exp_expr(B,H,F)))),multiply_expr(A,F,C)))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(1),0),
+    put_variable(y(3),1),
+    call((general_form)/2),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    put_value(y(1),2),
+    call(('$divide_expr/3_$aux1')/3),
+    put_value(y(0),0),
+    put_unsafe_value(y(4),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((multiply_expr)/3)]).
+
+
+predicate('$divide_expr/3_$aux1'/3,266,static,private,monofile,local,2).
+
+
+clause(:-('$divide_expr/3_$aux1'(A,B,_),','('$get_cut_level'(C),','(number(A),','('$cut'(C),','(is(D,/(1,A)),normal_form(D,B)))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),3),
+    put_value(y(0),0),
+    call((number)/1),
+    cut(y(2)),
+    put_variable(y(3),0),
+    put_structure((/)/2,1),
+    unify_integer(1),
+    unify_local_value(y(0)),
+    call((is)/2),
+    put_unsafe_value(y(3),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((normal_form)/2)]).
+
+
+clause(:-('$divide_expr/3_$aux1'(_,A,B),','(is(C,-1),','(normal_form(C,D),exp_expr(B,D,A)))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    put_variable(y(2),0),
+    put_integer(-1,1),
+    call((is)/2),
+    put_value(y(2),0),
+    put_variable(y(3),1),
+    call((normal_form)/2),
+    put_value(y(1),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(0),2),
+    deallocate,
+    execute((exp_expr)/3)]).
+
+
+predicate(exp_expr/3,282,static,private,monofile,global,10).
+
+
+clause(exp_expr(_,bot,bot),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(exp_expr(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(exp_expr(A,inf,inf),\==(A,bot)),[
+    get_atom(inf,1),
+    get_atom(inf,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(exp_expr(inf,A,inf),','(\==(A,bot),\==(A,inf))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(exp_expr(_,A,expr([],'.'(factor([],1),[]))),','(==(A,expr([],[])),!)),[
+    allocate(1),
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_integer(1),
+    get_variable(y(0),3),
+    put_value(x(1),0),
+    put_structure((expr)/2,1),
+    unify_nil,
+    unify_nil,
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(exp_expr(A,B,A),','(=(B,expr([],'.'(factor([],C),[]))),','(=:=(C,1),!))),[
+    allocate(1),
+    get_value(x(2),0),
+    get_variable(y(0),3),
+    get_structure((expr)/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    put_integer(1,1),
+    call((=:=)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(exp_expr(A,_,expr([],[])),','(==(A,expr([],[])),!)),[
+    allocate(1),
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_nil,
+    get_variable(y(0),3),
+    put_structure((expr)/2,1),
+    unify_nil,
+    unify_nil,
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(exp_expr(A,_,expr([],'.'(factor([],1),[]))),','(=(A,expr([],'.'(factor([],B),[]))),','(=:=(B,1),!))),[
+    allocate(1),
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure((factor)/2,1),
+    unify_nil,
+    unify_integer(1),
+    get_variable(y(0),3),
+    get_structure((expr)/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    put_integer(1,1),
+    call((=:=)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(exp_expr(A,B,expr([],'.'(factor([],C),[]))),','(=(A,expr([],'.'(factor([],D),[]))),','(=(B,expr([],'.'(factor([],E),[]))),','(!,','(is(F,float(D)),','(is(G,float(E)),pow(F,G,C))))))),[
+    allocate(4),
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure((factor)/2,2),
+    unify_nil,
+    unify_variable(y(0)),
+    get_structure((expr)/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    get_structure((expr)/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure((factor)/2,1),
+    unify_nil,
+    unify_variable(y(1)),
+    cut(x(3)),
+    put_structure((float)/1,1),
+    unify_value(x(0)),
+    put_variable(y(2),0),
+    call((is)/2),
+    put_variable(y(3),0),
+    put_structure((float)/1,1),
+    unify_value(y(1)),
+    call((is)/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(0),2),
+    deallocate,
+    execute((pow)/3)]).
+
+
+clause(exp_expr(A,B,expr([],'.'(factor('.'(exp(A,B),[]),1),[]))),[
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure((factor)/2,2),
+    unify_variable(x(2)),
+    unify_integer(1),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure((exp)/2,2),
+    unify_local_value(x(0)),
+    unify_local_value(x(1)),
+    proceed]).
+
+
+predicate(log_expr/3,311,static,private,monofile,global,8).
+
+
+clause(log_expr(_,bot,bot),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(log_expr(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(log_expr(A,inf,inf),\==(A,bot)),[
+    get_atom(inf,1),
+    get_atom(inf,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(log_expr(inf,A,bot),','(\==(A,bot),\==(A,inf))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(bot,2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(log_expr(A,A,expr([],'.'(factor([],1),[]))),[
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure((factor)/2,2),
+    unify_nil,
+    unify_integer(1),
+    get_value(x(1),0),
+    proceed]).
+
+
+clause(:-(log_expr(A,B,expr([],[])),','(\==(A,B),','(=(B,expr([],'.'(factor([],C),[]))),','(=:=(C,1),!)))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_nil,
+    get_variable(y(1),3),
+    put_value(y(0),1),
+    call((\==)/2),
+    put_value(y(0),0),
+    get_structure((expr)/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    put_integer(1,1),
+    call((=:=)/2),
+    cut(y(1)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(log_expr(A,B,expr([],'.'(factor([],C),[]))),','(\==(A,B),','(=(A,expr([],'.'(factor([],D),[]))),','(=(B,expr([],'.'(factor([],E),[]))),','(!,','(is(F,float(D)),','(log2(F,G),','(is(H,float(E)),','(log2(H,I),is(C,/(I,G))))))))))),[
+    allocate(9),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_variable(y(2)),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(0),0),
+    get_structure((expr)/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    put_value(y(1),1),
+    get_structure((expr)/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure((factor)/2,1),
+    unify_nil,
+    unify_variable(y(4)),
+    cut(y(3)),
+    put_structure((float)/1,1),
+    unify_value(x(0)),
+    put_variable(y(5),0),
+    call((is)/2),
+    put_value(y(5),0),
+    put_variable(y(6),1),
+    call((log2)/2),
+    put_variable(y(7),0),
+    put_structure((float)/1,1),
+    unify_value(y(4)),
+    call((is)/2),
+    put_value(y(7),0),
+    put_variable(y(8),1),
+    call((log2)/2),
+    put_value(y(2),0),
+    put_structure((/)/2,1),
+    unify_local_value(y(8)),
+    unify_local_value(y(6)),
+    deallocate,
+    execute((is)/2)]).
+
+
+clause(:-(log_expr(A,B,expr([],'.'(factor('.'(log(A,B),[]),1),[]))),\==(A,B)),[
+    get_structure((expr)/2,2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure((factor)/2,2),
+    unify_variable(x(2)),
+    unify_integer(1),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure((log)/2,2),
+    unify_local_value(x(0)),
+    unify_local_value(x(1)),
+    execute((\==)/2)]).
+
+
+predicate(factorial_expr/2,339,static,private,monofile,global,5).
+
+
+clause(factorial_expr(bot,bot),[
+    get_atom(bot,0),
+    get_atom(bot,1),
+    proceed]).
+
+
+clause(factorial_expr(inf,inf),[
+    get_atom(inf,0),
+    get_atom(inf,1),
+    proceed]).
+
+
+clause(:-(factorial_expr(A,expr([],'.'(factor([],1),[]))),','(==(A,expr([],[])),!)),[
+    allocate(1),
+    get_structure((expr)/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure((factor)/2,1),
+    unify_nil,
+    unify_integer(1),
+    get_variable(y(0),2),
+    put_structure((expr)/2,1),
+    unify_nil,
+    unify_nil,
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(factorial_expr(A,expr([],'.'(factor([],1),[]))),','(=(A,expr([],'.'(factor([],B),[]))),','(=:=(B,1),!))),[
+    allocate(1),
+    get_structure((expr)/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure((factor)/2,1),
+    unify_nil,
+    unify_integer(1),
+    get_variable(y(0),2),
+    get_structure((expr)/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure((factor)/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    put_integer(1,1),
+    call((=:=)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(factorial_expr(A,expr([],'.'(factor('.'(fact(A),[]),1),[]))),[
+    get_structure((expr)/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure((factor)/2,1),
+    unify_variable(x(1)),
+    unify_integer(1),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure((fact)/1,1),
+    unify_local_value(x(0)),
+    proceed]).
+
+
+predicate(insert_order_list_cas/3,351,static,private,monofile,global,3).
+
+
+clause(insert_order_list_cas([],A,'.'(A,[])),[
+    get_nil(0),
+    get_list(2),
+    unify_local_value(x(1)),
+    unify_nil,
+    proceed]).
+
+
+clause(:-(insert_order_list_cas('.'(A,B),C,'.'(C,'.'(A,B))),@<(A,C)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(x(3)),
+    get_list(2),
+    unify_local_value(x(1)),
+    unify_list,
+    unify_value(x(0)),
+    unify_value(x(3)),
+    execute((@<)/2)]).
+
+
+clause(:-(insert_order_list_cas('.'(A,B),C,'.'(A,D)),','(@>(A,C),insert_order_list_cas(B,C,D))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_value(x(0)),
+    unify_variable(y(2)),
+    put_value(y(1),1),
+    call((@>)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((insert_order_list_cas)/3)]).

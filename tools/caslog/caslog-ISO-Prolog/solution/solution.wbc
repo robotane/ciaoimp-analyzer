@@ -1,0 +1,665 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/solution/solution.pl
+% date    : 2 6 2003
+% time    : 10:15:37
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/solution/solution.pl').
+
+
+predicate(solution_analysis/9,11,static,private,user,1).
+
+
+clause(:-(solution_analysis(A,B,C,A,D,E,F,G,H),solution_analysis(A,B,C,A,D,E,F,G,[],H)),[
+    get_value(x(3),0),
+    put_value(x(3),0),
+    put_value(x(8),9),
+    put_nil(8),
+    execute(solution_analysis/10)]).
+
+
+predicate(solution_analysis/10,14,static,private,user,2).
+
+
+clause(solution_analysis([],A,B,C,D,E,F,G,H,[]),[
+    get_nil(0),
+    get_nil(9),
+    proceed]).
+
+
+clause(:-(solution_analysis('.'(A,B),C,D,E,'.'(F,G),'.'(H,I),'.'(J,K),'.'(L,M),N,'.'(O,P)),','(find_symbol_field_det(D,A,det,Q),','(;(->(var(Q),','(find_symbol_field_clause(D,A,clause,R),','(nl,','(solution_clauses(R,C,D,E,F,H,J,L,N,S),','(solve_complexity_equ(A,D,E,S,F,T),=(U,'.'(T,[]))))))),=(U,Q)),','(solution_analysis(B,C,D,E,G,I,K,M,'.'(comp(A,U),N),P),','(remove_recursive_comps(U,C,D,det,O),insert_symbol_field_det(D,A,det,O)))))),[
+    allocate(18),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_variable(y(4),3),
+    get_list(4),
+    unify_variable(y(5)),
+    unify_variable(y(6)),
+    get_list(5),
+    unify_variable(y(7)),
+    unify_variable(y(8)),
+    get_list(6),
+    unify_variable(y(9)),
+    unify_variable(y(10)),
+    get_list(7),
+    unify_variable(y(11)),
+    unify_variable(y(12)),
+    get_variable(y(13),8),
+    get_list(9),
+    unify_variable(y(14)),
+    unify_variable(y(15)),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    put_atom(det,2),
+    put_variable(y(16),3),
+    call(find_symbol_field_det/4),
+    put_value(y(16),0),
+    put_value(y(3),1),
+    put_value(y(0),2),
+    put_value(y(2),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(7),6),
+    put_value(y(9),7),
+    put_value(y(11),8),
+    put_value(y(13),9),
+    put_variable(y(17),10),
+    call('$solution_analysis/10_$aux1'/11),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    put_value(y(6),4),
+    put_value(y(8),5),
+    put_value(y(10),6),
+    put_value(y(12),7),
+    put_structure(comp/2,9),
+    unify_value(y(0)),
+    unify_local_value(y(17)),
+    put_list(8),
+    unify_value(x(9)),
+    unify_local_value(y(13)),
+    put_value(y(15),9),
+    call(solution_analysis/10),
+    put_value(y(17),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_atom(det,3),
+    put_value(y(14),4),
+    call(remove_recursive_comps/5),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    put_atom(det,2),
+    put_value(y(14),3),
+    deallocate,
+    execute(insert_symbol_field_det/4)]).
+
+
+predicate('$solution_analysis/10_$aux1'/11,15,static,private,user,2).
+
+
+clause(:-('$solution_analysis/10_$aux1'(A,B,C,D,E,F,G,H,I,J,K),','('$get_cut_level'(L),','(var(A),','('$cut'(L),','(find_symbol_field_clause(B,C,clause,M),','(nl,','(solution_clauses(M,D,B,E,F,G,H,I,J,N),','(solve_complexity_equ(C,B,E,N,F,O),=(K,'.'(O,[])))))))))),[
+    allocate(14),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    get_variable(y(7),8),
+    get_variable(y(8),9),
+    get_variable(y(9),10),
+    get_variable(y(10),11),
+    call(var/1),
+    cut(y(10)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_atom(clause,2),
+    put_variable(y(11),3),
+    call(find_symbol_field_clause/4),
+    call(nl/0),
+    put_value(y(11),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(6),6),
+    put_value(y(7),7),
+    put_value(y(8),8),
+    put_variable(y(12),9),
+    call(solution_clauses/10),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_value(y(3),2),
+    put_value(y(12),3),
+    put_value(y(4),4),
+    put_variable(y(13),5),
+    call(solve_complexity_equ/6),
+    put_value(y(9),0),
+    get_list(0),
+    unify_local_value(y(13)),
+    unify_nil,
+    deallocate,
+    proceed]).
+
+
+clause(:-('$solution_analysis/10_$aux1'(A,B,C,D,E,F,G,H,I,J,K),=(K,A)),[
+    get_value(x(0),10),
+    proceed]).
+
+
+predicate(solution_clauses/10,50,static,private,user,2).
+
+
+clause(:-(solution_clauses(A,B,C,D,E,F,G,H,I,[]),var(A)),[
+    get_nil(9),
+    execute(var/1)]).
+
+
+clause(:-(solution_clauses(A,B,C,D,'.'(E,F),'.'(G,H),'.'(I,J),'.'(K,L),M,'.'(N,O)),','(nonvar(A),','(=(A,'.'(P,Q)),','(solution_clause(P,B,C,D,E,G,I,K,M,N),solution_clauses(Q,B,C,D,F,H,J,L,M,O))))),[
+    allocate(16),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_list(4),
+    unify_variable(y(4)),
+    unify_variable(y(5)),
+    get_list(5),
+    unify_variable(y(6)),
+    unify_variable(y(7)),
+    get_list(6),
+    unify_variable(y(8)),
+    unify_variable(y(9)),
+    get_list(7),
+    unify_variable(y(10)),
+    unify_variable(y(11)),
+    get_variable(y(12),8),
+    get_list(9),
+    unify_variable(y(13)),
+    unify_variable(y(14)),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(15)),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(6),5),
+    put_value(y(8),6),
+    put_value(y(10),7),
+    put_value(y(12),8),
+    put_value(y(13),9),
+    call(solution_clause/10),
+    put_value(y(15),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(5),4),
+    put_value(y(7),5),
+    put_value(y(9),6),
+    put_value(y(11),7),
+    put_value(y(12),8),
+    put_value(y(14),9),
+    deallocate,
+    execute(solution_clauses/10)]).
+
+
+predicate(solution_clause/10,62,static,private,user,1).
+
+
+clause(:-(solution_clause(A,B,C,D,E,F,G,H,I,J),','(clause_type(A,K),solution_clause(K,A,B,C,D,E,F,G,H,I,J))),[
+    allocate(11),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),8),
+    get_variable(y(9),9),
+    put_value(y(0),0),
+    put_variable(y(10),1),
+    call(clause_type/2),
+    put_unsafe_value(y(10),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(3),4),
+    put_value(y(4),5),
+    put_value(y(5),6),
+    put_value(y(6),7),
+    put_value(y(7),8),
+    put_value(y(8),9),
+    put_value(y(9),10),
+    deallocate,
+    execute(solution_clause/11)]).
+
+
+predicate(solution_clause/11,66,static,private,user,2).
+
+
+clause(:-(solution_clause(2,A,B,C,D,E,F,G,H,I,J),','(=(A,:-(K,L)),;(->(fail_body(L),=(J,0)),','(solution_head_input(K,B,C,A,F,G,H),','(no_of_cuts(L,M),','(collect_test_literals(L,B,C,N),','(body_binding(1,L,B,C,D,A,E,F,G,H,det,M,N,I),solution_head_output(K,A,F,G,H,N,J)))))))),[
+    get_integer(2,0),
+    get_variable(x(12),10),
+    get_variable(x(11),9),
+    get_variable(x(10),5),
+    get_variable(x(9),4),
+    get_variable(x(4),3),
+    get_variable(x(3),2),
+    get_variable(x(5),1),
+    get_structure((:-)/2,5),
+    unify_variable(x(2)),
+    unify_variable(x(0)),
+    put_value(x(12),1),
+    execute('$solution_clause/11_$aux1'/12)]).
+
+
+clause(:-(solution_clause(3,A,B,C,D,E,F,G,H,I,J),','(solution_head_input(A,B,C,A,F,G,H),solution_head_output(A,A,F,G,H,[],J))),[
+    allocate(5),
+    get_integer(3,0),
+    get_variable(y(0),1),
+    get_variable(y(1),6),
+    get_variable(y(2),7),
+    get_variable(y(3),8),
+    get_variable(y(4),10),
+    put_value(x(2),1),
+    put_value(x(3),2),
+    put_value(y(0),0),
+    put_value(y(0),3),
+    put_value(y(1),4),
+    put_value(y(2),5),
+    put_value(y(3),6),
+    call(solution_head_input/7),
+    put_value(y(0),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(3),4),
+    put_nil(5),
+    put_value(y(4),6),
+    deallocate,
+    execute(solution_head_output/7)]).
+
+
+predicate('$solution_clause/11_$aux1'/12,66,static,private,user,2).
+
+
+clause(:-('$solution_clause/11_$aux1'(A,B,C,D,E,F,G,H,I,J,K,L),','('$get_cut_level'(M),','(fail_body(A),','('$cut'(M),=(B,0))))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_variable(y(1),12),
+    call(fail_body/1),
+    cut(y(1)),
+    put_value(y(0),0),
+    get_integer(0,0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$solution_clause/11_$aux1'(A,B,C,D,E,F,G,H,I,J,K,L),','(solution_head_input(C,D,E,F,G,H,I),','(no_of_cuts(A,M),','(collect_test_literals(A,D,E,N),','(body_binding(1,A,D,E,J,F,K,G,H,I,det,M,N,L),solution_head_output(C,F,G,H,I,N,B)))))),[
+    allocate(14),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),8),
+    get_variable(y(9),9),
+    get_variable(y(10),10),
+    get_variable(y(11),11),
+    put_value(y(2),0),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    put_value(y(6),4),
+    put_value(y(7),5),
+    put_value(y(8),6),
+    call(solution_head_input/7),
+    put_value(y(0),0),
+    put_variable(y(12),1),
+    call(no_of_cuts/2),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_variable(y(13),3),
+    call(collect_test_literals/4),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    put_value(y(9),4),
+    put_value(y(5),5),
+    put_value(y(10),6),
+    put_value(y(6),7),
+    put_value(y(7),8),
+    put_value(y(8),9),
+    put_atom(det,10),
+    put_value(y(12),11),
+    put_value(y(13),12),
+    put_value(y(11),13),
+    call(body_binding/14),
+    put_value(y(2),0),
+    put_value(y(5),1),
+    put_value(y(6),2),
+    put_value(y(7),3),
+    put_value(y(8),4),
+    put_unsafe_value(y(13),5),
+    put_value(y(1),6),
+    deallocate,
+    execute(solution_head_output/7)]).
+
+
+predicate(no_of_cuts/2,95,static,private,user,1).
+
+
+clause(:-(no_of_cuts(A,B),;(->(=(A,','(C,D)),','(no_of_cuts(D,E),;(->(==(C,!),is(B,+(E,1))),=(B,E)))),->(=(A,C),','(nonsequence(C),;(->(==(C,!),=(B,1)),=(B,0)))))),[
+    execute('$no_of_cuts/2_$aux1'/2)]).
+
+
+predicate('$no_of_cuts/2_$aux1'/2,95,static,private,user,2).
+
+
+clause(:-('$no_of_cuts/2_$aux1'(A,B),','('$get_cut_level'(C),','(=(A,','(D,E)),','('$cut'(C),','(no_of_cuts(E,F),;(','('$get_cut_level'(G),','(==(D,!),','('$cut'(G),is(B,+(F,1))))),=(B,F))))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_structure((',')/2,0),
+    unify_variable(y(1)),
+    unify_variable(x(0)),
+    cut(x(2)),
+    put_variable(y(2),1),
+    call(no_of_cuts/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_unsafe_value(y(2),2),
+    deallocate,
+    execute('$no_of_cuts/2_$aux2'/3)]).
+
+
+clause(:-('$no_of_cuts/2_$aux1'(A,B),','('$get_cut_level'(C),','(=(A,D),','('$cut'(C),','(nonsequence(D),;(','('$get_cut_level'(E),','(==(D,!),','('$cut'(E),=(B,1)))),=(B,0))))))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_variable(y(1),0),
+    cut(x(2)),
+    put_value(y(1),0),
+    call(nonsequence/1),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute('$no_of_cuts/2_$aux3'/2)]).
+
+
+predicate('$no_of_cuts/2_$aux3'/2,95,static,private,user,2).
+
+
+clause(:-('$no_of_cuts/2_$aux3'(A,B),','('$get_cut_level'(C),','(==(A,!),','('$cut'(C),=(B,1))))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    put_atom(!,1),
+    call((==)/2),
+    cut(y(1)),
+    put_value(y(0),0),
+    get_integer(1,0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$no_of_cuts/2_$aux3'(A,B),=(B,0)),[
+    get_integer(0,1),
+    proceed]).
+
+
+predicate('$no_of_cuts/2_$aux2'/3,95,static,private,user,2).
+
+
+clause(:-('$no_of_cuts/2_$aux2'(A,B,C),','('$get_cut_level'(D),','(==(A,!),','('$cut'(D),is(B,+(C,1)))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    put_atom(!,1),
+    call((==)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(1)),
+    unify_integer(1),
+    deallocate,
+    execute((is)/2)]).
+
+
+clause(:-('$no_of_cuts/2_$aux2'(A,B,C),=(B,C)),[
+    get_value(x(2),1),
+    proceed]).
+
+
+predicate(collect_test_literals/4,136,static,private,user,1).
+
+
+clause(:-(collect_test_literals(A,B,C,D),;(->(=(A,','(E,F)),','(functor(E,G,H),','(literal_property(B,C,/(G,H),mode,I),','(;(->(test_predicate(I),','(literal_property(B,C,/(G,H),relation,J),;(->(\==(J,inf),=(D,'.'(test(E,J),K))),=(D,K)))),=(D,K)),collect_test_literals(F,B,C,K))))),->(=(A,E),->(nonsequence(E),','(functor(E,G,H),','(literal_property(B,C,/(G,H),mode,I),;(->(test_predicate(I),','(literal_property(B,C,/(G,H),relation,J),;(->(\==(J,inf),=(D,'.'(test(E,J),[]))),=(D,[])))),=(D,[])))))))),[
+    execute('$collect_test_literals/4_$aux1'/4)]).
+
+
+predicate('$collect_test_literals/4_$aux1'/4,136,static,private,user,2).
+
+
+clause(:-('$collect_test_literals/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(=(A,','(F,G)),','('$cut'(E),','(functor(F,H,I),','(literal_property(B,C,/(H,I),mode,J),','(;(','('$get_cut_level'(K),','(test_predicate(J),','('$cut'(K),','(literal_property(B,C,/(H,I),relation,L),;(','('$get_cut_level'(M),','(\==(L,inf),','('$cut'(M),=(D,'.'(test(F,L),N))))),=(D,N)))))),=(D,N)),collect_test_literals(G,B,C,N)))))))),[
+    allocate(9),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_structure((',')/2,0),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    cut(x(4)),
+    put_value(y(3),0),
+    put_variable(y(5),1),
+    put_variable(y(6),2),
+    call(functor/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure((/)/2,2),
+    unify_local_value(y(5)),
+    unify_local_value(y(6)),
+    put_atom(mode,3),
+    put_variable(y(7),4),
+    call(literal_property/5),
+    put_value(y(7),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(5),3),
+    put_value(y(6),4),
+    put_value(y(2),5),
+    put_value(y(3),6),
+    put_variable(y(8),7),
+    call('$collect_test_literals/4_$aux2'/8),
+    put_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_unsafe_value(y(8),3),
+    deallocate,
+    execute(collect_test_literals/4)]).
+
+
+clause(:-('$collect_test_literals/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(=(A,F),','('$cut'(E),;(','('$get_cut_level'(G),','(nonsequence(F),','('$cut'(G),','(functor(F,H,I),','(literal_property(B,C,/(H,I),mode,J),;(','('$get_cut_level'(K),','(test_predicate(J),','('$cut'(K),','(literal_property(B,C,/(H,I),relation,L),;(','('$get_cut_level'(M),','(\==(L,inf),','('$cut'(M),=(D,'.'(test(F,L),[]))))),=(D,[])))))),=(D,[]))))))),fail))))),[
+    cut(x(4)),
+    execute('$collect_test_literals/4_$aux3'/4)]).
+
+
+predicate('$collect_test_literals/4_$aux3'/4,136,static,private,user,1).
+
+
+clause(:-('$collect_test_literals/4_$aux3'(A,B,C,D),','('$get_cut_level'(E),','(nonsequence(A),','('$cut'(E),','(functor(A,F,G),','(literal_property(B,C,/(F,G),mode,H),;(','('$get_cut_level'(I),','(test_predicate(H),','('$cut'(I),','(literal_property(B,C,/(F,G),relation,J),;(','('$get_cut_level'(K),','(\==(J,inf),','('$cut'(K),=(D,'.'(test(A,J),[]))))),=(D,[])))))),=(D,[])))))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    call(nonsequence/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_variable(y(5),1),
+    put_variable(y(6),2),
+    call(functor/3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_structure((/)/2,2),
+    unify_local_value(y(5)),
+    unify_local_value(y(6)),
+    put_atom(mode,3),
+    put_variable(y(7),4),
+    call(literal_property/5),
+    put_unsafe_value(y(7),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_unsafe_value(y(5),3),
+    put_unsafe_value(y(6),4),
+    put_value(y(3),5),
+    put_value(y(0),6),
+    deallocate,
+    execute('$collect_test_literals/4_$aux4'/7)]).
+
+
+predicate('$collect_test_literals/4_$aux4'/7,136,static,private,user,2).
+
+
+clause(:-('$collect_test_literals/4_$aux4'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(test_predicate(A),','('$cut'(H),','(literal_property(B,C,/(D,E),relation,I),;(','('$get_cut_level'(J),','(\==(I,inf),','('$cut'(J),=(F,'.'(test(G,I),[]))))),=(F,[]))))))),[
+    allocate(8),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    call(test_predicate/1),
+    cut(y(6)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure((/)/2,2),
+    unify_local_value(y(2)),
+    unify_local_value(y(3)),
+    put_atom(relation,3),
+    put_variable(y(7),4),
+    call(literal_property/5),
+    put_unsafe_value(y(7),0),
+    put_value(y(4),1),
+    put_value(y(5),2),
+    deallocate,
+    execute('$collect_test_literals/4_$aux5'/3)]).
+
+
+clause(:-('$collect_test_literals/4_$aux4'(A,B,C,D,E,F,G),=(F,[])),[
+    get_nil(5),
+    proceed]).
+
+
+predicate('$collect_test_literals/4_$aux5'/3,136,static,private,user,2).
+
+
+clause(:-('$collect_test_literals/4_$aux5'(A,B,C),','('$get_cut_level'(D),','(\==(A,inf),','('$cut'(D),=(B,'.'(test(C,A),[])))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    cut(y(3)),
+    put_value(y(1),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(test/2,0),
+    unify_local_value(y(2)),
+    unify_local_value(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$collect_test_literals/4_$aux5'(A,B,C),=(B,[])),[
+    get_nil(1),
+    proceed]).
+
+
+predicate('$collect_test_literals/4_$aux2'/8,136,static,private,user,2).
+
+
+clause(:-('$collect_test_literals/4_$aux2'(A,B,C,D,E,F,G,H),','('$get_cut_level'(I),','(test_predicate(A),','('$cut'(I),','(literal_property(B,C,/(D,E),relation,J),;(','('$get_cut_level'(K),','(\==(J,inf),','('$cut'(K),=(F,'.'(test(G,J),H))))),=(F,H))))))),[
+    allocate(9),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    get_variable(y(7),8),
+    call(test_predicate/1),
+    cut(y(7)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure((/)/2,2),
+    unify_local_value(y(2)),
+    unify_local_value(y(3)),
+    put_atom(relation,3),
+    put_variable(y(8),4),
+    call(literal_property/5),
+    put_unsafe_value(y(8),0),
+    put_value(y(4),1),
+    put_value(y(5),2),
+    put_value(y(6),3),
+    deallocate,
+    execute('$collect_test_literals/4_$aux6'/4)]).
+
+
+clause(:-('$collect_test_literals/4_$aux2'(A,B,C,D,E,F,G,H),=(F,H)),[
+    get_value(x(7),5),
+    proceed]).
+
+
+predicate('$collect_test_literals/4_$aux6'/4,136,static,private,user,2).
+
+
+clause(:-('$collect_test_literals/4_$aux6'(A,B,C,D),','('$get_cut_level'(E),','(\==(A,inf),','('$cut'(E),=(B,'.'(test(C,A),D)))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_local_value(y(3)),
+    get_structure(test/2,0),
+    unify_local_value(y(2)),
+    unify_local_value(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$collect_test_literals/4_$aux6'(A,B,C,D),=(B,D)),[
+    get_value(x(3),1),
+    proceed]).

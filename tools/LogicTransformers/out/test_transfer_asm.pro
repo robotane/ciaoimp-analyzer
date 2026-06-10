@@ -1,0 +1,172 @@
+:- op(100, xfy, =>).
+% QUERY THIS WITH: ?- p(Answer => _ => goal).
+
+u(A, B, A=>B).
+b(A, B, A=>B).
+p(A) :-
+    var(A),
+    !,
+    A=true.
+p(A) :-
+    nonvar(A),
+    A=B=>C=>D=>(is),
+    toTerm(C, E),
+    B is E,
+    p(D).
+p(A) :-
+    nonvar(A),
+    A=B=>C=>D=>(>),
+    B>C,
+    p(D).
+p(A) :-
+    nonvar(A),
+    A=B=>C=>D=>(>=),
+    B>=C,
+    p(D).
+p(A) :-
+    nonvar(A),
+    A=B=>C=>D=>(\=),
+    B\=C,
+    p(D).
+p(A) :-
+    nonvar(A),
+    A=B=>!,
+    !,
+    p(B).
+p(A) :-
+    u(B, get_balance, C),
+    u(0, C, D),
+    u([], D, E),
+    u(_, E, A),
+    p(B).
+p(A) :-
+    u(B, bal, C),
+    u(D, C, E),
+    u(_, '[|]', F),
+    u(E, F, G),
+    u(H, get_balance, I),
+    u(B, I, J),
+    u(G, J, K),
+    u(D, K, A),
+    b(H, !, L),
+    p(L).
+p(A) :-
+    u(B, '[|]', C),
+    u(_, C, D),
+    u(E, get_balance, F),
+    u(G, F, H),
+    u(D, H, I),
+    u(J, I, A),
+    b(E, get_balance, K),
+    b(G, K, L),
+    b(B, L, M),
+    b(J, M, N),
+    p(N).
+p(A) :-
+    u(B, bal, C),
+    u(D, C, E),
+    u([], '[|]', F),
+    u(E, F, G),
+    u(H, set_balance, I),
+    u(G, I, J),
+    u([], J, K),
+    u(B, K, L),
+    u(D, L, A),
+    p(H).
+p(A) :-
+    u(_, bal, B),
+    u(C, B, D),
+    u(E, '[|]', F),
+    u(D, F, G),
+    u(H, bal, I),
+    u(C, I, J),
+    u(E, '[|]', K),
+    u(J, K, L),
+    u(M, set_balance, N),
+    u(L, N, O),
+    u(G, O, P),
+    u(H, P, Q),
+    u(C, Q, A),
+    b(M, !, R),
+    p(R).
+p(A) :-
+    u(B, bal, C),
+    u(D, C, E),
+    u(F, '[|]', G),
+    u(E, G, H),
+    u(B, bal, I),
+    u(D, I, J),
+    u(K, '[|]', L),
+    u(J, L, M),
+    u(N, set_balance, O),
+    u(M, O, P),
+    u(H, P, Q),
+    u(R, Q, S),
+    u(T, S, A),
+    b(N, set_balance, U),
+    b(K, U, V),
+    b(F, V, W),
+    b(R, W, X),
+    b(T, X, Y),
+    p(Y).
+p(A) :-
+    u(B, transfer_bal, C),
+    u(D, C, E),
+    u(F, E, G),
+    u(H, G, I),
+    u(J, I, K),
+    u(L, K, A),
+    b(H, -, M),
+    b(N, M, O),
+    b(H, +, P),
+    b(Q, P, R),
+    b(B, set_balance, S),
+    b(D, S, T),
+    b(U, T, V),
+    b(W, V, X),
+    b(J, X, Y),
+    b(Y, is, Z),
+    b(R, Z, A1),
+    b(W, A1, B1),
+    b(B1, get_balance, C1),
+    b(Q, C1, D1),
+    b(U, D1, E1),
+    b(J, E1, F1),
+    b(F1, set_balance, G1),
+    b(U, G1, H1),
+    b(F, H1, I1),
+    b(J1, I1, K1),
+    b(L, K1, L1),
+    b(L1, is, M1),
+    b(O, M1, N1),
+    b(J1, N1, O1),
+    b(O1, get_balance, P1),
+    b(N, P1, Q1),
+    b(F, Q1, R1),
+    b(L, R1, S1),
+    p(S1).
+p(A) :-
+    u(B, goal, C),
+    u(D, C, A),
+    b(1000, bal, E),
+    b(alice, E, F),
+    b(1000, bal, G),
+    b(bob, G, H),
+    b(0, bal, I),
+    b(this, I, J),
+    b([], '[|]', K),
+    b(J, K, L),
+    b(L, '[|]', M),
+    b(H, M, N),
+    b(N, '[|]', O),
+    b(F, O, P),
+    b(B, transfer_bal, Q),
+    b(D, Q, R),
+    b(S, R, T),
+    b(100, T, U),
+    b(this, U, V),
+    b(alice, V, W),
+    b(W, =, X),
+    b(P, X, Y),
+    b(S, Y, Z),
+    p(Z).

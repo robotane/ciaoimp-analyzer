@@ -1,0 +1,1150 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Pipeline portable pour la normalisation de contrats CiaoMoka, l'analyse CasLog et l'exécution TNF.">
+      
+      
+        <meta name="author" content="CiaoImp project">
+      
+      
+      
+        <link rel="prev" href="prerequisites.html">
+      
+      
+        <link rel="next" href="pipeline-guide.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Architecture - CiaoImp Pipeline</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="index.html" title="CiaoImp Pipeline" class="md-header__button md-logo" aria-label="CiaoImp Pipeline" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CiaoImp Pipeline
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="CiaoImp Pipeline" class="md-nav__button md-logo" aria-label="CiaoImp Pipeline" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CiaoImp Pipeline
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="prerequisites.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prérequis et démarrage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="architecture.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#role-du-dossier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rôle du dossier
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flux-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flux global
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chaine-dexecution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chaîne d'exécution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entrees-et-sorties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entrées et sorties
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-du-projet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture du projet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#organisation-de-src" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organisation de src/
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outils-embarques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outils embarqués
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#invariants-utiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Invariants utiles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ordre-de-lecture-recommande" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ordre de lecture recommandé
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pipeline-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guide pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/pipeline.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/transformations.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transformations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/annotation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/results.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Résultats
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#role-du-dossier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rôle du dossier
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flux-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flux global
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chaine-dexecution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chaîne d'exécution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entrees-et-sorties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entrées et sorties
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-du-projet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture du projet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#organisation-de-src" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organisation de src/
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outils-embarques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outils embarqués
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#invariants-utiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Invariants utiles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ordre-de-lecture-recommande" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ordre de lecture recommandé
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
+<h2 id="role-du-dossier">Rôle du dossier<a class="headerlink" href="#role-du-dossier" title="Permanent link">&para;</a></h2>
+<p><code>ciaoimp_pipeline</code> est une version portable du pipeline CiaoImp pour les
+contrats CiaoMoka/Prolog. Le dossier peut être déplacé sur une machine cible à
+condition de conserver sa structure interne.</p>
+<p>Le pipeline transforme un contrat source en trois familles de résultats :</p>
+<ul>
+<li>une entrée annotée pour l'analyse statique CasLog ;</li>
+<li>un assembleur TNF exécuté par la VM Python embarquée ;</li>
+<li>une traduction Java exécutée par Prolog Cafe.</li>
+</ul>
+<p>La logique active du pipeline se trouve principalement dans <code>pipeline.py</code> et
+dans <code>src/</code>. Les dossiers <code>tools/caslog/</code> et <code>tools/LogicTransformers/</code>
+fournissent les moteurs externes nécessaires, mais ne constituent pas la
+documentation principale du pipeline.</p>
+<h2 id="flux-global">Flux global<a class="headerlink" href="#flux-global" title="Permanent link">&para;</a></h2>
+<p><img alt="Flux global du pipeline" src="assets/pipeline-flow.png" /></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>data/source/*.pl
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  -&gt; expansion CiaoPP
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  -&gt; nettoyage et transformation Prolog
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  -&gt; build/executable/*.pl
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  -&gt; normalisation (destate + fix_dlist)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  -&gt; build/normalized/*.pl
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>     -&gt; annotation CasLog
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>     -&gt; build/annotated/*.pl
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>     -&gt; exécution CasLog
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>     -&gt; results/caslog_*.txt
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>     -&gt; compilation TNF
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>     -&gt; build/tnf_asm/*.txt
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>     -&gt; exécution VM TNF
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>     -&gt; results/tnf_*.txt
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>     -&gt; traduction Prolog Cafe
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>     -&gt; build/prolog_cafe_src/ &amp; build/prolog_cafe_classes/
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>     -&gt; exécution Java
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>     -&gt; results/prolog_cafe_*.txt
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>results/stage_diffs.txt compare les étapes publiques générées.
+</code></pre></div>
+<p><code>build/normalized/</code> est la forme commune avant bifurcation. TNF et Prolog Cafe
+la consomment directement, tandis que CasLog consomme la version annotée
+dérivée dans <code>build/annotated/</code>.</p>
+<h2 id="chaine-dexecution">Chaîne d'exécution<a class="headerlink" href="#chaine-dexecution" title="Permanent link">&para;</a></h2>
+<p>Le runner applique la séquence suivante :</p>
+<ol>
+<li>Résoudre le contrat source depuis <code>data/source/</code> ou depuis le chemin passé en
+   argument.</li>
+<li>Lancer CiaoPP pour produire une version expansée.</li>
+<li>Convertir cette sortie en Prolog exploitable.</li>
+<li>Pré-nettoyer le texte avec <code>src/transforms/caslog_clean.py</code>.</li>
+<li>Appliquer <code>src/transforms/caslog_transform.pl</code>.</li>
+<li>Écrire <code>build/executable/&lt;nom&gt;.pl</code>.</li>
+<li>Normaliser avec <code>destate</code> puis <code>fix_dlist</code>.</li>
+<li>Écrire <code>build/normalized/&lt;nom&gt;.pl</code>.</li>
+<li>Annoter pour CasLog et écrire <code>build/annotated/&lt;nom&gt;.pl</code>.</li>
+<li>Ajuster les modes si CasLog signale des problèmes d'annotation.</li>
+<li>Exécuter CasLog sur les contrats annotés.</li>
+<li>Compiler <code>build/normalized/&lt;nom&gt;.pl</code> en ASM TNF.</li>
+<li>Exécuter l'ASM dans la VM TNF Python.</li>
+<li>Compiler <code>build/normalized/&lt;nom&gt;.pl</code> en classes Java via Prolog Cafe.</li>
+<li>Exécuter les classes générées sur la JVM.</li>
+<li>Extraire les rapports finaux dans <code>results/</code>.</li>
+</ol>
+<h2 id="entrees-et-sorties">Entrées et sorties<a class="headerlink" href="#entrees-et-sorties" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><code>data/source/</code></dt>
+<dd>contrats source traités par le pipeline. Les fichiers <code>.itf</code> associés
+complètent les contrats pour Ciao/CiaoPP.</dd>
+<dt><code>build/executable/</code></dt>
+<dd>première sortie Prolog stable après expansion, nettoyage et transformation.</dd>
+<dt><code>build/normalized/</code></dt>
+<dd>forme normalisée commune avant bifurcation. C'est l'entrée directe de TNF.</dd>
+<dt><code>build/annotated/</code></dt>
+<dd>version dérivée de <code>build/normalized/</code>, enrichie avec <code>mode/2</code> et <code>measure/2</code>
+pour CasLog.</dd>
+<dt><code>build/tnf_asm/</code></dt>
+<dd>assembleur TNF produit depuis <code>build/normalized/</code>.</dd>
+<dt><code>build/prolog_cafe_src/</code> et <code>build/prolog_cafe_classes/</code></dt>
+<dd>code source et bytecode Java générés par Prolog Cafe depuis <code>build/normalized/</code>.</dd>
+<dt><code>results/</code></dt>
+<dd>rapports consolidés CasLog, TNF, Prolog Cafe, et diff entre étapes publiques.</dd>
+<dt><code>site/</code></dt>
+<dd>documentation HTML générée depuis <code>docs/</code> et <code>mkdocs.yml</code>.</dd>
+</dl>
+<p>Les dossiers <code>site/</code>, <code>build/</code> et <code>results/</code> contiennent des artefacts générés.
+La source de vérité reste <code>src/</code> pour la logique du pipeline et <code>docs/</code> pour la
+documentation.</p>
+<h2 id="architecture-du-projet">Architecture du projet<a class="headerlink" href="#architecture-du-projet" title="Permanent link">&para;</a></h2>
+<p>Cette vue montre les dossiers à connaître pour utiliser et maintenir le
+pipeline. Elle ne cherche pas à détailler les sous-projets embarqués ligne par
+ligne.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ciaoimp_pipeline/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── README.md
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├── INSTALLATION_UBUNTU.md
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├── mkdocs.yml
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>├── pipeline.py
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>├── run_pipeline.sh
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>├── run_tnf.sh
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>├── run_tnf.py
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>├── data/
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   └── source/
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│       ├── *.pl
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│       └── *.itf
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>├── docs/
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>│   ├── index.md
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│   ├── prerequisites.md
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│   ├── architecture.md
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>│   ├── pipeline-guide.md
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│   ├── assets/
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│   │   ├── pipeline-flow.dot
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>│   │   └── pipeline-flow.png
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>│   └── api/
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>├── src/
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>│   ├── pipeline/
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>│   ├── cleaning/
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>│   ├── annotation/
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>│   ├── transforms/
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>│   ├── results/
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>│   └── utils/
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>├── tools/
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>│   ├── caslog/
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>│   ├── LogicTransformers/
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>│   └── transform.pl
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>├── build/
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>│   ├── executable/
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>│   ├── normalized/
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>│   ├── annotated/
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>│   ├── tnf_asm/
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>│   ├── prolog_cafe_src/
+<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>│   ├── prolog_cafe_am/
+<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>│   └── prolog_cafe_classes/
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>├── results/
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>└── site/
+</code></pre></div>
+<p>Les chemins racine (<code>pipeline.py</code>, <code>run_pipeline.sh</code>, <code>run_tnf.sh</code>) sont les
+points d'entrée utilisateur. <code>src/</code> contient la logique maintenue du pipeline.
+<code>tools/</code> contient les dépendances embarquées. <code>build/</code>, <code>results/</code> et <code>site/</code>
+sont générés par l'exécution ou par MkDocs.</p>
+<h2 id="organisation-de-src">Organisation de <code>src/</code><a class="headerlink" href="#organisation-de-src" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><code>src/pipeline/</code></dt>
+<dd>orchestration, résolution des chemins, lancement des outils externes et
+enchaînement complet du pipeline.</dd>
+</dl>
+<p>Ce paquet contient le squelette d'exécution. Il ne réécrit pas directement les
+contrats : il choisit les entrées, prépare les dossiers de sortie, appelle les
+transformations Python/Prolog, puis agrège les résultats.</p>
+<ul>
+<li><code>paths.py</code> définit le contrat de fichiers du pipeline avec la classe
+  <code>PipelinePaths</code>. Tous les chemins publics (<code>data/source/</code>, <code>build/</code>,
+  <code>results/</code>, <code>tools/</code>, CasLog, TNF) sont dérivés de la racine du projet. Cela
+  évite que les autres modules reconstruisent les mêmes chemins à la main.</li>
+<li><code>commands.py</code> fournit deux primitives d'exécution : <code>run_checked</code>, pour les
+  commandes qui doivent réussir, et <code>run_capture</code>, pour les outils dont on veut
+  conserver la sortie même en cas d'erreur partielle. C'est ce qui permet au
+  runner d'écrire les journaux CasLog/TNF dans <code>results/</code>.</li>
+<li><code>runner.py</code> contient <code>PipelineRunner</code>, le cœur opérationnel. Pour chaque
+  contrat, <code>process_file</code> crée un dossier temporaire, lance CiaoPP, applique les
+  nettoyages, écrit <code>build/executable/</code>, normalise vers <code>build/normalized/</code>,
+  puis produit <code>build/annotated/</code> si CasLog est activé. Les étapes globales
+  <code>run_caslog_results</code>, <code>run_tnf_results</code> et <code>write_stage_diff</code> travaillent
+  ensuite sur les contrats qui ont réussi.</li>
+<li><code>tnf.py</code> est un point d'entrée spécialisé pour rejouer seulement TNF. Il lit
+  les noms demandés dans <code>build/normalized/</code>, puis réutilise
+  <code>PipelineRunner.run_tnf_results</code> pour produire les mêmes fichiers que le
+  pipeline complet.</li>
+</ul>
+<dl>
+<dt><code>src/cleaning/</code></dt>
+<dd>transformation du Prolog vers une forme stable et analysable.</dd>
+</dl>
+<p>Cette couche transforme progressivement une sortie issue d'outils en un Prolog
+plus régulier. Elle travaille surtout sur du texte Prolog, avec des parseurs
+locaux limités aux formes produites par le pipeline.</p>
+<ul>
+<li><code>expand/</code> convertit la sortie CiaoPP en Prolog exploitable. Le module découpe
+  la sortie expansée, reconstruit les clauses utiles et normalise certains
+  détails syntaxiques avant le passage vers CasLog/TNF.</li>
+<li><code>destate/</code> aplatit les arguments de type état. Le module détecte les positions
+  qui portent des wrappers comme <code>state(...)</code>, propage cette information entre
+  prédicats et appels partageant les mêmes variables, puis remplace ces wrappers
+  par des arguments Prolog ordinaires.</li>
+<li><code>fix_dlist/</code> traite certains motifs de listes différentielles. <code>detect.py</code>
+  repère les couples d'arguments qui représentent une liste ouverte, puis
+  <code>rewrite.py</code> simplifie les clauses et les appels concernés. Cette étape
+  renvoie aussi des indications utilisées ensuite par l'annotation.</li>
+<li><code>normalize/</code> orchestre les deux passes publiques de normalisation :
+  <code>destate_file</code>, puis <code>fix_dlist_file</code>. Le fichier intermédiaire produit par
+  <code>destate</code> reste temporaire ; seule la sortie finale est publiée dans
+  <code>build/normalized/</code>.</li>
+</ul>
+<dl>
+<dt><code>src/annotation/</code></dt>
+<dd>préparation de l'entrée CasLog.</dd>
+</dl>
+<p>Cette couche part de <code>build/normalized/</code> et produit la version réellement
+envoyée à CasLog dans <code>build/annotated/</code>.</p>
+<ul>
+<li><code>annotate/</code> analyse les clauses normalisées, infère des signatures de
+  prédicats, choisit des modes et ajoute les directives <code>mode/2</code> et <code>measure/2</code>
+  attendues par CasLog. Les indications produites par <code>fix_dlist</code> peuvent
+  modifier certains modes pour refléter les réécritures de listes.</li>
+<li><code>demote_modes.py</code> lance CasLog sur le fichier annoté, lit les erreurs de mode,
+  puis remplace certains <code>+</code> par <code>-</code> jusqu'à obtenir une annotation plus robuste.
+  Cette correction se fait en boucle bornée pour éviter de figer une hypothèse
+  trop optimiste dans <code>build/annotated/</code>.</li>
+</ul>
+<dl>
+<dt><code>src/transforms/</code></dt>
+<dd>préparation Prolog avant analyse CasLog.</dd>
+</dl>
+<p>Cette couche intervient avant <code>build/executable/</code>. Elle prépare une forme que
+CasLog et les étapes suivantes peuvent relire sans dépendre directement de la
+syntaxe CiaoMoka expansée.</p>
+<ul>
+<li><code>caslog_clean.py</code> effectue un pré-nettoyage textuel. Il retire les directives
+  Prolog inutiles pour CasLog et renomme certains atomes quotés contenant <code>/</code> ou
+  <code>$disj</code>, car ces formes compliquent la relecture par les transformateurs.</li>
+<li><code>caslog_transform.pl</code> est le point d'entrée Prolog appelé par le runner via
+  SWI-Prolog. Dans l'état actuel du dépôt, il charge <code>tools/transform.pl</code>, qui
+  réalise la transformation principale : réécriture de <code>length/2</code>, extraction
+  de conditions/disjonctions vers des prédicats auxiliaires, transformation de
+  certains tests d'égalité ou d'inégalité, et injection de prédicats auxiliaires
+  manquants si le programme final en a besoin.</li>
+</ul>
+<dl>
+<dt><code>src/results/</code></dt>
+<dd>extraction et condensation des sorties brutes.</dd>
+</dl>
+<p>Cette couche ne modifie pas les contrats. Elle rend lisibles les sorties
+produites par les outils externes et par les étapes publiques du pipeline.</p>
+<ul>
+<li><code>extract.py</code> lit <code>results/caslog_full_results.txt</code>, repère les blocs par
+  contrat et conserve les fonctions de temps des prédicats jugés importants. Le
+  résultat compact est écrit dans <code>results/caslog_important_results.txt</code>.</li>
+<li><code>extract_tnf.py</code> lit <code>results/tnf_results.txt</code>, extrait les lignes <code>ANSWER</code>
+  et le total final, puis écrit une synthèse dans
+  <code>results/tnf_important_results.txt</code>.</li>
+<li><code>stage_diff.py</code> compare les fichiers générés entre <code>data/source/</code>,
+  <code>build/executable/</code>, <code>build/normalized/</code> et <code>build/annotated/</code>. Il écrit les
+  statistiques et les diffs textuels dans <code>results/stage_diffs.txt</code>. Quand
+  CasLog est désactivé, le runner limite automatiquement la comparaison aux
+  étapes réellement produites.</li>
+</ul>
+<dl>
+<dt><code>src/utils/</code></dt>
+<dd>fonctions partagées de manipulation textuelle Prolog.</dd>
+</dl>
+<p>Le module principal, <code>prolog.py</code>, fournit les primitives utilisées par les
+passes de nettoyage et d'annotation : découpage de clauses, séparation
+tête/corps, découpage des arguments au niveau supérieur, détection de variables,
+relecture simple d'appels <code>predicat(...)</code>, sérialisation d'appels et génération
+de noms de variables fraîches. Ce n'est pas un parseur Prolog complet ; il est
+calibré pour les formes produites et consommées par ce pipeline.</p>
+<h2 id="outils-embarques">Outils embarqués<a class="headerlink" href="#outils-embarques" title="Permanent link">&para;</a></h2>
+<p>Le pipeline s'appuie sur ces composants externes :</p>
+<ul>
+<li><code>ciaopp</code> : expansion des contrats source.</li>
+<li><code>swipl</code> : exécution des transformations Prolog locales et compilation TNF.</li>
+<li><code>gprolog</code> : environnement d'exécution utilisé par CasLog.</li>
+<li><code>tools/caslog/caslog.gprolog</code> : point d'entrée CasLog appelé par le pipeline.</li>
+<li><code>tools/LogicTransformers/tnf.pro</code> : compilation du programme normalisé en ASM
+  TNF.</li>
+<li><code>tools/LogicTransformers/tnf.py</code> : VM Python qui exécute l'ASM TNF.</li>
+<li><code>tools/prolog_cafe/plcafe.jar</code> : traducteur de Prolog vers Java et runtime.</li>
+<li><code>tools/transform.pl</code> : transformateur Prolog encore utilisé indirectement via
+  <code>src/transforms/caslog_transform.pl</code>.</li>
+</ul>
+<p>Le pipeline ne documente pas les composants internes de CasLog ni tout le fork
+LogicTransformers. Pour comprendre le comportement global, lire d'abord
+<code>pipeline.py</code>, <code>src/pipeline/runner.py</code> et les modules <code>src/</code>.</p>
+<h2 id="invariants-utiles">Invariants utiles<a class="headerlink" href="#invariants-utiles" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>build/executable/</code> précède les deux familles d'analyse.</li>
+<li><code>build/normalized/</code> est l'entrée directe de TNF.</li>
+<li><code>build/annotated/</code> est l'entrée directe de CasLog.</li>
+<li><code>build/</code> et <code>results/</code> sont régénérables.</li>
+<li>Les chemins importants sont centralisés dans <code>src.pipeline.paths</code>.</li>
+<li>Les fichiers de documentation n'influencent pas l'exécution du pipeline.</li>
+</ul>
+<h2 id="ordre-de-lecture-recommande">Ordre de lecture recommandé<a class="headerlink" href="#ordre-de-lecture-recommande" title="Permanent link">&para;</a></h2>
+<p>Pour maintenir ou étendre le pipeline, lire dans cet ordre :</p>
+<ol>
+<li><code>README.md</code></li>
+<li><code>docs/pipeline-guide.md</code></li>
+<li><code>docs/architecture.md</code></li>
+<li><code>pipeline.py</code></li>
+<li><code>src/pipeline/paths.py</code></li>
+<li><code>src/pipeline/runner.py</code></li>
+<li><code>src/cleaning/expand/transformer.py</code></li>
+<li><code>src/transforms/caslog_transform.pl</code></li>
+<li><code>tools/transform.pl</code></li>
+<li><code>src/cleaning/normalize/__main__.py</code></li>
+<li><code>src/annotation/annotate/__main__.py</code></li>
+<li><code>src/annotation/demote_modes.py</code></li>
+<li><code>src/results/stage_diff.py</code></li>
+<li><code>run_tnf.py</code></li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.suggest", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

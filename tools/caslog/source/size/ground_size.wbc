@@ -1,0 +1,288 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/size/ground_size.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/size/ground_size.pl').
+
+
+predicate(ground_term_size/3,11,static,private,monofile,global,5).
+
+
+clause(ground_term_size(void,_,0),[
+    get_atom(void,0),
+    get_integer(0,2),
+    proceed]).
+
+
+clause(:-(ground_term_size(int,A,B),ground_int(A,B)),[
+    get_atom(int,0),
+    put_value(x(1),0),
+    put_value(x(2),1),
+    execute((ground_int)/2)]).
+
+
+clause(:-(ground_term_size(length,A,B),ground_length(A,B)),[
+    get_atom(length,0),
+    put_value(x(1),0),
+    put_value(x(2),1),
+    execute((ground_length)/2)]).
+
+
+clause(:-(ground_term_size(size,A,B),ground_size(A,B)),[
+    get_atom(size,0),
+    put_value(x(1),0),
+    put_value(x(2),1),
+    execute((ground_size)/2)]).
+
+
+clause(:-(ground_term_size(depth(A),B,C),ground_depth(A,B,C)),[
+    get_structure((depth)/1,0),
+    unify_variable(x(0)),
+    execute((ground_depth)/3)]).
+
+
+predicate(ground_int/2,24,static,private,monofile,global,2).
+
+
+clause(:-(ground_int(A,bot),noninteger(A)),[
+    get_atom(bot,1),
+    execute((noninteger)/1)]).
+
+
+clause(:-(ground_int(A,A),integer(A)),[
+    get_value(x(1),0),
+    put_value(x(1),0),
+    execute((integer)/1)]).
+
+
+predicate(ground_length/2,41,static,private,monofile,global,1).
+
+
+clause(:-(ground_length(A,B),;(->(nonlist_cas(A),=(B,bot)),;(->(==(A,[]),=(B,0)),','(=(A,'.'(_,C)),','(ground_term_size(length,C,D),add(D,1,B)))))),[
+    execute(('$ground_length/2_$aux1')/2)]).
+
+
+predicate('$ground_length/2_$aux1'/2,41,static,private,monofile,local,3).
+
+
+clause(:-('$ground_length/2_$aux1'(A,B),','('$get_cut_level'(C),','(nonlist_cas(A),','('$cut'(C),=(B,bot))))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    call((nonlist_cas)/1),
+    cut(y(1)),
+    put_value(y(0),0),
+    get_atom(bot,0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$ground_length/2_$aux1'(A,B),','('$get_cut_level'(C),','(==(A,[]),','('$cut'(C),=(B,0))))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    put_nil(1),
+    call((==)/2),
+    cut(y(1)),
+    put_value(y(0),0),
+    get_integer(0,0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$ground_length/2_$aux1'(A,B),','(=(A,'.'(_,C)),','(ground_term_size(length,C,D),add(D,1,B)))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_list(0),
+    unify_void(1),
+    unify_variable(x(1)),
+    put_atom(length,0),
+    put_variable(y(1),2),
+    call((ground_term_size)/3),
+    put_unsafe_value(y(1),0),
+    put_integer(1,1),
+    put_value(y(0),2),
+    deallocate,
+    execute((add)/3)]).
+
+
+predicate(ground_size/2,53,static,private,monofile,global,3).
+
+
+clause(:-(ground_size(A,bot),var(A)),[
+    get_atom(bot,1),
+    execute((var)/1)]).
+
+
+clause(:-(ground_size(A,1),atomic(A)),[
+    get_integer(1,1),
+    execute((atomic)/1)]).
+
+
+clause(:-(ground_size(A,B),','(compound_cas(A),','(functor(A,_,C),','(ground_size(C,A,D),add(D,1,B))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call((compound_cas)/1),
+    put_value(y(0),0),
+    put_void(1),
+    put_variable(y(2),2),
+    call((functor)/3),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call((ground_size)/3),
+    put_unsafe_value(y(3),0),
+    put_integer(1,1),
+    put_value(y(1),2),
+    deallocate,
+    execute((add)/3)]).
+
+
+predicate(ground_size/3,63,static,private,monofile,global,2).
+
+
+clause(ground_size(0,_,0),[
+    get_integer(0,0),
+    get_integer(0,2),
+    proceed]).
+
+
+clause(:-(ground_size(A,B,C),','(>(A,0),','(arg(A,B,D),','(ground_size(D,E),','(is(F,-(A,1)),','(ground_size(F,B,G),add(E,G,C))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(3),2),
+    call((arg)/3),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call((ground_size)/2),
+    put_variable(y(5),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(5),0),
+    put_value(y(1),1),
+    put_variable(y(6),2),
+    call((ground_size)/3),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((add)/3)]).
+
+
+predicate(ground_depth/3,75,static,private,monofile,global,3).
+
+
+clause(:-(ground_depth(_,A,bot),var(A)),[
+    get_atom(bot,2),
+    put_value(x(1),0),
+    execute((var)/1)]).
+
+
+clause(:-(ground_depth(_,A,0),atomic(A)),[
+    get_integer(0,2),
+    put_value(x(1),0),
+    execute((atomic)/1)]).
+
+
+clause(:-(ground_depth(A,B,C),','(compound_cas(B),','(functor(B,_,D),','(ground_depth(A,D,B,E),add(E,1,C))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(1),0),
+    call((compound_cas)/1),
+    put_value(y(1),0),
+    put_void(1),
+    put_variable(y(3),2),
+    call((functor)/3),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_value(y(1),2),
+    put_variable(y(4),3),
+    call((ground_depth)/4),
+    put_unsafe_value(y(4),0),
+    put_integer(1,1),
+    put_value(y(2),2),
+    deallocate,
+    execute((add)/3)]).
+
+
+predicate(ground_depth/4,85,static,private,monofile,global,2).
+
+
+clause(ground_depth(_,0,_,bot),[
+    get_integer(0,1),
+    get_atom(bot,3),
+    proceed]).
+
+
+clause(:-(ground_depth(A,B,C,D),','(>(B,0),','(;(->(member_cas(A,B),','(arg(B,C,E),ground_depth(A,E,F))),=(F,bot)),','(is(G,-(B,1)),','(ground_depth(A,G,C,H),maximum(F,H,D)))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(1),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(4),3),
+    call(('$ground_depth/4_$aux1')/4),
+    put_variable(y(5),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(1)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(0),0),
+    put_value(y(5),1),
+    put_value(y(2),2),
+    put_variable(y(6),3),
+    call((ground_depth)/4),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((maximum)/3)]).
+
+
+predicate('$ground_depth/4_$aux1'/4,86,static,private,monofile,local,2).
+
+
+clause(:-('$ground_depth/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(member_cas(A,B),','('$cut'(E),','(arg(B,C,F),ground_depth(A,F,D)))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((member_cas)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(5),2),
+    call((arg)/3),
+    put_value(y(0),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((ground_depth)/3)]).
+
+
+clause(:-('$ground_depth/4_$aux1'(_,_,_,A),=(A,bot)),[
+    get_atom(bot,3),
+    proceed]).

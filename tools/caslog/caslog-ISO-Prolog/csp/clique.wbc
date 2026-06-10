@@ -1,0 +1,1050 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/csp/clique.pl
+% date    : 2 6 2003
+% time    : 10:15:46
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/csp/clique.pl').
+
+
+predicate(number_n_cliques/4,11,static,private,user,3).
+
+
+clause(:-(number_n_cliques('.'(A,[]),B,C,D),','(!,length(B,D))),[
+    get_list(0),
+    unify_void(1),
+    unify_nil,
+    cut(x(4)),
+    put_value(x(1),0),
+    put_value(x(3),1),
+    execute(length/2)]).
+
+
+clause(:-(number_n_cliques('.'(A,'.'(B,[])),C,D,E),','(!,number_2_clique(D,E))),[
+    get_list(0),
+    unify_void(1),
+    unify_list,
+    unify_void(1),
+    unify_nil,
+    cut(x(4)),
+    put_value(x(2),0),
+    put_value(x(3),1),
+    execute(number_2_clique/2)]).
+
+
+clause(:-(number_n_cliques(A,B,C,D),number_n_cliques1(A,B,C,D)),[
+    execute(number_n_cliques1/4)]).
+
+
+predicate(number_n_cliques1/4,18,static,private,user,1).
+
+
+clause(:-(number_n_cliques1('.'(A,B),'.'(domain(A,C),D),'.'(cgraph(A,E),F),G),','(consistency_graph_reduction(C,E,F,[],H),number_n_cliques(B,D,H,G))),[
+    allocate(4),
+    get_variable(y(2),3),
+    get_list(0),
+    unify_variable(x(3)),
+    unify_variable(y(0)),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure(domain/2,0),
+    unify_value(x(3)),
+    unify_variable(x(0)),
+    get_list(2),
+    unify_variable(x(1)),
+    unify_variable(x(2)),
+    get_structure(cgraph/2,1),
+    unify_value(x(3)),
+    unify_variable(x(1)),
+    put_nil(3),
+    put_variable(y(3),4),
+    call(consistency_graph_reduction/5),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(3),2),
+    put_value(y(2),3),
+    deallocate,
+    execute(number_n_cliques/4)]).
+
+
+predicate(number_n_cliques2/4,22,static,private,user,1).
+
+
+clause(:-(number_n_cliques2('.'(A,B),'.'(domain(A,C),D),'.'(cgraph(A,E),F),G),consistency_graph_reduction2(C,E,B,D,F,0,G)),[
+    get_variable(x(6),3),
+    get_list(0),
+    unify_variable(x(7)),
+    unify_variable(x(5)),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(x(3)),
+    get_structure(domain/2,0),
+    unify_value(x(7)),
+    unify_variable(x(0)),
+    get_list(2),
+    unify_variable(x(1)),
+    unify_variable(x(4)),
+    get_structure(cgraph/2,1),
+    unify_value(x(7)),
+    unify_variable(x(1)),
+    put_value(x(5),2),
+    put_integer(0,5),
+    execute(consistency_graph_reduction2/7)]).
+
+
+predicate(number_2_clique/2,28,static,private,user,1).
+
+
+clause(:-(number_2_clique('.'(cgraph(A,B),C),D),number_2_clique2(B,D)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_structure(cgraph/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    execute(number_2_clique2/2)]).
+
+
+predicate(number_2_clique2/2,31,static,private,user,1).
+
+
+clause(:-(number_2_clique2('.'(cvar(A,B),C),D),number_2_clique3(B,0,D)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_structure(cvar/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    put_value(x(1),2),
+    put_integer(0,1),
+    execute(number_2_clique3/3)]).
+
+
+predicate(number_2_clique3/3,34,static,private,user,2).
+
+
+clause(number_2_clique3([],A,A),[
+    get_nil(0),
+    get_value(x(2),1),
+    proceed]).
+
+
+clause(:-(number_2_clique3('.'(cedge(A,B),C),D,E),','(number_2_clique4(B,0,F),','(is(G,+(D,F)),number_2_clique3(C,G,E)))),[
+    allocate(5),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(cedge/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    put_integer(0,1),
+    put_variable(y(3),2),
+    call(number_2_clique4/3),
+    put_variable(y(4),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(1)),
+    unify_local_value(y(3)),
+    call((is)/2),
+    put_value(y(0),0),
+    put_unsafe_value(y(4),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(number_2_clique3/3)]).
+
+
+predicate(number_2_clique4/3,40,static,private,user,2).
+
+
+clause(number_2_clique4([],A,A),[
+    get_nil(0),
+    get_value(x(2),1),
+    proceed]).
+
+
+clause(:-(number_2_clique4('.'(weight(A,B),C),D,E),','(is(F,+(B,D)),number_2_clique4(C,F,E))),[
+    allocate(3),
+    get_variable(y(1),2),
+    get_variable(x(2),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(weight/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    put_structure((+)/2,1),
+    unify_value(x(0)),
+    unify_local_value(x(2)),
+    put_variable(y(2),0),
+    call((is)/2),
+    put_value(y(0),0),
+    put_unsafe_value(y(2),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(number_2_clique4/3)]).
+
+
+predicate(consistency_graph_reduction/5,48,static,private,user,2).
+
+
+clause(consistency_graph_reduction([],A,B,C,C),[
+    get_nil(0),
+    get_value(x(4),3),
+    proceed]).
+
+
+clause(:-(consistency_graph_reduction('.'(A,B),C,D,E,F),','(adjacent_nodes(C,A,G),','(adjacent_graph(G,D,H),','(graph_addition(E,H,I),consistency_graph_reduction(B,C,D,I,F))))),[
+    allocate(8),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    put_variable(y(5),2),
+    call(adjacent_nodes/3),
+    put_value(y(5),0),
+    put_value(y(2),1),
+    put_variable(y(6),2),
+    call(adjacent_graph/3),
+    put_value(y(3),0),
+    put_value(y(6),1),
+    put_variable(y(7),2),
+    call(graph_addition/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_unsafe_value(y(7),3),
+    put_value(y(4),4),
+    deallocate,
+    execute(consistency_graph_reduction/5)]).
+
+
+predicate(consistency_graph_reduction2/7,55,static,private,user,2).
+
+
+clause(consistency_graph_reduction2([],A,B,C,D,E,E),[
+    get_nil(0),
+    get_value(x(6),5),
+    proceed]).
+
+
+clause(:-(consistency_graph_reduction2('.'(A,B),C,D,E,F,G,H),','(write(A),','(tab(1),','(adjacent_nodes(C,A,I),','(adjacent_graph(I,F,J),','(number_n_cliques(D,E,J,K),','(write(K),','(nl,','(is(L,+(G,K)),consistency_graph_reduction2(B,C,D,E,F,L,H)))))))))),[
+    allocate(12),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_variable(y(4),3),
+    get_variable(y(5),4),
+    get_variable(y(6),5),
+    get_variable(y(7),6),
+    put_value(y(0),0),
+    call(write/1),
+    put_integer(1,0),
+    call(tab/1),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_variable(y(8),2),
+    call(adjacent_nodes/3),
+    put_value(y(8),0),
+    put_value(y(5),1),
+    put_variable(y(9),2),
+    call(adjacent_graph/3),
+    put_value(y(3),0),
+    put_value(y(4),1),
+    put_value(y(9),2),
+    put_variable(y(10),3),
+    call(number_n_cliques/4),
+    put_value(y(10),0),
+    call(write/1),
+    call(nl/0),
+    put_variable(y(11),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(6)),
+    unify_local_value(y(10)),
+    call((is)/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    put_value(y(5),4),
+    put_unsafe_value(y(11),5),
+    put_value(y(7),6),
+    deallocate,
+    execute(consistency_graph_reduction2/7)]).
+
+
+predicate(adjacent_nodes/3,68,static,private,user,2).
+
+
+clause(adjacent_nodes([],A,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(adjacent_nodes('.'(cvar(A,B),C),D,'.'(E,F)),','(adjacent_nodes1(B,D,E),adjacent_nodes(C,D,F))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(cvar/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    put_value(y(1),1),
+    call(adjacent_nodes1/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(adjacent_nodes/3)]).
+
+
+predicate(adjacent_nodes1/3,73,static,private,user,3).
+
+
+clause(:-(adjacent_nodes1([],A,[]),!),[
+    get_nil(0),
+    get_nil(2),
+    cut(x(3)),
+    proceed]).
+
+
+clause(:-(adjacent_nodes1('.'(cedge(A,B),C),D,B),','(=:=(A,D),!)),[
+    allocate(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_structure(cedge/2,0),
+    unify_variable(x(0)),
+    unify_local_value(x(2)),
+    get_variable(y(0),3),
+    call((=:=)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(adjacent_nodes1('.'(cedge(A,B),C),D,E),','(=\=(A,D),adjacent_nodes1(C,D,E))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(cedge/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_value(y(1),1),
+    call((=\=)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(adjacent_nodes1/3)]).
+
+
+predicate(adjacent_graph/3,83,static,private,user,2).
+
+
+clause(adjacent_graph('.'(A,[]),B,B),[
+    get_list(0),
+    unify_void(1),
+    unify_nil,
+    get_value(x(2),1),
+    proceed]).
+
+
+clause(:-(adjacent_graph('.'(A,B),'.'(cgraph(C,D),E),'.'(cgraph(C,F),G)),','(adjacent_edges(B,A,D,F),adjacent_graph(B,E,G))),[
+    allocate(3),
+    get_list(0),
+    unify_variable(x(4)),
+    unify_variable(y(0)),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure(cgraph/2,0),
+    unify_variable(x(1)),
+    unify_variable(x(0)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    get_structure(cgraph/2,2),
+    unify_value(x(1)),
+    unify_variable(x(3)),
+    put_value(x(4),1),
+    put_value(x(0),2),
+    put_value(y(0),0),
+    call(adjacent_edges/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(adjacent_graph/3)]).
+
+
+predicate(adjacent_edges/4,91,static,private,user,2).
+
+
+clause(adjacent_edges([],A,B,[]),[
+    get_nil(0),
+    get_nil(3),
+    proceed]).
+
+
+clause(:-(adjacent_edges('.'(A,B),C,'.'(cvar(D,E),F),'.'(cvar(D,G),H)),','(adjacent_edges1(C,A,E,G),adjacent_edges(B,C,F,H))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure(cvar/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(2)),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_variable(y(3)),
+    get_structure(cvar/2,3),
+    unify_value(x(0)),
+    unify_variable(x(3)),
+    put_value(y(1),0),
+    call(adjacent_edges1/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(adjacent_edges/4)]).
+
+
+predicate(adjacent_edges1/4,96,static,private,user,5).
+
+
+clause(:-(adjacent_edges1([],A,B,[]),!),[
+    get_nil(0),
+    get_nil(3),
+    cut(x(4)),
+    proceed]).
+
+
+clause(:-(adjacent_edges1(A,B,[],[]),','(\==(A,[]),!)),[
+    allocate(1),
+    get_nil(2),
+    get_nil(3),
+    get_variable(y(0),4),
+    put_nil(1),
+    call((\==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(adjacent_edges1('.'(weight(A,B),C),D,'.'(cedge(E,F),G),H),','(=:=(A,E),','(!,','(adjacent_edges2(D,F,B,I),','(;(->(==(I,[]),=(H,J)),=(H,'.'(cedge(E,I),J))),adjacent_edges1(C,D,G,J)))))),[
+    allocate(10),
+    get_variable(y(2),1),
+    get_list(2),
+    unify_variable(x(1)),
+    unify_variable(y(5)),
+    get_structure(cedge/2,1),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    get_variable(y(6),3),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure(weight/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_variable(y(7),4),
+    put_value(y(3),1),
+    call((=:=)/2),
+    cut(y(7)),
+    put_value(y(2),0),
+    put_value(y(4),1),
+    put_value(y(0),2),
+    put_variable(y(8),3),
+    call(adjacent_edges2/4),
+    put_value(y(8),0),
+    put_value(y(6),1),
+    put_variable(y(9),2),
+    put_value(y(3),3),
+    call('$adjacent_edges1/4_$aux1'/4),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(5),2),
+    put_unsafe_value(y(9),3),
+    deallocate,
+    execute(adjacent_edges1/4)]).
+
+
+clause(:-(adjacent_edges1('.'(weight(A,B),C),D,'.'(cedge(E,F),G),H),','(<(A,E),','(!,adjacent_edges1(C,D,'.'(cedge(E,F),G),H)))),[
+    allocate(7),
+    get_variable(y(1),1),
+    get_list(2),
+    unify_variable(x(1)),
+    unify_variable(y(4)),
+    get_structure(cedge/2,1),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_variable(y(5),3),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(weight/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_variable(y(6),4),
+    put_value(y(2),1),
+    call((<)/2),
+    cut(y(6)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(cedge/2,3),
+    unify_value(y(2)),
+    unify_value(y(3)),
+    put_list(2),
+    unify_value(x(3)),
+    unify_value(y(4)),
+    put_value(y(5),3),
+    deallocate,
+    execute(adjacent_edges1/4)]).
+
+
+clause(:-(adjacent_edges1('.'(weight(A,B),C),D,'.'(cedge(E,F),G),H),','(>(A,E),adjacent_edges1('.'(weight(A,B),C),D,G,H))),[
+    allocate(6),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure(weight/2,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(3),1),
+    get_variable(y(5),3),
+    get_list(2),
+    unify_variable(x(0)),
+    unify_variable(y(4)),
+    get_structure(cedge/2,0),
+    unify_variable(x(1)),
+    unify_void(1),
+    put_value(y(0),0),
+    call((>)/2),
+    put_structure(weight/2,1),
+    unify_value(y(0)),
+    unify_value(y(1)),
+    put_list(0),
+    unify_value(x(1)),
+    unify_value(y(2)),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    deallocate,
+    execute(adjacent_edges1/4)]).
+
+
+predicate('$adjacent_edges1/4_$aux1'/4,98,static,private,user,2).
+
+
+clause(:-('$adjacent_edges1/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,[]),','('$cut'(E),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    put_nil(1),
+    call((==)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$adjacent_edges1/4_$aux1'(A,B,C,D),=(B,'.'(cedge(D,A),C))),[
+    get_list(1),
+    unify_variable(x(1)),
+    unify_local_value(x(2)),
+    get_structure(cedge/2,1),
+    unify_local_value(x(3)),
+    unify_local_value(x(0)),
+    proceed]).
+
+
+predicate(adjacent_edges2/4,112,static,private,user,5).
+
+
+clause(:-(adjacent_edges2([],A,B,[]),!),[
+    get_nil(0),
+    get_nil(3),
+    cut(x(4)),
+    proceed]).
+
+
+clause(:-(adjacent_edges2(A,[],B,[]),','(\==(A,[]),!)),[
+    allocate(1),
+    get_nil(1),
+    get_nil(3),
+    get_variable(y(0),4),
+    put_nil(1),
+    call((\==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(adjacent_edges2('.'(weight(A,B),C),'.'(weight(D,E),F),G,'.'(weight(D,H),I)),','(=:=(A,D),','(!,','(min(B,E,J),','(min(J,G,H),adjacent_edges2(C,F,G,I)))))),[
+    allocate(9),
+    get_variable(y(4),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure(weight/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(3)),
+    get_structure(weight/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(2)),
+    get_list(3),
+    unify_variable(x(2)),
+    unify_variable(y(6)),
+    get_structure(weight/2,2),
+    unify_value(x(1)),
+    unify_variable(y(5)),
+    get_variable(y(7),4),
+    call((=:=)/2),
+    cut(y(7)),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_variable(y(8),2),
+    call(min/3),
+    put_value(y(8),0),
+    put_value(y(4),1),
+    put_value(y(5),2),
+    call(min/3),
+    put_value(y(1),0),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_value(y(6),3),
+    deallocate,
+    execute(adjacent_edges2/4)]).
+
+
+clause(:-(adjacent_edges2('.'(weight(A,B),C),'.'(weight(D,E),F),G,H),','(<(A,D),','(!,adjacent_edges2(C,'.'(weight(D,E),F),G,H)))),[
+    allocate(7),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(3)),
+    get_structure(weight/2,1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_variable(y(4),2),
+    get_variable(y(5),3),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(weight/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_variable(y(6),4),
+    put_value(y(1),1),
+    call((<)/2),
+    cut(y(6)),
+    put_value(y(0),0),
+    put_structure(weight/2,2),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_list(1),
+    unify_value(x(2)),
+    unify_value(y(3)),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    deallocate,
+    execute(adjacent_edges2/4)]).
+
+
+clause(:-(adjacent_edges2('.'(weight(A,B),C),'.'(weight(D,E),F),G,H),','(>(A,D),adjacent_edges2('.'(weight(A,B),C),F,G,H))),[
+    allocate(6),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure(weight/2,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(4),2),
+    get_variable(y(5),3),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure(weight/2,0),
+    unify_variable(x(1)),
+    unify_void(1),
+    put_value(y(0),0),
+    call((>)/2),
+    put_structure(weight/2,1),
+    unify_value(y(0)),
+    unify_value(y(1)),
+    put_list(0),
+    unify_value(x(1)),
+    unify_value(y(2)),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    deallocate,
+    execute(adjacent_edges2/4)]).
+
+
+predicate(graph_addition/3,128,static,private,user,3).
+
+
+clause(:-(graph_addition([],A,A),!),[
+    get_nil(0),
+    get_value(x(2),1),
+    cut(x(3)),
+    proceed]).
+
+
+clause(:-(graph_addition(A,[],A),','(\==(A,[]),!)),[
+    allocate(1),
+    get_nil(1),
+    get_value(x(2),0),
+    get_variable(y(0),3),
+    put_value(x(2),0),
+    put_nil(1),
+    call((\==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(graph_addition('.'(cgraph(A,B),C),'.'(cgraph(A,D),E),'.'(cgraph(A,F),G)),','(var_addition(B,D,F),graph_addition(C,E,G))),[
+    allocate(3),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(cgraph/2,0),
+    unify_variable(x(3)),
+    unify_variable(x(0)),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_structure(cgraph/2,1),
+    unify_value(x(3)),
+    unify_variable(x(1)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    get_structure(cgraph/2,2),
+    unify_value(x(3)),
+    unify_variable(x(2)),
+    call(var_addition/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(graph_addition/3)]).
+
+
+predicate(var_addition/3,137,static,private,user,2).
+
+
+clause(var_addition([],A,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(var_addition('.'(cvar(A,B),C),'.'(cvar(A,D),E),'.'(cvar(A,F),G)),','(edges_addition(B,D,F),var_addition(C,E,G))),[
+    allocate(3),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(cvar/2,0),
+    unify_variable(x(3)),
+    unify_variable(x(0)),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_structure(cvar/2,1),
+    unify_value(x(3)),
+    unify_variable(x(1)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    get_structure(cvar/2,2),
+    unify_value(x(3)),
+    unify_variable(x(2)),
+    call(edges_addition/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(var_addition/3)]).
+
+
+predicate(edges_addition/3,145,static,private,user,5).
+
+
+clause(:-(edges_addition([],A,A),!),[
+    get_nil(0),
+    get_value(x(2),1),
+    cut(x(3)),
+    proceed]).
+
+
+clause(:-(edges_addition(A,[],A),','(\==(A,[]),!)),[
+    allocate(1),
+    get_nil(1),
+    get_value(x(2),0),
+    get_variable(y(0),3),
+    put_value(x(2),0),
+    put_nil(1),
+    call((\==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(edges_addition('.'(cedge(A,B),C),'.'(cedge(D,E),F),'.'(cedge(A,G),H)),','(=:=(A,D),','(!,','(edge_addition(B,E,G),edges_addition(C,F,H))))),[
+    allocate(7),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure(cedge/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(3)),
+    get_structure(cedge/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(2)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(5)),
+    get_structure(cedge/2,2),
+    unify_value(x(0)),
+    unify_variable(y(4)),
+    get_variable(y(6),3),
+    call((=:=)/2),
+    cut(y(6)),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(4),2),
+    call(edge_addition/3),
+    put_value(y(1),0),
+    put_value(y(3),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(edges_addition/3)]).
+
+
+clause(:-(edges_addition('.'(cedge(A,B),C),'.'(cedge(D,E),F),'.'(cedge(A,B),G)),','(<(A,D),','(!,edges_addition(C,'.'(cedge(D,E),F),G)))),[
+    allocate(6),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(3)),
+    get_structure(cedge/2,1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(cedge/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(4)),
+    get_structure(cedge/2,2),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    get_variable(y(5),3),
+    put_value(y(1),1),
+    call((<)/2),
+    cut(y(5)),
+    put_value(y(0),0),
+    put_structure(cedge/2,2),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_list(1),
+    unify_value(x(2)),
+    unify_value(y(3)),
+    put_value(y(4),2),
+    deallocate,
+    execute(edges_addition/3)]).
+
+
+clause(:-(edges_addition('.'(cedge(A,B),C),'.'(cedge(D,E),F),'.'(cedge(D,E),G)),','(>(A,D),edges_addition('.'(cedge(A,B),C),F,G))),[
+    allocate(5),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure(cedge/2,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure(cedge/2,0),
+    unify_variable(x(1)),
+    unify_variable(x(0)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(4)),
+    get_structure(cedge/2,2),
+    unify_value(x(1)),
+    unify_value(x(0)),
+    put_value(y(0),0),
+    call((>)/2),
+    put_structure(cedge/2,1),
+    unify_value(y(0)),
+    unify_value(y(1)),
+    put_list(0),
+    unify_value(x(1)),
+    unify_value(y(2)),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    deallocate,
+    execute(edges_addition/3)]).
+
+
+predicate(edge_addition/3,158,static,private,user,5).
+
+
+clause(:-(edge_addition([],A,A),!),[
+    get_nil(0),
+    get_value(x(2),1),
+    cut(x(3)),
+    proceed]).
+
+
+clause(:-(edge_addition(A,[],A),','(\==(A,[]),!)),[
+    allocate(1),
+    get_nil(1),
+    get_value(x(2),0),
+    get_variable(y(0),3),
+    put_value(x(2),0),
+    put_nil(1),
+    call((\==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(edge_addition('.'(weight(A,B),C),'.'(weight(D,E),F),'.'(weight(A,G),H)),','(=:=(A,D),','(!,','(is(G,+(B,E)),edge_addition(C,F,H))))),[
+    allocate(7),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure(weight/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(3)),
+    get_structure(weight/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(2)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(5)),
+    get_structure(weight/2,2),
+    unify_value(x(0)),
+    unify_variable(y(4)),
+    get_variable(y(6),3),
+    call((=:=)/2),
+    cut(y(6)),
+    put_value(y(4),0),
+    put_structure((+)/2,1),
+    unify_value(y(0)),
+    unify_value(y(2)),
+    call((is)/2),
+    put_value(y(1),0),
+    put_value(y(3),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(edge_addition/3)]).
+
+
+clause(:-(edge_addition('.'(weight(A,B),C),'.'(weight(D,E),F),'.'(weight(A,B),G)),','(<(A,D),','(!,edge_addition(C,'.'(weight(D,E),F),G)))),[
+    allocate(6),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(3)),
+    get_structure(weight/2,1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(weight/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(4)),
+    get_structure(weight/2,2),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    get_variable(y(5),3),
+    put_value(y(1),1),
+    call((<)/2),
+    cut(y(5)),
+    put_value(y(0),0),
+    put_structure(weight/2,2),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_list(1),
+    unify_value(x(2)),
+    unify_value(y(3)),
+    put_value(y(4),2),
+    deallocate,
+    execute(edge_addition/3)]).
+
+
+clause(:-(edge_addition('.'(weight(A,B),C),'.'(weight(D,E),F),'.'(weight(D,E),G)),','(>(A,D),edge_addition('.'(weight(A,B),C),F,G))),[
+    allocate(5),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure(weight/2,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure(weight/2,0),
+    unify_variable(x(1)),
+    unify_variable(x(0)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(4)),
+    get_structure(weight/2,2),
+    unify_value(x(1)),
+    unify_value(x(0)),
+    put_value(y(0),0),
+    call((>)/2),
+    put_structure(weight/2,1),
+    unify_value(y(0)),
+    unify_value(y(1)),
+    put_list(0),
+    unify_value(x(1)),
+    unify_value(y(2)),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    deallocate,
+    execute(edge_addition/3)]).

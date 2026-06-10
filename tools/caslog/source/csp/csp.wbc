@@ -1,0 +1,824 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/csp/csp.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/csp/csp.pl').
+
+
+predicate(csp/4,11,static,private,monofile,global,2).
+
+
+clause(csp(_,_,[],0),[
+    get_nil(2),
+    get_integer(0,3),
+    proceed]).
+
+
+clause(:-(csp(A,B,C,D),','(\==(C,[]),','(rename_variables(A,1,E,B,F,C,G),','(simplify_constraints(G,H),','(node_consistency(E,F,I,H,J),','(build_consistency_graph(E,F,I,J,K),number_n_cliques(E,I,K,D))))))),[
+    allocate(11),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(2),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_integer(1,1),
+    put_variable(y(4),2),
+    put_value(y(1),3),
+    put_variable(y(5),4),
+    put_value(y(2),5),
+    put_variable(y(6),6),
+    call((rename_variables)/7),
+    put_value(y(6),0),
+    put_variable(y(7),1),
+    call((simplify_constraints)/2),
+    put_value(y(4),0),
+    put_value(y(5),1),
+    put_variable(y(8),2),
+    put_value(y(7),3),
+    put_variable(y(9),4),
+    call((node_consistency)/5),
+    put_value(y(4),0),
+    put_value(y(5),1),
+    put_value(y(8),2),
+    put_value(y(9),3),
+    put_variable(y(10),4),
+    call((build_consistency_graph)/5),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(8),1),
+    put_unsafe_value(y(10),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((number_n_cliques)/4)]).
+
+
+predicate(rename_variables/7,33,static,private,monofile,global,2).
+
+
+clause(rename_variables([],_,[],_,[],A,A),[
+    get_nil(0),
+    get_nil(2),
+    get_nil(4),
+    get_value(x(6),5),
+    proceed]).
+
+
+clause(:-(rename_variables('.'(A,B),C,'.'($(C),D),'.'(-(E,F),G),'.'(H,I),J,K),','(=(H,domain($(C),E,F)),','(substitute(J,A,$(C),L),','(is(M,+(C,1)),rename_variables(B,M,D,G,I,L,K))))),[
+    allocate(8),
+    get_variable(y(1),1),
+    get_list(2),
+    unify_variable(x(1)),
+    unify_variable(y(2)),
+    get_structure(($)/1,1),
+    unify_local_value(y(1)),
+    get_variable(y(5),6),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    get_list(3),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure((-)/2,0),
+    unify_variable(x(3)),
+    unify_variable(x(2)),
+    get_list(4),
+    unify_variable(x(0)),
+    unify_variable(y(4)),
+    get_structure((domain)/3,0),
+    unify_variable(x(0)),
+    unify_value(x(3)),
+    unify_value(x(2)),
+    get_structure(($)/1,0),
+    unify_local_value(y(1)),
+    put_value(x(5),0),
+    put_structure(($)/1,2),
+    unify_local_value(y(1)),
+    put_variable(y(6),3),
+    call((substitute)/4),
+    put_variable(y(7),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(1)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(0),0),
+    put_unsafe_value(y(7),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_unsafe_value(y(6),5),
+    put_value(y(5),6),
+    deallocate,
+    execute((rename_variables)/7)]).
+
+
+predicate(simplify_constraints/2,44,static,private,monofile,global,2).
+
+
+clause(simplify_constraints([],[]),[
+    get_nil(0),
+    get_nil(1),
+    proceed]).
+
+
+clause(:-(simplify_constraints('.'(A,B),'.'(C,D)),','(;(->(list_cas(A),simplify_constraints(A,C)),simplify_constraint(A,C)),simplify_constraints(B,D))),[
+    allocate(2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    call(('$simplify_constraints/2_$aux1')/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((simplify_constraints)/2)]).
+
+
+predicate('$simplify_constraints/2_$aux1'/2,45,static,private,monofile,local,2).
+
+
+clause(:-('$simplify_constraints/2_$aux1'(A,B),','('$get_cut_level'(C),','(list_cas(A),','('$cut'(C),simplify_constraints(A,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((list_cas)/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((simplify_constraints)/2)]).
+
+
+clause(:-('$simplify_constraints/2_$aux1'(A,B),simplify_constraint(A,B)),[
+    execute((simplify_constraint)/2)]).
+
+
+predicate(simplify_constraint/2,51,static,private,monofile,global,2).
+
+
+clause(simplify_constraint(true,[]),[
+    get_atom(true,0),
+    get_nil(1),
+    proceed]).
+
+
+clause(:-(simplify_constraint(A,B),','(\==(A,true),','(functor(A,C,2),','(arg(1,A,D),','(arg(2,A,E),','(simplification(-(D,E),F),','(functor(B,C,2),','(arg(1,B,F),arg(2,B,0))))))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_atom(true,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    put_integer(2,2),
+    call((functor)/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call((arg)/3),
+    put_integer(2,0),
+    put_value(y(0),1),
+    put_variable(y(4),2),
+    call((arg)/3),
+    put_structure((-)/2,0),
+    unify_local_value(y(3)),
+    unify_local_value(y(4)),
+    put_variable(y(5),1),
+    call((simplification)/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_integer(2,2),
+    call((functor)/3),
+    put_integer(1,0),
+    put_value(y(1),1),
+    put_value(y(5),2),
+    call((arg)/3),
+    put_integer(2,0),
+    put_value(y(1),1),
+    put_integer(0,2),
+    deallocate,
+    execute((arg)/3)]).
+
+
+predicate(node_consistency/5,63,static,private,monofile,global,2).
+
+
+clause(node_consistency([],_,[],A,A),[
+    get_nil(0),
+    get_nil(2),
+    get_value(x(4),3),
+    proceed]).
+
+
+clause(:-(node_consistency('.'(A,B),C,'.'(domain(A,D),E),F,G),','(relevant_uni_constraints(F,A,H,I),','(find_interval_entry(C,A,domain(_,J,K)),','(gen_interval(J,K,L),','(consistent_node(H,L,D),node_consistency(B,C,E,I,G)))))),[
+    allocate(11),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),1),
+    get_list(2),
+    unify_variable(x(0)),
+    unify_variable(y(4)),
+    get_structure((domain)/2,0),
+    unify_value(y(0)),
+    unify_variable(y(3)),
+    get_variable(y(5),4),
+    put_value(x(3),0),
+    put_value(y(0),1),
+    put_variable(y(6),2),
+    put_variable(y(7),3),
+    call((relevant_uni_constraints)/4),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_structure((domain)/3,2),
+    unify_void(1),
+    unify_variable(y(8)),
+    unify_variable(y(9)),
+    call((find_interval_entry)/3),
+    put_value(y(8),0),
+    put_value(y(9),1),
+    put_variable(y(10),2),
+    call((gen_interval)/3),
+    put_value(y(6),0),
+    put_value(y(10),1),
+    put_value(y(3),2),
+    call((consistent_node)/3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(4),2),
+    put_unsafe_value(y(7),3),
+    put_value(y(5),4),
+    deallocate,
+    execute((node_consistency)/5)]).
+
+
+predicate(relevant_uni_constraints/4,76,static,private,monofile,global,1).
+
+
+clause(:-(relevant_uni_constraints(A,B,C,D),or_uni_constraints(A,B,C,D)),[
+    execute((or_uni_constraints)/4)]).
+
+
+predicate(or_uni_constraints/4,79,static,private,monofile,global,2).
+
+
+clause(or_uni_constraints([],_,[],[]),[
+    get_nil(0),
+    get_nil(2),
+    get_nil(3),
+    proceed]).
+
+
+clause(:-(or_uni_constraints('.'(A,B),C,'.'(D,E),'.'(F,G)),','(and_uni_constraints(A,C,D,F),or_uni_constraints(B,C,E,G))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_variable(y(3)),
+    put_value(y(1),1),
+    call((and_uni_constraints)/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((or_uni_constraints)/4)]).
+
+
+predicate(and_uni_constraints/4,92,static,private,monofile,global,2).
+
+
+clause(and_uni_constraints([],_,[],[]),[
+    get_nil(0),
+    get_nil(2),
+    get_nil(3),
+    proceed]).
+
+
+clause(:-(and_uni_constraints('.'(A,B),C,'.'(D,E),'.'(F,G)),','(;(->(list_cas(A),or_uni_constraints(A,C,D,F)),atom_uni_constraints(A,C,D,F)),and_uni_constraints(B,C,E,G))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_variable(y(3)),
+    put_value(y(1),1),
+    call(('$and_uni_constraints/4_$aux1')/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((and_uni_constraints)/4)]).
+
+
+predicate('$and_uni_constraints/4_$aux1'/4,93,static,private,monofile,local,2).
+
+
+clause(:-('$and_uni_constraints/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(list_cas(A),','('$cut'(E),or_uni_constraints(A,B,C,D))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    call((list_cas)/1),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((or_uni_constraints)/4)]).
+
+
+clause(:-('$and_uni_constraints/4_$aux1'(A,B,C,D),atom_uni_constraints(A,B,C,D)),[
+    execute((atom_uni_constraints)/4)]).
+
+
+predicate(atom_uni_constraints/4,107,static,private,monofile,global,1).
+
+
+clause(:-(atom_uni_constraints(A,B,C,D),','(functor(A,E,_),','(arg(1,A,F),;(->(unary_constraint(F,B,G,H),','(=(C,uc(E,G,H)),=(D,[]))),','(=(C,[]),=(D,A)))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    put_variable(y(4),1),
+    put_void(2),
+    call((functor)/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(5),2),
+    call((arg)/3),
+    put_unsafe_value(y(5),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_unsafe_value(y(4),3),
+    put_value(y(3),4),
+    put_value(y(0),5),
+    deallocate,
+    execute(('$atom_uni_constraints/4_$aux1')/6)]).
+
+
+predicate('$atom_uni_constraints/4_$aux1'/6,107,static,private,monofile,local,2).
+
+
+clause(:-('$atom_uni_constraints/4_$aux1'(A,B,C,D,E,_),','('$get_cut_level'(F),','(unary_constraint(A,B,G,H),','('$cut'(F),','(=(C,uc(D,G,H)),=(E,[])))))),[
+    allocate(6),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),6),
+    put_variable(y(4),2),
+    put_variable(y(5),3),
+    call((unary_constraint)/4),
+    cut(y(3)),
+    put_value(y(0),0),
+    get_structure((uc)/3,0),
+    unify_local_value(y(1)),
+    unify_local_value(y(4)),
+    unify_local_value(y(5)),
+    put_value(y(2),0),
+    get_nil(0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$atom_uni_constraints/4_$aux1'(_,_,A,_,B,C),','(=(A,[]),=(B,C))),[
+    get_nil(2),
+    get_value(x(5),4),
+    proceed]).
+
+
+predicate(unary_constraint/4,118,static,private,monofile,global,6).
+
+
+clause(unary_constraint(A,A,1,0),[
+    get_integer(1,2),
+    get_integer(0,3),
+    get_value(x(1),0),
+    proceed]).
+
+
+clause(:-(unary_constraint(A,_,0,A),number(A)),[
+    get_integer(0,2),
+    get_value(x(3),0),
+    put_value(x(3),0),
+    execute((number)/1)]).
+
+
+clause(:-(unary_constraint(-(A),B,C,D),','(unary_constraint(A,B,E,F),','(minus(E,C),minus(F,D)))),[
+    allocate(4),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_structure((-)/1,0),
+    unify_variable(x(0)),
+    put_variable(y(2),2),
+    put_variable(y(3),3),
+    call((unary_constraint)/4),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    call((minus)/2),
+    put_unsafe_value(y(3),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((minus)/2)]).
+
+
+clause(:-(unary_constraint(+(A,B),C,D,E),','(unary_constraint(A,C,F,G),','(unary_constraint(B,C,H,I),','(addition(F,H,D),addition(G,I,E))))),[
+    allocate(8),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_structure((+)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_variable(y(4),2),
+    put_variable(y(5),3),
+    call((unary_constraint)/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(6),2),
+    put_variable(y(7),3),
+    call((unary_constraint)/4),
+    put_value(y(4),0),
+    put_value(y(6),1),
+    put_value(y(2),2),
+    call((addition)/3),
+    put_unsafe_value(y(5),0),
+    put_unsafe_value(y(7),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((addition)/3)]).
+
+
+clause(:-(unary_constraint(-(A,B),C,D,E),','(unary_constraint(A,C,F,G),','(unary_constraint(B,C,H,I),','(subtraction(F,H,D),subtraction(G,I,E))))),[
+    allocate(8),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_structure((-)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_variable(y(4),2),
+    put_variable(y(5),3),
+    call((unary_constraint)/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(6),2),
+    put_variable(y(7),3),
+    call((unary_constraint)/4),
+    put_value(y(4),0),
+    put_value(y(6),1),
+    put_value(y(2),2),
+    call((subtraction)/3),
+    put_unsafe_value(y(5),0),
+    put_unsafe_value(y(7),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((subtraction)/3)]).
+
+
+clause(:-(unary_constraint(*(A,B),C,D,E),','(unary_constraint(A,C,F,G),','(unary_constraint(B,C,H,I),','(multiply(F,I,J),','(multiply(H,G,K),','(addition(J,K,D),multiply(G,I,E))))))),[
+    allocate(10),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_structure((*)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_variable(y(4),2),
+    put_variable(y(5),3),
+    call((unary_constraint)/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(6),2),
+    put_variable(y(7),3),
+    call((unary_constraint)/4),
+    put_value(y(4),0),
+    put_value(y(7),1),
+    put_variable(y(8),2),
+    call((multiply)/3),
+    put_value(y(6),0),
+    put_value(y(5),1),
+    put_variable(y(9),2),
+    call((multiply)/3),
+    put_value(y(8),0),
+    put_value(y(9),1),
+    put_value(y(2),2),
+    call((addition)/3),
+    put_unsafe_value(y(5),0),
+    put_unsafe_value(y(7),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((multiply)/3)]).
+
+
+predicate(unary_constraint/2,141,static,private,monofile,global,1).
+
+
+clause(:-(unary_constraint(A,B),','(variable(A),','(\==(A,B),fail))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call((variable)/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((\==)/2),
+    fail]).
+
+
+predicate(consistent_node/3,147,static,private,monofile,global,1).
+
+
+clause(:-(consistent_node(A,B,C),or_consistent_nodes(A,B,C)),[
+    execute((or_consistent_nodes)/3)]).
+
+
+predicate(or_consistent_nodes/3,150,static,private,monofile,global,2).
+
+
+clause(or_consistent_nodes([],A,A),[
+    get_nil(0),
+    get_value(x(2),1),
+    proceed]).
+
+
+clause(:-(or_consistent_nodes(A,B,C),','(\==(A,[]),or_consistent_node(A,B,C))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((or_consistent_node)/3)]).
+
+
+predicate(or_consistent_node/3,155,static,private,monofile,global,2).
+
+
+clause(or_consistent_node([],_,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(or_consistent_node('.'(A,B),C,D),','(and_consistent_node(A,C,E),','(or_consistent_node(B,C,F),number_union(E,F,D)))),[
+    allocate(5),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_variable(y(3),2),
+    call((and_consistent_node)/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(4),2),
+    call((or_consistent_node)/3),
+    put_unsafe_value(y(3),0),
+    put_unsafe_value(y(4),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((number_union)/3)]).
+
+
+predicate(and_consistent_node/3,161,static,private,monofile,global,2).
+
+
+clause(and_consistent_node([],A,A),[
+    get_nil(0),
+    get_value(x(2),1),
+    proceed]).
+
+
+clause(:-(and_consistent_node('.'(A,B),C,D),','(;(->(list_cas(A),or_consistent_nodes(A,C,E)),atom_consistent_node(A,C,E)),and_consistent_node(B,E,D))),[
+    allocate(3),
+    get_variable(y(1),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),2),
+    call(('$and_consistent_node/3_$aux1')/3),
+    put_value(y(0),0),
+    put_unsafe_value(y(2),1),
+    put_value(y(1),2),
+    deallocate,
+    execute((and_consistent_node)/3)]).
+
+
+predicate('$and_consistent_node/3_$aux1'/3,162,static,private,monofile,local,2).
+
+
+clause(:-('$and_consistent_node/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(list_cas(A),','('$cut'(D),or_consistent_nodes(A,B,C))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call((list_cas)/1),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((or_consistent_nodes)/3)]).
+
+
+clause(:-('$and_consistent_node/3_$aux1'(A,B,C),atom_consistent_node(A,B,C)),[
+    execute((atom_consistent_node)/3)]).
+
+
+predicate(atom_consistent_node/3,168,static,private,monofile,global,1).
+
+
+clause(:-(atom_consistent_node(uc(A,B,C),D,E),','(is(F,-(/(C,B))),','(;(->(>(B,0),=(G,A)),reverse_op(A,G)),consistency(G,D,'.'(F,[]),E)))),[
+    allocate(6),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_structure((uc)/3,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    unify_variable(x(0)),
+    put_structure((-)/1,1),
+    unify_structure((/)/2),
+    unify_value(x(0)),
+    unify_value(y(1)),
+    put_variable(y(4),0),
+    call((is)/2),
+    put_value(y(1),0),
+    put_variable(y(5),1),
+    put_value(y(0),2),
+    call(('$atom_consistent_node/3_$aux1')/3),
+    put_unsafe_value(y(5),0),
+    put_value(y(2),1),
+    put_list(2),
+    unify_local_value(y(4)),
+    unify_nil,
+    put_value(y(3),3),
+    deallocate,
+    execute((consistency)/4)]).
+
+
+predicate('$atom_consistent_node/3_$aux1'/3,168,static,private,monofile,local,2).
+
+
+clause(:-('$atom_consistent_node/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(>(A,0),','('$cut'(D),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    put_integer(0,1),
+    call((>)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$atom_consistent_node/3_$aux1'(_,A,B),reverse_op(B,A)),[
+    put_value(x(2),0),
+    execute((reverse_op)/2)]).
+
+
+predicate(find_interval_entry/3,178,static,private,monofile,global,4).
+
+
+clause(:-(find_interval_entry(A,_,_),var(A)),[
+    execute((var)/1)]).
+
+
+clause(find_interval_entry([],_,_),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(find_interval_entry(A,B,C),','(nonvar(A),','(=(A,'.'(C,_)),','(=(C,domain(D,_,_)),==(D,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_void(1),
+    put_value(y(2),0),
+    get_structure((domain)/3,0),
+    unify_variable(x(0)),
+    unify_void(2),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+clause(:-(find_interval_entry(A,B,C),','(nonvar(A),','(=(A,'.'(domain(D,_,_),E)),','(\==(D,B),find_interval_entry(E,B,C))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure((domain)/3,0),
+    unify_variable(x(0)),
+    unify_void(2),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((find_interval_entry)/3)]).
+
+
+predicate(find_domain_entry/3,195,static,private,monofile,global,4).
+
+
+clause(:-(find_domain_entry(A,_,_),var(A)),[
+    execute((var)/1)]).
+
+
+clause(find_domain_entry([],_,_),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(find_domain_entry(A,B,C),','(nonvar(A),','(=(A,'.'(C,_)),','(=(C,domain(D,_)),==(D,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_void(1),
+    put_value(y(2),0),
+    get_structure((domain)/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+clause(:-(find_domain_entry(A,B,C),','(nonvar(A),','(=(A,'.'(domain(D,_),E)),','(\==(D,B),find_domain_entry(E,B,C))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call((nonvar)/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure((domain)/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((find_domain_entry)/3)]).

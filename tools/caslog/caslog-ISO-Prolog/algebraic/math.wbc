@@ -1,0 +1,30 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/algebraic/math.pl
+% date    : 2 6 2003
+% time    : 10:15:44
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/algebraic/math.pl').
+
+
+predicate(pow/3,8,static,private,user,1).
+
+
+clause(:-(pow(A,B,C),is(C,**(A,B))),[
+    get_variable(x(3),1),
+    put_structure((**)/2,1),
+    unify_local_value(x(0)),
+    unify_local_value(x(3)),
+    put_value(x(2),0),
+    execute((is)/2)]).
+
+
+predicate(log2/2,9,static,private,user,1).
+
+
+clause(:-(log2(A,B),is(B,log(A))),[
+    get_variable(x(2),1),
+    put_structure(log/1,1),
+    unify_local_value(x(0)),
+    put_value(x(2),0),
+    execute((is)/2)]).

@@ -1,0 +1,814 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/algebraic/maxmin.pl
+% date    : 2 6 2003
+% time    : 10:15:43
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/algebraic/maxmin.pl').
+
+
+predicate(max_expr/3,11,static,private,user,5).
+
+
+clause(max_expr(A,bot,bot),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(max_expr(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(max_expr(A,inf,inf),\==(A,bot)),[
+    get_atom(inf,1),
+    get_atom(inf,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(max_expr(inf,A,inf),','(\==(A,bot),\==(A,inf))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(max_expr(A,B,C),','(is(D,-1),','(normal_form(D,E),','(multiply_expr(E,B,F),','(add_expr(A,F,G),max_sign_expr(A,B,G,C)))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_variable(y(3),0),
+    put_integer(-1,1),
+    call((is)/2),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_value(y(4),0),
+    put_value(y(1),1),
+    put_variable(y(5),2),
+    call(multiply_expr/3),
+    put_value(y(0),0),
+    put_value(y(5),1),
+    put_variable(y(6),2),
+    call(add_expr/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(6),2),
+    put_value(y(2),3),
+    deallocate,
+    execute(max_sign_expr/4)]).
+
+
+predicate(max_sign_expr/4,41,static,private,user,1).
+
+
+clause(:-(max_sign_expr(A,B,C,D),;(->(positive_expr(C),=(D,A)),;(->(negative_expr(C),=(D,B)),;(->(;(positive_expr(C),negative_expr(C)),fail),max_term_by_term(A,B,D))))),[
+    get_variable(x(4),3),
+    get_variable(x(5),2),
+    get_variable(x(3),1),
+    get_variable(x(2),0),
+    put_value(x(5),0),
+    put_value(x(4),1),
+    execute('$max_sign_expr/4_$aux1'/4)]).
+
+
+predicate('$max_sign_expr/4_$aux1'/4,41,static,private,user,4).
+
+
+clause(:-('$max_sign_expr/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(positive_expr(A),','('$cut'(E),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    call(positive_expr/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$max_sign_expr/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(negative_expr(A),','('$cut'(E),=(B,D))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    call(negative_expr/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$max_sign_expr/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(;(positive_expr(A),negative_expr(A)),','('$cut'(E),fail)))),[
+    allocate(1),
+    get_variable(y(0),4),
+    call('$max_sign_expr/4_$aux2'/1),
+    cut(y(0)),
+    fail]).
+
+
+clause(:-('$max_sign_expr/4_$aux1'(A,B,C,D),max_term_by_term(C,D,B)),[
+    get_variable(x(0),2),
+    get_variable(x(2),1),
+    put_value(x(3),1),
+    execute(max_term_by_term/3)]).
+
+
+predicate('$max_sign_expr/4_$aux2'/1,41,static,private,user,2).
+
+
+clause(:-('$max_sign_expr/4_$aux2'(A),positive_expr(A)),[
+    execute(positive_expr/1)]).
+
+
+clause(:-('$max_sign_expr/4_$aux2'(A),negative_expr(A)),[
+    execute(negative_expr/1)]).
+
+
+predicate(min_expr/3,58,static,private,user,5).
+
+
+clause(min_expr(A,bot,bot),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(min_expr(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(min_expr(A,inf,A),\==(A,bot)),[
+    get_atom(inf,1),
+    get_value(x(2),0),
+    put_value(x(2),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(min_expr(inf,A,A),','(\==(A,bot),\==(A,inf))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(min_expr(A,B,C),','(is(D,-1),','(normal_form(D,E),','(multiply_expr(E,B,F),','(add_expr(A,F,G),min_sign_expr(A,B,G,C)))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_variable(y(3),0),
+    put_integer(-1,1),
+    call((is)/2),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_value(y(4),0),
+    put_value(y(1),1),
+    put_variable(y(5),2),
+    call(multiply_expr/3),
+    put_value(y(0),0),
+    put_value(y(5),1),
+    put_variable(y(6),2),
+    call(add_expr/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(6),2),
+    put_value(y(2),3),
+    deallocate,
+    execute(min_sign_expr/4)]).
+
+
+predicate(min_sign_expr/4,91,static,private,user,1).
+
+
+clause(:-(min_sign_expr(A,B,C,D),;(->(negative_expr(C),=(D,A)),;(->(positive_expr(C),=(D,B)),;(->(;(positive_expr(C),negative_expr(C)),fail),','(ground_size(A,E),','(ground_size(B,F),;(->(=<(E,F),=(D,A)),=(D,B)))))))),[
+    get_variable(x(4),3),
+    get_variable(x(5),2),
+    get_variable(x(3),1),
+    get_variable(x(2),0),
+    put_value(x(5),0),
+    put_value(x(4),1),
+    execute('$min_sign_expr/4_$aux1'/4)]).
+
+
+predicate('$min_sign_expr/4_$aux1'/4,91,static,private,user,4).
+
+
+clause(:-('$min_sign_expr/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(negative_expr(A),','('$cut'(E),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    call(negative_expr/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$min_sign_expr/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(positive_expr(A),','('$cut'(E),=(B,D))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    call(positive_expr/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$min_sign_expr/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(;(positive_expr(A),negative_expr(A)),','('$cut'(E),fail)))),[
+    allocate(1),
+    get_variable(y(0),4),
+    call('$min_sign_expr/4_$aux2'/1),
+    cut(y(0)),
+    fail]).
+
+
+clause(:-('$min_sign_expr/4_$aux1'(A,B,C,D),','(ground_size(C,E),','(ground_size(D,F),;(','('$get_cut_level'(G),','(=<(E,F),','('$cut'(G),=(B,C)))),=(B,D))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    put_value(y(1),0),
+    put_variable(y(3),1),
+    call(ground_size/2),
+    put_value(y(2),0),
+    put_variable(y(4),1),
+    call(ground_size/2),
+    put_unsafe_value(y(3),0),
+    put_unsafe_value(y(4),1),
+    put_value(y(0),2),
+    put_value(y(1),3),
+    put_value(y(2),4),
+    deallocate,
+    execute('$min_sign_expr/4_$aux3'/5)]).
+
+
+predicate('$min_sign_expr/4_$aux3'/5,91,static,private,user,2).
+
+
+clause(:-('$min_sign_expr/4_$aux3'(A,B,C,D,E),','('$get_cut_level'(F),','(=<(A,B),','('$cut'(F),=(C,D))))),[
+    allocate(3),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),5),
+    call((=<)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$min_sign_expr/4_$aux3'(A,B,C,D,E),=(C,E)),[
+    get_value(x(4),2),
+    proceed]).
+
+
+predicate('$min_sign_expr/4_$aux2'/1,91,static,private,user,2).
+
+
+clause(:-('$min_sign_expr/4_$aux2'(A),positive_expr(A)),[
+    execute(positive_expr/1)]).
+
+
+clause(:-('$min_sign_expr/4_$aux2'(A),negative_expr(A)),[
+    execute(negative_expr/1)]).
+
+
+predicate(positive_expr/1,113,static,private,user,1).
+
+
+clause(:-(positive_expr(expr(A,B)),','(positive_terms(A),positive_factors(B))),[
+    allocate(1),
+    get_structure(expr/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(positive_terms/1),
+    put_value(y(0),0),
+    deallocate,
+    execute(positive_factors/1)]).
+
+
+predicate(positive_terms/1,120,static,private,user,2).
+
+
+clause(positive_terms([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(positive_terms('.'(term(A,B),C)),','(positive_factors(B),positive_terms(C))),[
+    allocate(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(term/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    call(positive_factors/1),
+    put_value(y(0),0),
+    deallocate,
+    execute(positive_terms/1)]).
+
+
+predicate(positive_factors/1,128,static,private,user,2).
+
+
+clause(positive_factors([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(positive_factors('.'(A,B)),','(positive_factor(A),positive_factors(B))),[
+    allocate(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(positive_factor/1),
+    put_value(y(0),0),
+    deallocate,
+    execute(positive_factors/1)]).
+
+
+predicate(positive_factor/1,133,static,private,user,1).
+
+
+clause(:-(positive_factor(factor(A,B)),pos_factor(A,B)),[
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    execute(pos_factor/2)]).
+
+
+predicate(pos_factor/2,136,static,private,user,2).
+
+
+clause(:-(pos_factor([],A),>(A,0)),[
+    get_nil(0),
+    put_value(x(1),0),
+    put_integer(0,1),
+    execute((>)/2)]).
+
+
+clause(:-(pos_factor('.'(A,B),C),','(positive_item(A),pos_factor(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(positive_item/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(pos_factor/2)]).
+
+
+predicate(positive_item/1,145,static,private,user,3).
+
+
+clause(:-(positive_item(A),variable(A)),[
+    execute(variable/1)]).
+
+
+clause(positive_item(exp(A,expr([],'.'(factor([],B),[])))),[
+    get_structure(exp/2,0),
+    unify_void(1),
+    unify_structure(expr/2),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_void(1),
+    proceed]).
+
+
+clause(:-(positive_item(exp(expr([],'.'(factor([],A),[])),B)),>(A,0)),[
+    get_structure(exp/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    put_integer(0,1),
+    execute((>)/2)]).
+
+
+predicate(negative_expr/1,153,static,private,user,1).
+
+
+clause(:-(negative_expr(expr(A,B)),','(negative_terms(A),negative_factors(B))),[
+    allocate(1),
+    get_structure(expr/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(negative_terms/1),
+    put_value(y(0),0),
+    deallocate,
+    execute(negative_factors/1)]).
+
+
+predicate(negative_terms/1,160,static,private,user,2).
+
+
+clause(negative_terms([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(negative_terms('.'(term(A,B),C)),','(negative_factors(B),negative_terms(C))),[
+    allocate(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(term/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    call(negative_factors/1),
+    put_value(y(0),0),
+    deallocate,
+    execute(negative_terms/1)]).
+
+
+predicate(negative_factors/1,168,static,private,user,2).
+
+
+clause(negative_factors([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(negative_factors('.'(A,B)),','(negative_factor(A),negative_factors(B))),[
+    allocate(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(negative_factor/1),
+    put_value(y(0),0),
+    deallocate,
+    execute(negative_factors/1)]).
+
+
+predicate(negative_factor/1,173,static,private,user,1).
+
+
+clause(:-(negative_factor(factor(A,B)),neg_factor(A,B)),[
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    execute(neg_factor/2)]).
+
+
+predicate(neg_factor/2,176,static,private,user,2).
+
+
+clause(:-(neg_factor([],A),<(A,0)),[
+    get_nil(0),
+    put_value(x(1),0),
+    put_integer(0,1),
+    execute((<)/2)]).
+
+
+clause(:-(neg_factor('.'(A,B),C),','(positive_item(A),neg_factor(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(positive_item/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(neg_factor/2)]).
+
+
+predicate(max_term_by_term/3,185,static,private,user,1).
+
+
+clause(:-(max_term_by_term(expr(A,B),expr(C,D),expr(E,F)),','(max_terms(A,C,E),max_factors(B,D,F))),[
+    allocate(3),
+    get_structure(expr/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(expr/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_structure(expr/2,2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    call(max_terms/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(max_factors/3)]).
+
+
+predicate(max_terms/3,194,static,private,user,2).
+
+
+clause(:-(max_terms('.'(term('.'(A,[]),B),[]),'.'(term('.'(C,[]),D),[]),E),','(userfunc(A),','(functor(A,F,G),','(userfunc(C),','(functor(C,F,G),','(arg(1,A,H),','(arg(1,C,H),','(!,max_terms(G,A,C,B,D,E))))))))),[
+    allocate(9),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(term/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_nil,
+    get_list(1),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(term/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_list(0),
+    unify_variable(y(2)),
+    unify_nil,
+    get_variable(y(4),2),
+    get_variable(y(5),3),
+    put_value(y(0),0),
+    call(userfunc/1),
+    put_value(y(0),0),
+    put_variable(y(6),1),
+    put_variable(y(7),2),
+    call(functor/3),
+    put_value(y(2),0),
+    call(userfunc/1),
+    put_value(y(2),0),
+    put_value(y(6),1),
+    put_value(y(7),2),
+    call(functor/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(8),2),
+    call(arg/3),
+    put_integer(1,0),
+    put_value(y(2),1),
+    put_value(y(8),2),
+    call(arg/3),
+    cut(y(5)),
+    put_unsafe_value(y(7),0),
+    put_value(y(0),1),
+    put_value(y(2),2),
+    put_value(y(1),3),
+    put_value(y(3),4),
+    put_value(y(4),5),
+    deallocate,
+    execute(max_terms/6)]).
+
+
+clause(:-(max_terms(A,B,C),add_terms(A,B,C)),[
+    execute(add_terms/3)]).
+
+
+predicate(max_terms/6,203,static,private,user,4).
+
+
+clause(:-(max_terms(A,B,C,D,E,'.'(term('.'(B,[]),F),[])),','(==(B,C),','(!,max_factors(D,E,F)))),[
+    allocate(4),
+    get_variable(y(0),3),
+    get_variable(y(1),4),
+    get_list(5),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(term/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_nil,
+    get_variable(y(3),6),
+    put_value(x(1),0),
+    put_value(x(2),1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(max_factors/3)]).
+
+
+clause(:-(max_terms(A,B,C,D,E,'.'(term('.'(B,[]),D),[])),','(\==(B,C),','(larger_terms(3,A,B,C),','(larger_factors(D,E),!)))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_list(5),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(term/2,0),
+    unify_variable(x(0)),
+    unify_local_value(y(3)),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_nil,
+    get_variable(y(5),6),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    call((\==)/2),
+    put_integer(3,0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    call(larger_terms/4),
+    put_value(y(3),0),
+    put_value(y(4),1),
+    call(larger_factors/2),
+    cut(y(5)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(max_terms(A,B,C,D,E,'.'(term('.'(C,[]),E),[])),','(\==(B,C),','(larger_terms(3,A,C,B),','(larger_factors(E,D),!)))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_list(5),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(term/2,0),
+    unify_variable(x(0)),
+    unify_local_value(y(4)),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_nil,
+    get_variable(y(5),6),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    call((\==)/2),
+    put_integer(3,0),
+    put_value(y(0),1),
+    put_value(y(2),2),
+    put_value(y(1),3),
+    call(larger_terms/4),
+    put_value(y(4),0),
+    put_value(y(3),1),
+    call(larger_factors/2),
+    cut(y(5)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(max_terms(A,B,C,D,E,F),','(\==(B,C),add_terms('.'(term('.'(B,[]),D),[]),'.'(term('.'(C,[]),E),[]),F))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_list(0),
+    unify_local_value(y(0)),
+    unify_nil,
+    put_structure(term/2,1),
+    unify_value(x(0)),
+    unify_local_value(y(2)),
+    put_list(0),
+    unify_value(x(1)),
+    unify_nil,
+    put_list(1),
+    unify_local_value(y(1)),
+    unify_nil,
+    put_structure(term/2,2),
+    unify_value(x(1)),
+    unify_local_value(y(3)),
+    put_list(1),
+    unify_value(x(2)),
+    unify_nil,
+    put_value(y(4),2),
+    deallocate,
+    execute(add_terms/3)]).
+
+
+predicate(larger_terms/4,219,static,private,user,2).
+
+
+clause(:-(larger_terms(A,B,C,D),>(A,B)),[
+    execute((>)/2)]).
+
+
+clause(:-(larger_terms(A,B,C,D),','(=<(A,B),','(arg(B,C,E),','(arg(B,D,F),','(normal_form(-1,G),','(multiply_expr(G,F,H),','(add_expr(E,H,I),','(positive_expr(I),','(is(J,-(B,1)),larger_terms(A,J,C,D)))))))))),[
+    allocate(10),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((=<)/2),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(4),2),
+    call(arg/3),
+    put_value(y(1),0),
+    put_value(y(3),1),
+    put_variable(y(5),2),
+    call(arg/3),
+    put_integer(-1,0),
+    put_variable(y(6),1),
+    call(normal_form/2),
+    put_value(y(6),0),
+    put_value(y(5),1),
+    put_variable(y(7),2),
+    call(multiply_expr/3),
+    put_value(y(4),0),
+    put_value(y(7),1),
+    put_variable(y(8),2),
+    call(add_expr/3),
+    put_value(y(8),0),
+    call(positive_expr/1),
+    put_variable(y(9),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(1)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(0),0),
+    put_unsafe_value(y(9),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(larger_terms/4)]).
+
+
+predicate(larger_factors/2,233,static,private,user,1).
+
+
+clause(:-(larger_factors(A,B),','(normal_form(-1,C),','(multiply_expr(C,expr([],B),D),','(add_expr(expr([],A),D,E),positive_expr(E))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_integer(-1,0),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(2),0),
+    put_structure(expr/2,1),
+    unify_nil,
+    unify_local_value(y(1)),
+    put_variable(y(3),2),
+    call(multiply_expr/3),
+    put_structure(expr/2,0),
+    unify_nil,
+    unify_local_value(y(0)),
+    put_value(y(3),1),
+    put_variable(y(4),2),
+    call(add_expr/3),
+    put_unsafe_value(y(4),0),
+    deallocate,
+    execute(positive_expr/1)]).
+
+
+predicate(max_factors/3,240,static,private,user,1).
+
+
+clause(:-(max_factors(A,B,C),add_factors(A,B,C)),[
+    execute(add_factors/3)]).

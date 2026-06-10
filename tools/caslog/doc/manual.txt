@@ -1,0 +1,207 @@
+I. Introduction
+
+CASLOG is a complexity analysis system for a subset of Prolog. The source 
+codes for CASLOG are contained in the directory caslog/source. A paper 
+describing CASLOG is contained in the directory caslog/doc. A set of
+examples is contained in the directory caslog/benchmark.
+
+CASLOG is running on top of SICStus Prolog and C. 
+To install CASLOG,
+
+1. set the following aliases in your .login file
+
+alias prolog 'the command for the SICStus Prolog interpreter in your system'
+alias cc 'the command for the C compiler in your system'
+
+2. type "make" (at directory caslog)
+
+This command will compile the Prolog and C source codes, 
+and save the initial system state in a new file caslog.init.
+
+To run CASLOG,
+
+1. type "caslog filename" (at directory caslog)
+
+This command will restore the initial system state saved in caslog.init,
+and perform complexity analysis on the program file filename.
+To run CASLOG at other directories, the file caslog, which is a csh script
+file, can be updated appropriately.
+
+CASLOG can perform four different complexity analyses: argument size analysis,
+relation size analysis, solution size analysis and time analysis. In CASLOG
+all the predicates in the program are assumed to have definite mode. That is, 
+all the argument positions are either an input or an output, and all the
+input arguments are given ground and all the output arguments are produced
+ground.
+
+II. Declarations
+
+The Prolog program under analysis must declare the mode and size measure 
+for each user-defiend predicate in the program. This can be done by using 
+mode and measure declarations.
+
+1. Mode Declarations:
+
+:- mode(pred/arity,mode_list).
+
+where mode_list is a list of mode symbols. Legal mode symbols are:
+
++	input
+-	output
+
+Note that since we assume all the predicate have definite mode, only these 
+two types are possible for user-defined predicates.
+
+2. Measure Declarations:
+
+:- measure(pred/arity,measure_list).
+
+where measure_list is a list of measure names. Currently legal measure names 
+are:
+
+void			irrelevant (complexity does not depend on this 
+			position, it always has value 0)
+int			integer-value
+length			list-length
+size			term-size
+depth([ChildList])	term-depth, where ChildList is the list of recursive 
+			positions.
+
+In order to improve the estimation of relation size, the user can use the 
+following optional declaration to declare the domain information for some 
+"test" predicates that range over finite domains. However, the user should
+be warned that the estimation of relation size using domain information is
+very time-consuming, and the system may run for a long time if the number
+of variables or the domain size of the variables are large.
+
+3. Domain Declarations:
+
+:- domain(pred/arity,domain_list).
+
+where domain_list is a list of domain expressions. A domain expression can be
+either an interger interval L-U, representing all the integers from the 
+integer L to the integer U, or a list of atoms, representing the elements 
+in the domain. But the domain expressions in a domain declaration must be
+of the same type.
+
+Examples:
+
+%  Traverse a tree structure in pre-order.
+:- mode(pre_order/2,[+,-]).
+:- measure(pre_order/2,[depth([2,3]),length]).
+pre_order(void,[]).
+pre_order(tree(X,L,R),Xs) :-
+	pre_order(L,Ls),
+	pre_order(R,Rs),
+	append([X|Ls],Rs,Xs).
+
+%  Select nondeterministically an element from a list.
+:- mode(select/3,[-,+,-]).
+:- measure(select/3,[void,length,length]).
+select(X,[X|Xs],Xs).
+select(X,[Y|Ys],[Y|Zs]) :- select(X,Ys,Zs).
+
+%  Test if two queens do not attack each other in 5-queens problem.
+:- mode(noattack/3,[+,+,+]).
+:- measure(noattack/3,[int,int,int]).
+:- domain(noattack/3,[1-5,1-5,1-4]).
+noattack(X,Y,D) :- X =\= Y,  Y-X =\= D,  Y-X =\= -D.
+
+%  Test if the coloring of a 3-nodes graph is legal.
+:- mode(color/3,[+,+,+]).
+:- measure(color/3,[int,int,int]).
+:- domain(color/3,[[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]).
+color(X,Y,Z) :- X =\= Y, X =\= Z.
+
+III. Built-in Predicates
+
+The system currently handles the following built-in predicates:
+
+arg(+ArgNo,+Term,-Arg)	
+		Argument ArgNo of a ground term Term is Arg.
+arg(+ArgNo,+Term1,+Arg,-Term2)	
+		Ground term Term2 is a term constructed from a ground term 
+		Term1 and extented with its ArgNo argument being Arg.
+		(Note that this predicate is modified to satisfy the definite
+		mode assumption.)
+atom(+X)	X is a ground atom.
+atomic(+X)	X is a ground atom or number.
+fail		Backtrack immediately.
+findall(-Template,+Goal,-Set)
+		The set of instances of Template such that an instance of Goal
+		is provable. (Note that the "set" but not the "bag" is used.)
+float(+X)	X is a float.
+functor(+Term,-Name,-Arity)
+		The principal functor of a ground term Term has name
+		Name and arity Arity.
+functor1(-Term1,+Name,+Arity)
+		The principal functor of a ground term Term has name
+		Name and arity Arity.
+		(Note that this predicate is added to satisfy the definite
+		mode assumption. Note also the definitions of arg/3 and arg/4.)
+integer(+X)	X is an integer.
+-Y is +X	Y is the value of the arithmetic expression X.
+nl		Output a new line on the output stream.
+nonvar(+X)	X is a non-variable.
+number(+X)	X is a number.
+tab(+N)		Send N spaces to the output stream.
+true		Succeed.
+write(+T)	Write the term T on the output stream.
+!		Cut any choices taken in the current procedure.
++X =:= +Y	As numeric values, X is equal to Y.
++X =\= +Y	As numeric values, X is not equal to Y.
++X < +Y		As numeric values, X is less than Y.
++X =< +Y	As numeric values, X is less than or equal to Y.
++X > +Y		As numeric values, X is greater than Y.
++X >= +Y	As numeric values, X is greater than or equal to Y.
++Term1 == +Term2
+		Ground terms Term1 and Term2 are strictly identical.
++Term1 =\= +Term2
+		Ground terms Term1 and Term2 are not strictly identical.
+
+IV. Output Format
+
+The size of the ith argument position in the head is denoted by $i, where $ 
+is declared as an unary operator as follows:
+
+:- op(200,fx,[$]).
+
+In general, the size of an output argument position is represented as a
+function in terms of the size of input argument positions. Therefore, 
+the size functions for predicate append/3 is denoted as
+
+[$1,$2,$1+$2]
+
+which means the size of the 3rd argument position (output position) is
+the sum of the sizes of the 1st and 2nd argument positions (input positions).
+
+Other functions used in the output:
+
+exp(Base,Exp): exponentiation
+	Base is the base and Exp the exponent
+
+log(Base,Expr): logarithm
+	Base is the base and Expr an expression
+
+fact(Expr): factorial
+	Expr is an expression
+
+sum(Var,Lower,Upper,Expr): summation
+	Var is the index variable, Lower the lower bound, Upper the upper
+	bound and Expr an expression
+
+prod(Var,Lower,Upper,Expr): product
+	Var is the index variable, Lower the lower bound, Upper the upper
+	bound and Expr an expression
+
+head(X): the size of the head of a list X
+
+tail(X): the size of the tail of a list X
+
+arg(X,I): the size of the Ith argument of a term X
+
+arity(X): the arity of a term X
+
+V. Inquiries and Bug Reports
+
+Please address inquires and bug reports to naiwei@cs.arizona.edu.

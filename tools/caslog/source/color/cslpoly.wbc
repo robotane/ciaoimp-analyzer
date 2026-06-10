@@ -1,0 +1,818 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/color/cslpoly.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/color/cslpoly.pl').
+
+
+predicate(csl_poly/4,14,static,private,monofile,global,1).
+
+
+clause(:-(csl_poly(A,B,C,D),','(csl_order(A,E,D),chro_poly(A,E,B,C))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(x(3),2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call((csl_order)/3),
+    put_value(y(0),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    deallocate,
+    execute((chro_poly)/4)]).
+
+
+predicate(csl_order/3,23,static,private,monofile,global,1).
+
+
+clause(:-(csl_order(A,B,C),','(csf_order(A,D,1,C),gcp_reverse(D,B))),[
+    allocate(2),
+    get_variable(y(0),1),
+    put_value(x(2),3),
+    put_variable(y(1),1),
+    put_integer(1,2),
+    call((csf_order)/4),
+    put_unsafe_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute((gcp_reverse)/2)]).
+
+
+predicate(csf_order/4,32,static,private,monofile,global,2).
+
+
+clause(csf_order([],[],A,A),[
+    get_nil(0),
+    get_nil(1),
+    get_value(x(3),2),
+    proceed]).
+
+
+clause(:-(csf_order(A,'.'(B,C),D,E),','(iqsort(A,F),','(csf_node(F,B,G,H),','(is(I,*(D,H)),csf_order(G,C,I,E))))),[
+    allocate(8),
+    get_list(1),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_variable(y(4),1),
+    call((iqsort)/2),
+    put_value(y(4),0),
+    put_value(y(0),1),
+    put_variable(y(5),2),
+    put_variable(y(6),3),
+    call((csf_node)/4),
+    put_variable(y(7),0),
+    put_structure((*)/2,1),
+    unify_local_value(y(2)),
+    unify_local_value(y(6)),
+    call((is)/2),
+    put_unsafe_value(y(5),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(7),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((csf_order)/4)]).
+
+
+predicate(iqsort/2,44,static,private,monofile,global,2).
+
+
+clause(iqsort([],[]),[
+    get_nil(0),
+    get_nil(1),
+    proceed]).
+
+
+clause(:-(iqsort('.'(A,B),C),','(split(A,B,D,E),','(iqsort(D,F),','(iqsort(E,G),append_cas(F,'.'(A,G),C))))),[
+    allocate(6),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(x(1)),
+    put_value(y(0),0),
+    put_variable(y(2),2),
+    put_variable(y(3),3),
+    call((split)/4),
+    put_value(y(2),0),
+    put_variable(y(4),1),
+    call((iqsort)/2),
+    put_value(y(3),0),
+    put_variable(y(5),1),
+    call((iqsort)/2),
+    put_unsafe_value(y(4),0),
+    put_list(1),
+    unify_value(y(0)),
+    unify_local_value(y(5)),
+    put_value(y(1),2),
+    deallocate,
+    execute((append_cas)/3)]).
+
+
+predicate(split/4,51,static,private,monofile,global,3).
+
+
+clause(split(_,[],[],[]),[
+    get_nil(1),
+    get_nil(2),
+    get_nil(3),
+    proceed]).
+
+
+clause(:-(split(node(A,B,C),'.'(node(D,E,F),G),'.'(node(D,E,F),H),I),','(=<(E,B),split(node(A,B,C),G,H,I))),[
+    allocate(6),
+    get_structure((node)/3,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_variable(y(5),3),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure((node)/3,0),
+    unify_variable(x(3)),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(4)),
+    get_structure((node)/3,2),
+    unify_value(x(3)),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    put_value(y(1),1),
+    call((=<)/2),
+    put_structure((node)/3,0),
+    unify_value(y(0)),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    deallocate,
+    execute((split)/4)]).
+
+
+clause(:-(split(node(A,B,C),'.'(node(D,E,F),G),H,'.'(node(D,E,F),I)),','(>(E,B),split(node(A,B,C),G,H,I))),[
+    allocate(6),
+    get_structure((node)/3,0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_variable(y(4),2),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure((node)/3,0),
+    unify_variable(x(2)),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_variable(y(5)),
+    get_structure((node)/3,3),
+    unify_value(x(2)),
+    unify_value(x(0)),
+    unify_value(x(1)),
+    put_value(y(1),1),
+    call((>)/2),
+    put_structure((node)/3,0),
+    unify_value(y(0)),
+    unify_value(y(1)),
+    unify_value(y(2)),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    deallocate,
+    execute((split)/4)]).
+
+
+predicate(csf_node/4,73,static,private,monofile,global,1).
+
+
+clause(:-(csf_node(A,B,C,D),csf_node(A,A,B,C,D)),[
+    get_variable(x(4),3),
+    get_variable(x(3),2),
+    get_variable(x(2),1),
+    put_value(x(0),1),
+    execute((csf_node)/5)]).
+
+
+predicate(csf_node/5,76,static,private,monofile,global,3).
+
+
+clause(:-(csf_node([],'.'(node(A,B,C),D),node(A,B,C),E,0),gcp_delete(A,D,E)),[
+    get_nil(0),
+    get_integer(0,4),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    get_structure((node)/3,0),
+    unify_variable(x(0)),
+    unify_variable(x(5)),
+    unify_variable(x(4)),
+    get_structure((node)/3,2),
+    unify_value(x(0)),
+    unify_value(x(5)),
+    unify_value(x(4)),
+    put_value(x(3),2),
+    execute((gcp_delete)/3)]).
+
+
+clause(:-(csf_node('.'(node(A,B,C),_),D,node(A,B,C),E,1),','(complete(C,D),','(!,gcp_delete(A,D,E)))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_variable(y(2),3),
+    get_integer(1,4),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_structure((node)/3,0),
+    unify_variable(y(0)),
+    unify_variable(x(1)),
+    unify_variable(x(0)),
+    get_structure((node)/3,2),
+    unify_value(y(0)),
+    unify_value(x(1)),
+    unify_value(x(0)),
+    get_variable(y(3),5),
+    put_value(y(1),1),
+    call((complete)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((gcp_delete)/3)]).
+
+
+clause(:-(csf_node('.'(_,A),B,C,D,E),csf_node(A,B,C,D,E)),[
+    get_list(0),
+    unify_void(1),
+    unify_variable(x(0)),
+    execute((csf_node)/5)]).
+
+
+predicate(complete/2,88,static,private,monofile,global,1).
+
+
+clause(:-(complete(A,B),complete(A,A,B)),[
+    get_variable(x(2),1),
+    put_value(x(0),1),
+    execute((complete)/3)]).
+
+
+predicate(complete/3,91,static,private,monofile,global,2).
+
+
+clause(complete([],_,_),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(complete('.'(A,B),C,D),','(join(A,C,D),complete(B,C,D))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    call((join)/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((complete)/3)]).
+
+
+predicate(join/3,100,static,private,monofile,global,2).
+
+
+clause(:-(join(A,B,'.'(node(A,_,C),_)),','(!,subset(A,B,C))),[
+    get_list(2),
+    unify_variable(x(2)),
+    unify_void(1),
+    get_structure((node)/3,2),
+    unify_local_value(x(0)),
+    unify_void(1),
+    unify_variable(x(2)),
+    cut(x(3)),
+    execute((subset)/3)]).
+
+
+clause(:-(join(A,B,'.'(_,C)),join(A,B,C)),[
+    get_list(2),
+    unify_void(1),
+    unify_variable(x(2)),
+    execute((join)/3)]).
+
+
+predicate(subset/3,109,static,private,monofile,global,3).
+
+
+clause(subset(_,[],_),[
+    get_nil(1),
+    proceed]).
+
+
+clause(:-(subset(A,'.'(A,B),C),subset(A,B,C)),[
+    get_list(1),
+    unify_local_value(x(0)),
+    unify_variable(x(1)),
+    execute((subset)/3)]).
+
+
+clause(:-(subset(A,'.'(B,C),D),','(\==(A,B),','(gcp_member_cas(B,D),subset(A,C,D)))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_list(1),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_variable(y(3),2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_value(y(3),1),
+    call((gcp_member_cas)/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((subset)/3)]).
+
+
+predicate(gcp_member_cas/2,120,static,private,monofile,global,2).
+
+
+clause(:-(gcp_member_cas(A,'.'(A,_)),!),[
+    get_list(1),
+    unify_local_value(x(0)),
+    unify_void(1),
+    cut(x(2)),
+    proceed]).
+
+
+clause(:-(gcp_member_cas(A,'.'(B,C)),','(\==(A,B),gcp_member_cas(A,C))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    put_value(y(0),0),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((gcp_member_cas)/2)]).
+
+
+predicate(gcp_delete/3,129,static,private,monofile,global,3).
+
+
+clause(gcp_delete(_,[],[]),[
+    get_nil(1),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(gcp_delete(A,'.'(node(A,_,_),B),C),gcp_delete(A,B,C)),[
+    get_list(1),
+    unify_variable(x(3)),
+    unify_variable(x(1)),
+    get_structure((node)/3,3),
+    unify_local_value(x(0)),
+    unify_void(2),
+    execute((gcp_delete)/3)]).
+
+
+clause(:-(gcp_delete(A,'.'(node(B,C,D),E),'.'(node(B,F,G),H)),','(\==(A,B),','(remove(A,D,C,G,F),gcp_delete(A,E,H)))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure((node)/3,0),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    unify_variable(y(2)),
+    get_list(2),
+    unify_variable(x(0)),
+    unify_variable(y(6)),
+    get_structure((node)/3,0),
+    unify_value(x(1)),
+    unify_variable(y(4)),
+    unify_variable(y(5)),
+    put_value(y(0),0),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(1),2),
+    put_value(y(5),3),
+    put_value(y(4),4),
+    call((remove)/5),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_value(y(6),2),
+    deallocate,
+    execute((gcp_delete)/3)]).
+
+
+predicate(remove/5,142,static,private,monofile,global,3).
+
+
+clause(remove(_,[],A,[],A),[
+    get_nil(1),
+    get_nil(3),
+    get_value(x(4),2),
+    proceed]).
+
+
+clause(:-(remove(A,'.'(A,B),C,B,D),','(is(D,-(C,1)),!)),[
+    allocate(1),
+    get_list(1),
+    unify_local_value(x(0)),
+    unify_local_value(x(3)),
+    get_variable(y(0),5),
+    put_structure((-)/2,1),
+    unify_local_value(x(2)),
+    unify_integer(1),
+    put_value(x(4),0),
+    call((is)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(remove(A,'.'(B,C),D,'.'(B,E),F),','(\==(A,B),remove(A,C,D,E,F))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(2),2),
+    get_variable(y(4),4),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_list(3),
+    unify_value(x(1)),
+    unify_variable(y(3)),
+    put_value(y(0),0),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    deallocate,
+    execute((remove)/5)]).
+
+
+predicate(gcp_reverse/2,153,static,private,monofile,global,1).
+
+
+clause(:-(gcp_reverse(A,B),gcp_reverse(A,[],B)),[
+    put_value(x(1),2),
+    put_nil(1),
+    execute((gcp_reverse)/3)]).
+
+
+predicate(gcp_reverse/3,155,static,private,monofile,global,2).
+
+
+clause(gcp_reverse([],A,A),[
+    get_nil(0),
+    get_value(x(2),1),
+    proceed]).
+
+
+clause(:-(gcp_reverse('.'(A,B),C,D),gcp_reverse(B,'.'(A,C),D)),[
+    get_variable(x(3),1),
+    get_list(0),
+    unify_variable(x(4)),
+    unify_variable(x(0)),
+    put_list(1),
+    unify_value(x(4)),
+    unify_local_value(x(3)),
+    execute((gcp_reverse)/3)]).
+
+
+predicate(chro_poly/4,163,static,private,monofile,global,2).
+
+
+clause(chro_poly(_,[],[],[]),[
+    get_nil(1),
+    get_nil(2),
+    get_nil(3),
+    proceed]).
+
+
+clause(:-(chro_poly(A,'.'(node(_,B,C),D),'.'(E,F),'.'(-(k,B),G)),','(subgraph(A,C,H),','(ubound(H,B,E),chro_poly(A,D,F,G)))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_list(2),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    get_list(3),
+    unify_variable(x(0)),
+    unify_variable(y(5)),
+    get_structure((-)/2,0),
+    unify_atom(k),
+    unify_variable(y(1)),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure((node)/3,0),
+    unify_void(1),
+    unify_value(y(1)),
+    unify_variable(x(1)),
+    put_value(y(0),0),
+    put_variable(y(6),2),
+    call((subgraph)/3),
+    put_value(y(6),0),
+    put_value(y(1),1),
+    put_value(y(3),2),
+    call((ubound)/3),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    deallocate,
+    execute((chro_poly)/4)]).
+
+
+predicate(subgraph/3,173,static,private,monofile,global,3).
+
+
+clause(subgraph([],_,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(subgraph('.'(node(A,_,B),C),D,'.'(node(A,E,F),G)),','(gcp_member_cas(A,D),','(!,','(gcp_intersect(B,D,F,E),subgraph(C,D,G))))),[
+    allocate(7),
+    get_variable(y(2),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure((node)/3,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_variable(x(1)),
+    unify_variable(y(5)),
+    get_structure((node)/3,1),
+    unify_value(x(0)),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    get_variable(y(6),3),
+    put_value(y(2),1),
+    call((gcp_member_cas)/2),
+    cut(y(6)),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(4),2),
+    put_value(y(3),3),
+    call((gcp_intersect)/4),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(5),2),
+    deallocate,
+    execute((subgraph)/3)]).
+
+
+clause(:-(subgraph('.'(_,A),B,C),subgraph(A,B,C)),[
+    get_list(0),
+    unify_void(1),
+    unify_variable(x(0)),
+    execute((subgraph)/3)]).
+
+
+predicate(gcp_intersect/4,185,static,private,monofile,global,1).
+
+
+clause(:-(gcp_intersect(A,B,C,D),gcp_intersect(A,B,C,0,D)),[
+    put_value(x(3),4),
+    put_integer(0,3),
+    execute((gcp_intersect)/5)]).
+
+
+predicate(gcp_intersect/5,188,static,private,monofile,global,3).
+
+
+clause(gcp_intersect([],_,[],A,A),[
+    get_nil(0),
+    get_nil(2),
+    get_value(x(4),3),
+    proceed]).
+
+
+clause(:-(gcp_intersect('.'(A,B),C,'.'(A,D),E,F),','(gcp_member_cas(A,C),','(!,','(is(G,+(E,1)),gcp_intersect(B,C,D,G,F))))),[
+    allocate(7),
+    get_variable(y(1),1),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_value(x(0)),
+    unify_variable(y(2)),
+    get_variable(y(5),5),
+    put_value(y(1),1),
+    call((gcp_member_cas)/2),
+    cut(y(5)),
+    put_variable(y(6),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(3)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_unsafe_value(y(6),3),
+    put_value(y(4),4),
+    deallocate,
+    execute((gcp_intersect)/5)]).
+
+
+clause(:-(gcp_intersect('.'(_,A),B,C,D,E),gcp_intersect(A,B,C,D,E)),[
+    get_list(0),
+    unify_void(1),
+    unify_variable(x(0)),
+    execute((gcp_intersect)/5)]).
+
+
+predicate(ubound/3,201,static,private,monofile,global,1).
+
+
+clause(:-(ubound(A,B,-(k,C)),lbound(A,B,C)),[
+    get_structure((-)/2,2),
+    unify_atom(k),
+    unify_variable(x(2)),
+    execute((lbound)/3)]).
+
+
+predicate(lbound/3,208,static,private,monofile,global,1).
+
+
+clause(:-(lbound(A,B,C),','(dqsort(A,D),lbound(D,B,0,0,C))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    put_variable(y(2),1),
+    call((dqsort)/2),
+    put_unsafe_value(y(2),0),
+    put_value(y(0),1),
+    put_integer(0,2),
+    put_integer(0,3),
+    put_value(y(1),4),
+    deallocate,
+    execute((lbound)/5)]).
+
+
+predicate(lbound/5,212,static,private,monofile,global,2).
+
+
+clause(lbound(_,A,_,A,A),[
+    get_value(x(4),3),
+    get_value(x(4),1),
+    proceed]).
+
+
+clause(:-(lbound(A,B,C,D,E),','(is(F,+(C,1)),','(getdeg(A,F,G),','(is(H,+(-(B,G),C)),','(is(I,+(D,1)),;(->(>=(H,B),=(E,I)),lbound(A,B,H,I,E))))))),[
+    allocate(9),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_variable(y(5),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(2)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(0),0),
+    put_value(y(5),1),
+    put_variable(y(6),2),
+    call((getdeg)/3),
+    put_variable(y(7),0),
+    put_structure((-)/2,2),
+    unify_local_value(y(1)),
+    unify_local_value(y(6)),
+    put_structure((+)/2,1),
+    unify_value(x(2)),
+    unify_local_value(y(2)),
+    call((is)/2),
+    put_variable(y(8),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(3)),
+    unify_integer(1),
+    call((is)/2),
+    put_unsafe_value(y(7),0),
+    put_value(y(1),1),
+    put_value(y(4),2),
+    put_unsafe_value(y(8),3),
+    put_value(y(0),4),
+    deallocate,
+    execute(('$lbound/5_$aux1')/5)]).
+
+
+predicate('$lbound/5_$aux1'/5,213,static,private,monofile,local,2).
+
+
+clause(:-('$lbound/5_$aux1'(A,B,C,D,_),','('$get_cut_level'(E),','(>=(A,B),','('$cut'(E),=(C,D))))),[
+    allocate(3),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),5),
+    call((>=)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$lbound/5_$aux1'(A,B,C,D,E),lbound(E,B,A,D,C)),[
+    get_variable(x(5),4),
+    get_variable(x(4),2),
+    get_variable(x(2),0),
+    put_value(x(5),0),
+    execute((lbound)/5)]).
+
+
+predicate(getdeg/3,226,static,private,monofile,global,2).
+
+
+clause(getdeg('.'(node(_,A,_),_),1,A),[
+    get_integer(1,1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_structure((node)/3,0),
+    unify_void(1),
+    unify_local_value(x(2)),
+    unify_void(1),
+    proceed]).
+
+
+clause(:-(getdeg('.'(_,A),B,C),','(>(B,1),','(is(D,-(B,1)),getdeg(A,D,C)))),[
+    allocate(4),
+    get_list(0),
+    unify_void(1),
+    unify_variable(y(0)),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(1),0),
+    put_integer(1,1),
+    call((>)/2),
+    put_variable(y(3),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(1)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(0),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((getdeg)/3)]).
+
+
+predicate(dqsort/2,237,static,private,monofile,global,2).
+
+
+clause(dqsort([],[]),[
+    get_nil(0),
+    get_nil(1),
+    proceed]).
+
+
+clause(:-(dqsort('.'(A,B),C),','(split(A,B,D,E),','(dqsort(D,F),','(dqsort(E,G),append_cas(G,'.'(A,F),C))))),[
+    allocate(6),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(x(1)),
+    put_value(y(0),0),
+    put_variable(y(2),2),
+    put_variable(y(3),3),
+    call((split)/4),
+    put_value(y(2),0),
+    put_variable(y(4),1),
+    call((dqsort)/2),
+    put_value(y(3),0),
+    put_variable(y(5),1),
+    call((dqsort)/2),
+    put_unsafe_value(y(5),0),
+    put_list(1),
+    unify_value(y(0)),
+    unify_local_value(y(4)),
+    put_value(y(1),2),
+    deallocate,
+    execute((append_cas)/3)]).

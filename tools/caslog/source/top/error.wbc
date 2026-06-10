@@ -1,0 +1,270 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/top/error.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/top/error.pl').
+
+
+predicate(error_message/3,10,static,private,monofile,global,1).
+
+
+clause(:-(error_message(A,B,C),','(write('* Caslog error: '),','(error(A,B),','(nl,','(write('  '),','(write(C),nl)))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_atom('* Caslog error: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((error)/2),
+    call((nl)/0),
+    put_atom('  ',0),
+    call((write)/1),
+    put_value(y(2),0),
+    call((write)/1),
+    deallocate,
+    execute((nl)/0)]).
+
+
+predicate(error/2,21,static,private,monofile,global,28).
+
+
+clause(:-(error(comp1,A),','(write('unknown complexity name: '),write(A))),[
+    allocate(1),
+    get_atom(comp1,0),
+    get_variable(y(0),1),
+    put_atom('unknown complexity name: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(lit1,A),','(write('unknown predicate: '),write(A))),[
+    allocate(1),
+    get_atom(lit1,0),
+    get_variable(y(0),1),
+    put_atom('unknown predicate: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(bound1,A),','(write('unbound input variable: '),write(A))),[
+    allocate(1),
+    get_atom(bound1,0),
+    get_variable(y(0),1),
+    put_atom('unbound input variable: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(dec1,A),','(write('complexity declaration is missed for predicate: '),write(A))),[
+    allocate(1),
+    get_atom(dec1,0),
+    get_variable(y(0),1),
+    put_atom('complexity declaration is missed for predicate: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(dec2,A),','(write('illegal declaration: '),write(A))),[
+    allocate(1),
+    get_atom(dec2,0),
+    get_variable(y(0),1),
+    put_atom('illegal declaration: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(dec3,A),','(write('mode is not declared for predicate: '),write(A))),[
+    allocate(1),
+    get_atom(dec3,0),
+    get_variable(y(0),1),
+    put_atom('mode is not declared for predicate: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(dec4,A),','(write('measure is not declared for predicate: '),write(A))),[
+    allocate(1),
+    get_atom(dec4,0),
+    get_variable(y(0),1),
+    put_atom('measure is not declared for predicate: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(dec5,A),','(write('size is not declared for predicate: '),write(A))),[
+    allocate(1),
+    get_atom(dec5,0),
+    get_variable(y(0),1),
+    put_atom('size is not declared for predicate: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(dec6,A),','(write('det is not declared for predicate: '),write(A))),[
+    allocate(1),
+    get_atom(dec6,0),
+    get_variable(y(0),1),
+    put_atom('det is not declared for predicate: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(dec7,A),','(write('time is not declared for predicate: '),write(A))),[
+    allocate(1),
+    get_atom(dec7,0),
+    get_variable(y(0),1),
+    put_atom('time is not declared for predicate: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(dec8,_),write('illegal expressions in declaration')),[
+    get_atom(dec8,0),
+    put_atom('illegal expressions in declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(dec9,A),','(write('mutex is not declared for predicate: '),write(A))),[
+    allocate(1),
+    get_atom(dec9,0),
+    get_variable(y(0),1),
+    put_atom('mutex is not declared for predicate: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(mode1,_),write('use list_cas for mode declaration')),[
+    get_atom(mode1,0),
+    put_atom('use list_cas for mode declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(mode2,_),write('arity inconsistency in mode declaration')),[
+    get_atom(mode2,0),
+    put_atom('arity inconsistency in mode declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(mode3,A),','(write('illegal mode symbol: '),write(A))),[
+    allocate(1),
+    get_atom(mode3,0),
+    get_variable(y(0),1),
+    put_atom('illegal mode symbol: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(measure1,_),write('use list_cas for measure declaration')),[
+    get_atom(measure1,0),
+    put_atom('use list_cas for measure declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(measure2,_),write('arity inconsistency in measure declaration')),[
+    get_atom(measure2,0),
+    put_atom('arity inconsistency in measure declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(measure3,A),','(write('illegal measure name: '),write(A))),[
+    allocate(1),
+    get_atom(measure3,0),
+    get_variable(y(0),1),
+    put_atom('illegal measure name: ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    deallocate,
+    execute((write)/1)]).
+
+
+clause(:-(error(mutex1,_),write('use list_cas for mutex declaration')),[
+    get_atom(mutex1,0),
+    put_atom('use list_cas for mutex declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(mutex2,_),write('use list_cas of integers for mutex declaration')),[
+    get_atom(mutex2,0),
+    put_atom('use list_cas of integers for mutex declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(domain1,_),write('use list_cas for domain declaration')),[
+    get_atom(domain1,0),
+    put_atom('use list_cas for domain declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(domain2,_),write('arity inconsistency in domain declaration')),[
+    get_atom(domain2,0),
+    put_atom('arity inconsistency in domain declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(domain3,_),write('use integer interval or list_cas for domain declaration')),[
+    get_atom(domain3,0),
+    put_atom('use integer interval or list_cas for domain declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(size1,_),write('use list_cas for size declaration')),[
+    get_atom(size1,0),
+    put_atom('use list_cas for size declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(size2,_),write('arity inconsistency in size declaration')),[
+    get_atom(size2,0),
+    put_atom('arity inconsistency in size declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(det1,_),write('do not use list_cas for det declaration')),[
+    get_atom(det1,0),
+    put_atom('do not use list_cas for det declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(time1,_),write('do not use list_cas for time declaration')),[
+    get_atom(time1,0),
+    put_atom('do not use list_cas for time declaration',0),
+    execute((write)/1)]).
+
+
+clause(:-(error(second_order1,A),','(write('illegal predicate argument '),','(write(A),write(' in findall predicate')))),[
+    allocate(1),
+    get_atom(second_order1,0),
+    get_variable(y(0),1),
+    put_atom('illegal predicate argument ',0),
+    call((write)/1),
+    put_value(y(0),0),
+    call((write)/1),
+    put_atom(' in findall predicate',0),
+    deallocate,
+    execute((write)/1)]).

@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Build output
+build/
+
+# LaTeX auxiliary files (if compiled locally in the future)
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# Ciao / CiaoPP compiler and analysis artifacts
+*.itf
+*.po
+*.as
+*.pla
+*.ast
+
+# Benchmark workspace and cache
+tools/LogicTransformers/benchmark/work/
+tools/LogicTransformers/benchmark/tmp/

@@ -1,0 +1,353 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/dependency/adg.pl
+% date    : 2 6 2003
+% time    : 10:15:31
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/dependency/adg.pl').
+
+
+predicate(insert_adg_entry/3,16,static,private,user,3).
+
+
+clause(:-(insert_adg_entry(A,B,C),','(var(A),','(=(C,adg(B,D,E,F)),=(A,'.'(C,G))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(2),0),
+    get_structure(adg/4,0),
+    unify_local_value(y(1)),
+    unify_void(3),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_adg_entry(A,B,C),','(nonvar(A),','(=(A,'.'(C,D)),=(C,adg(B,E,F,G))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_void(1),
+    put_value(y(2),0),
+    get_structure(adg/4,0),
+    unify_local_value(y(1)),
+    unify_void(3),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_adg_entry(A,B,C),','(nonvar(A),','(=(A,'.'(adg(D,E,F,G),H)),','(\==(D,B),insert_adg_entry(H,B,C))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure(adg/4,0),
+    unify_variable(x(0)),
+    unify_void(3),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(insert_adg_entry/3)]).
+
+
+predicate(insert_adg_field/4,46,static,private,user,1).
+
+
+clause(:-(insert_adg_field(A,B,C,D),;(->(==(C,pred),','(insert_adg_entry(A,B,adg(B,E,F,G)),insert_adg_edge(E,D))),;(->(==(C,succ),','(insert_adg_entry(A,B,adg(B,H,E,I)),insert_adg_edge(E,D))),->(==(C,mode),insert_adg_entry(A,B,adg(B,J,K,D)))))),[
+    get_variable(x(4),2),
+    get_variable(x(2),1),
+    get_variable(x(1),0),
+    put_value(x(4),0),
+    execute('$insert_adg_field/4_$aux1'/4)]).
+
+
+predicate('$insert_adg_field/4_$aux1'/4,46,static,private,user,3).
+
+
+clause(:-('$insert_adg_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,pred),','('$cut'(E),','(insert_adg_entry(B,C,adg(C,F,G,H)),insert_adg_edge(F,D)))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(pred,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(adg/4,2),
+    unify_local_value(y(1)),
+    unify_variable(y(4)),
+    unify_void(2),
+    call(insert_adg_entry/3),
+    put_value(y(4),0),
+    put_value(y(2),1),
+    deallocate,
+    execute(insert_adg_edge/2)]).
+
+
+clause(:-('$insert_adg_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,succ),','('$cut'(E),','(insert_adg_entry(B,C,adg(C,F,G,H)),insert_adg_edge(G,D)))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(succ,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(adg/4,2),
+    unify_local_value(y(1)),
+    unify_void(1),
+    unify_variable(y(4)),
+    unify_void(1),
+    call(insert_adg_entry/3),
+    put_value(y(4),0),
+    put_value(y(2),1),
+    deallocate,
+    execute(insert_adg_edge/2)]).
+
+
+clause(:-('$insert_adg_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,mode),','('$cut'(E),insert_adg_entry(B,C,adg(C,F,G,D)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(mode,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(adg/4,2),
+    unify_local_value(y(1)),
+    unify_void(2),
+    unify_local_value(y(2)),
+    deallocate,
+    execute(insert_adg_entry/3)]).
+
+
+predicate(insert_adg_edge/2,63,static,private,user,3).
+
+
+clause(:-(insert_adg_edge(A,B),','(var(A),=(A,'.'(B,C)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_adg_edge(A,B),','(nonvar(A),=(A,'.'(B,C)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_adg_edge(A,B),','(nonvar(A),','(=(A,'.'(C,D)),','(\==(C,B),insert_adg_edge(D,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(insert_adg_edge/2)]).
+
+
+predicate(find_adg_entry/3,80,static,private,user,3).
+
+
+clause(:-(find_adg_entry(A,B,C),var(A)),[
+    execute(var/1)]).
+
+
+clause(:-(find_adg_entry(A,B,C),','(nonvar(A),','(=(A,'.'(C,D)),=(C,adg(B,E,F,G))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(2)),
+    unify_void(1),
+    put_value(y(2),0),
+    get_structure(adg/4,0),
+    unify_local_value(y(1)),
+    unify_void(3),
+    deallocate,
+    proceed]).
+
+
+clause(:-(find_adg_entry(A,B,C),','(nonvar(A),','(=(A,'.'(adg(D,E,F,G),H)),','(\==(D,B),find_adg_entry(H,B,C))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(3)),
+    get_structure(adg/4,0),
+    unify_variable(x(0)),
+    unify_void(3),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(find_adg_entry/3)]).
+
+
+predicate(find_adg_field/4,104,static,private,user,1).
+
+
+clause(:-(find_adg_field(A,B,C,D),;(->(==(C,pred),find_adg_entry(A,B,adg(B,D,E,F))),;(->(==(C,succ),find_adg_entry(A,B,adg(B,G,D,H))),->(==(C,mode),find_adg_entry(A,B,adg(B,I,J,D)))))),[
+    get_variable(x(4),2),
+    get_variable(x(2),1),
+    get_variable(x(1),0),
+    put_value(x(4),0),
+    execute('$find_adg_field/4_$aux1'/4)]).
+
+
+predicate('$find_adg_field/4_$aux1'/4,104,static,private,user,3).
+
+
+clause(:-('$find_adg_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,pred),','('$cut'(E),find_adg_entry(B,C,adg(C,D,F,G)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(pred,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(adg/4,2),
+    unify_local_value(y(1)),
+    unify_local_value(y(2)),
+    unify_void(2),
+    deallocate,
+    execute(find_adg_entry/3)]).
+
+
+clause(:-('$find_adg_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,succ),','('$cut'(E),find_adg_entry(B,C,adg(C,F,D,G)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(succ,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(adg/4,2),
+    unify_local_value(y(1)),
+    unify_void(1),
+    unify_local_value(y(2)),
+    unify_void(1),
+    deallocate,
+    execute(find_adg_entry/3)]).
+
+
+clause(:-('$find_adg_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,mode),','('$cut'(E),find_adg_entry(B,C,adg(C,F,G,D)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(mode,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(adg/4,2),
+    unify_local_value(y(1)),
+    unify_void(2),
+    unify_local_value(y(2)),
+    deallocate,
+    execute(find_adg_entry/3)]).
+
+
+predicate(print_adg/1,118,static,private,user,1).
+
+
+clause(:-(print_adg(A),','(tell(adg),','(p_adg(A),told))),[
+    allocate(1),
+    get_variable(y(0),0),
+    put_atom(adg,0),
+    call(tell/1),
+    put_value(y(0),0),
+    call(p_adg/1),
+    deallocate,
+    execute(told/0)]).
+
+
+predicate(p_adg/1,123,static,private,user,2).
+
+
+clause(p_adg([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(p_adg('.'(A,B)),','(write(A),','(nl,p_adg(B)))),[
+    allocate(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(write/1),
+    call(nl/0),
+    put_value(y(0),0),
+    deallocate,
+    execute(p_adg/1)]).

@@ -1,0 +1,63 @@
+package com.googlecode.prolog_cafe.builtin;
+import com.googlecode.prolog_cafe.exceptions.IllegalTypeException;
+import com.googlecode.prolog_cafe.exceptions.PInstantiationException;
+import com.googlecode.prolog_cafe.exceptions.RepresentationException;
+import com.googlecode.prolog_cafe.lang.IntegerTerm;
+import com.googlecode.prolog_cafe.lang.ListTerm;
+import com.googlecode.prolog_cafe.lang.Operation;
+import com.googlecode.prolog_cafe.lang.Predicate;
+import com.googlecode.prolog_cafe.lang.Prolog;
+import com.googlecode.prolog_cafe.lang.StructureTerm;
+import com.googlecode.prolog_cafe.lang.SymbolTerm;
+import com.googlecode.prolog_cafe.lang.Term;
+import com.googlecode.prolog_cafe.lang.VariableTerm;
+/**
+   <code>'$get_instances'/2</code><br>
+   @author Mutsunori Banbara (banbara@kobe-u.ac.jp)
+   @author Naoyuki Tamura (tamura@kobe-u.ac.jp)
+   @version 1.1
+*/
+class PRED_$get_instances_2 extends Predicate.P2 {
+    private static final SymbolTerm COMMA = SymbolTerm.intern(",", 2);
+
+    public PRED_$get_instances_2(Term a1, Term a2, Operation cont) {
+        arg1 = a1;
+        arg2 = a2;
+        this.cont = cont;
+    }
+
+    @Override
+    public Operation exec(Prolog engine) {
+        engine.setB0();
+        Term a1, a2;
+        a1 = arg1;
+        a2 = arg2;
+
+	a1 = a1.dereference();
+	if (Prolog.Nil.equals(a1))
+	    return engine.fail();
+	if (! (a1 instanceof ListTerm))
+	    throw new IllegalTypeException(this, 1, "list", a1);
+	Term x = Prolog.Nil;
+	Term tmp = a1;
+	while(! Prolog.Nil.equals(tmp)) {
+	    if (! (tmp instanceof ListTerm))
+		throw new IllegalTypeException(this, 1, "list", a1);
+	    Term car = ((ListTerm)tmp).car().dereference();
+	    if (car instanceof VariableTerm)
+		throw new PInstantiationException(this, 1);
+	    if (! (car instanceof IntegerTerm)) 
+		throw new RepresentationException(this, 1, "integer");
+	    // car is an integer
+	    int i = ((IntegerTerm)car).intValue();
+	    Term e = engine.internalDB.get(i);
+	    if (e != null) {
+		x = new ListTerm(new StructureTerm(COMMA, e, car), x);
+	    }
+	    tmp = ((ListTerm)tmp).cdr().dereference();
+	}
+	if (! a2.unify(x, engine.trail))
+	    return engine.fail();
+	return cont;
+    }
+}

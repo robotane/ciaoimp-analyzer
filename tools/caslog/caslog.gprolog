@@ -1,0 +1,9 @@
+#!/bin/sh
+LOCALSZ=20000;export LOCALSZ
+if [ $# -eq 0 ];then
+echo "`cat gprolog.loading` caslog([])."|gprolog
+else
+echo "`cat gprolog.loading`
+caslog(['"$*"']).
+" | sed "s/ /','/g" | gprolog
+fi

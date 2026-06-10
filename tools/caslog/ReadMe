@@ -1,0 +1,15 @@
+
+To install CASLOG for gnu_prolog
+Type "./gprolog.install" (at directory caslog)
+
+This command will compile the Prolog source codes.
+
+To run CASLOG,
+
+Type "./caslog.gprolog filename" (at caslog directory)
+
+This command will load the compiled files (.wbc),
+and perform complexity analysis on the program file filename.
+
+
+

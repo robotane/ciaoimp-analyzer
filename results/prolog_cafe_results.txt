@@ -1,0 +1,49 @@
+=== auction ===
+Result: [1000,850,150,0]
+
+=== ballot ===
+Result: [prop_a]
+
+=== blind_auction ===
+Result: [850,1000,150,0]
+
+=== crowdfunding ===
+Result: [800,850,350,0]
+
+=== crypto_buddy ===
+Result: [700,0,200,100]
+
+=== crypto_shark ===
+Result: [charlie,1,1]
+
+=== distributor ===
+Result: [1150,1150,700,0]
+
+=== example_coin ===
+Result: [999500,400,200,1000100]
+
+=== example_erc721 ===
+Result: [bob,alice,1,1]
+
+=== gradual_ponzi ===
+Result: [3000,1000,-1000,0]
+
+=== shared_entity ===
+Result: [1500,1000,500,0]
+
+=== simple_auction ===
+Result: [1000,800,200,0]
+
+=== simple_ponzi ===
+Result: [1020,880,100]
+
+=== simple_pyramid ===
+Result: [2705,1505,290,0]
+
+=== simple_shared_entity ===
+Result: [1200,1000,800,0]
+
+=== tictactoe ===
+Result: [900,900,200]
+
+Prolog Cafe : 16 OK, 0 ERREURS

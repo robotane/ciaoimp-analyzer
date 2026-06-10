@@ -1,0 +1,296 @@
+CiaoImp pipeline - rapport automatique des differences entre etapes
+==============================================================================
+
+Contrats analyses: 1
+Limite de diff par transition: 400 lignes
+Configurer avec STAGE_DIFF_MAX_LINES=0 pour un diff complet.
+
+##############################################################################
+CONTRAT: distributor
+##############################################################################
+
+Statistiques par etape
+------------------------------------------------------------------------------
+source           73 lines, 2007 bytes, sha256=78a5cb71c468598e
+executable       68 lines, 1666 bytes, sha256=d09ec9f3229a88dd
+normalized       63 lines, 1598 bytes, sha256=d83b8211d5737ea6
+annotated        90 lines, 2435 bytes, sha256=5941f4b8bfa29d91
+
+Transition source -> executable
+------------------------------------------------------------------------------
+--- /home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable_primitives/data/source/distributor.pl
++++ /home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable_primitives/build/executable/distributor.pl
+@@ -1,73 +1,68 @@
+-% Distributeur : le propriétaire enregistre des bénéficiaires,
+-% puis distribue équitablement les fonds reçus.
+-% Etat : state(Owner, ListeBeneficiaires)
+-:- module(_, [goal/1], [fsyntax, statevars, hiord, loops]).
+-:- use_module(library(lists), [length/2]).
+-:- fun_eval arith(true).
+-
+-% --- Infrastructure Blockchain ---
+-
+-:- fun_eval get_bal/2.
+-get_bal(Addr, B) := Result :-
+-    Result := 0,
+-    for (Entry in list(B)) {
+-        Entry = bal(A, Val),
+-        if (A == Addr) { Result := Val }
+-    }.
+-
+-set_bal(Addr, NewVal, !B) :-
+-    Acc := [],
+-    for (Entry in list(B)) {
+-        Entry = bal(A, V),
+-        if (A == Addr) {
+-            Acc := [bal(Addr, NewVal) | Acc]
+-        } else {
+-            Acc := [bal(A, V) | Acc]
+-        }
+-    },
+-    B := Acc.
+-
+-transfer(From, To, Amount, !B) :-
+-    FB is ~get_bal(From, B),
+-    NewFB is FB - Amount,
+-    set_bal(From, NewFB, !B),
+-    TB is ~get_bal(To, B),
+-    NewTB is TB + Amount,
+-    set_bal(To, NewTB, !B).
+-
+-% --- Contrat ---
+-
+-init(Caller, !S) :-
+-    S := state(Caller, []).
+-
+-add_as_payee(Caller, !S) :-
+-    state(Owner, Payees) = S,
+-    S := state(Owner, [Caller | Payees]).
+-
+-distribute(Caller, Value, !S, !B) :-
+-    state(Owner, Payees) = S,
+-    length(Payees, Len),
+-    if (Len > 0) {
+-        transfer(Caller, this, Value, !B),
+-        EachGets is Value // Len,
+-        for (P in list(Payees)) {
+-            transfer(this, P, EachGets, !B)
+-        }
+-    }.
+-
+-% --- Test ---
+-% Scenario : owner cree, alice+bob sont beneficiaires,
+-%            carol distribue 300 (150 chacun).
+-% Attendu : alice=1150, bob=1150, carol=700, this=0
+-
+-goal(Results) :-
+-    B0 = [bal(alice, 1000), bal(bob, 1000), bal(carol, 1000), bal(this, 0)],
+-    init(owner, _, S1),
+-    add_as_payee(alice, S1, S2),
+-    add_as_payee(bob, S2, S3),
+-    distribute(carol, 300, S3, _, B0, B1),
+-    AliceBal is ~get_bal(alice, B1),
+-    BobBal   is ~get_bal(bob,   B1),
+-    CarolBal is ~get_bal(carol, B1),
+-    ThisBal  is ~get_bal(this,  B1),
+-    Results = [AliceBal, BobBal, CarolBal, ThisBal].
++get_bal(A, B, C) :-
++    loop_aux_1(B, A, 0, C).
++set_bal(A, B, C, D) :-
++    loop_aux_2(C, A, B, D).
++transfer(A, B, C, D, E) :-
++    get_bal(A, D, F),
++    G is F,
++    H is G-C,
++    I is H,
++    set_bal(A, I, D, J),
++    get_bal(B, J, K),
++    L is K,
++    M is L+C,
++    N is M,
++    set_bal(B, N, J, E).
++init(A, _, state(A, [])).
++add_as_payee(A, state(B, C), state(B, [A|C])).
++distribute(A, B, state(C, D), state(C, D), E, F) :-
++    len_list(D, G),
++    aux_cond_1(G, A, B, E, D, F).
++aux_cond_1(A, B, C, D, E, F) :-
++    A>0,
++    !,
++    transfer(B, this, C, D, G),
++    H is C//A,
++    I is H,
++    loop_aux_3(E, I, G, F).
++aux_cond_1(_, _, _, A, _, A).
++goal([A, B, C, D]) :-
++    init(owner, _, E),
++    add_as_payee(alice, E, F),
++    add_as_payee(bob, F, G),
++    distribute(carol,
++               300,
++               G,
++               _,
++               [bal(alice, 1000), bal(bob, 1000), bal(carol, 1000), bal(this, 0)],
++               H),
++    get_bal(alice, H, I),
++    A is I,
++    get_bal(bob, H, J),
++    B is J,
++    get_bal(carol, H, K),
++    C is K,
++    get_bal(this, H, L),
++    D is L.
++loop_aux_1([], _, A, A).
++loop_aux_1([bal(A, B)|C], D, E, F) :-
++    aux_cond_2(A, D, G, B, E),
++    loop_aux_1(C, D, G, F).
++aux_cond_2(A, A, B, B, _) :-
++    !.
++aux_cond_2(_, _, A, _, A).
++loop_aux_2([], _, _, []).
++loop_aux_2([bal(A, B)|C], D, E, F) :-
++    aux_cond_3(A, D, F, E, G, B),
++    loop_aux_2(C, D, E, G).
++aux_cond_3(A, A, [bal(A, B)|C], B, C, _) :-
++    !.
++aux_cond_3(A, _, [bal(A, B)|C], _, C, B).
++loop_aux_3([], _, A, A).
++loop_aux_3([A|B], C, D, E) :-
++    transfer(this, A, C, D, F),
++    loop_aux_3(B, C, F, E).
++len_list([], 0).
++len_list([_|A], B) :-
++    len_list(A, C),
++    B is C+1.
+
+Transition executable -> normalized
+------------------------------------------------------------------------------
+--- /home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable_primitives/build/executable/distributor.pl
++++ /home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable_primitives/build/normalized/distributor.pl
+@@ -13,9 +13,9 @@
+     M is L+C,
+     N is M,
+     set_bal(B, N, J, E).
+-init(A, _, state(A, [])).
+-add_as_payee(A, state(B, C), state(B, [A|C])).
+-distribute(A, B, state(C, D), state(C, D), E, F) :-
++init(A, _, A, []).
++add_as_payee(A, B, C, B, [A|C]).
++distribute(A, B, C, D, C, D, E, F) :-
+     len_list(D, G),
+     aux_cond_1(G, A, B, E, D, F).
+ aux_cond_1(A, B, C, D, E, F) :-
+@@ -27,15 +27,10 @@
+     loop_aux_3(E, I, G, F).
+ aux_cond_1(_, _, _, A, _, A).
+ goal([A, B, C, D]) :-
+-    init(owner, _, E),
+-    add_as_payee(alice, E, F),
+-    add_as_payee(bob, F, G),
+-    distribute(carol,
+-               300,
+-               G,
+-               _,
+-               [bal(alice, 1000), bal(bob, 1000), bal(carol, 1000), bal(this, 0)],
+-               H),
++    init(owner, _, E_1, E_2),
++    add_as_payee(alice, E_1, E_2, F_1, F_2),
++    add_as_payee(bob, F_1, F_2, G_1, G_2),
++    distribute(carol, 300, G_1, G_2, _, _, [bal(alice, 1000), bal(bob, 1000), bal(carol, 1000), bal(this, 0)], H),
+     get_bal(alice, H, I),
+     A is I,
+     get_bal(bob, H, J),
+@@ -52,12 +47,12 @@
+     !.
+ aux_cond_2(_, _, A, _, A).
+ loop_aux_2([], _, _, []).
+-loop_aux_2([bal(A, B)|C], D, E, F) :-
+-    aux_cond_3(A, D, F, E, G, B),
+-    loop_aux_2(C, D, E, G).
+-aux_cond_3(A, A, [bal(A, B)|C], B, C, _) :-
++loop_aux_2([bal(A, B)|C], D, E, [Elem_1|F]) :-
++    aux_cond_3(A, D, Elem_1, E, B),
++    loop_aux_2(C, D, E, F).
++aux_cond_3(A, A, bal(A, B), B, _) :-
+     !.
+-aux_cond_3(A, _, [bal(A, B)|C], _, C, B).
++aux_cond_3(A, _, bal(A, B), _, B).
+ loop_aux_3([], _, A, A).
+ loop_aux_3([A|B], C, D, E) :-
+     transfer(this, A, C, D, F),
+
+Transition normalized -> annotated
+------------------------------------------------------------------------------
+--- /home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable_primitives/build/normalized/distributor.pl
++++ /home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable_primitives/build/annotated/distributor.pl
+@@ -1,3 +1,43 @@
++:- mode(get_bal/3, [+, +, -]).
++:- measure(get_bal/3, [void, length, void]).
++
++:- mode(set_bal/4, [+, +, +, -]).
++:- measure(set_bal/4, [void, void, length, length]).
++
++:- mode(transfer/5, [+, +, +, +, -]).
++:- measure(transfer/5, [void, void, int, length, length]).
++
++:- mode(init/4, [+, +, +, -]).
++:- measure(init/4, [void, void, void, length]).
++
++:- mode(add_as_payee/5, [+, +, +, +, -]).
++:- measure(add_as_payee/5, [void, void, length, void, length]).
++
++:- mode(distribute/8, [+, +, +, +, +, +, +, -]).
++:- measure(distribute/8, [void, void, void, length, void, length, length, void]).
++
++:- mode(aux_cond_1/6, [+, +, +, +, +, -]).
++:- measure(aux_cond_1/6, [void, void, void, length, length, void]).
++
++:- mode(loop_aux_1/4, [+, +, +, -]).
++:- measure(loop_aux_1/4, [length, void, void, void]).
++
++:- mode(aux_cond_2/5, [+, +, -, +, +]).
++:- measure(aux_cond_2/5, [void, void, void, void, void]).
++
++:- mode(loop_aux_2/4, [+, +, +, -]).
++:- measure(loop_aux_2/4, [length, void, void, length]).
++
++:- mode(aux_cond_3/5, [+, +, -, +, +]).
++:- measure(aux_cond_3/5, [void, void, void, void, void]).
++
++:- mode(loop_aux_3/4, [+, +, +, -]).
++:- measure(loop_aux_3/4, [length, void, length, void]).
++
++:- mode(len_list/2, [+, -]).
++:- measure(len_list/2, [length, int]).
++
++
+ get_bal(A, B, C) :-
+     loop_aux_1(B, A, 0, C).
+ set_bal(A, B, C, D) :-
+@@ -26,19 +66,6 @@
+     I is H,
+     loop_aux_3(E, I, G, F).
+ aux_cond_1(_, _, _, A, _, A).
+-goal([A, B, C, D]) :-
+-    init(owner, _, E_1, E_2),
+-    add_as_payee(alice, E_1, E_2, F_1, F_2),
+-    add_as_payee(bob, F_1, F_2, G_1, G_2),
+-    distribute(carol, 300, G_1, G_2, _, _, [bal(alice, 1000), bal(bob, 1000), bal(carol, 1000), bal(this, 0)], H),
+-    get_bal(alice, H, I),
+-    A is I,
+-    get_bal(bob, H, J),
+-    B is J,
+-    get_bal(carol, H, K),
+-    C is K,
+-    get_bal(this, H, L),
+-    D is L.
+ loop_aux_1([], _, A, A).
+ loop_aux_1([bal(A, B)|C], D, E, F) :-
+     aux_cond_2(A, D, G, B, E),
+@@ -60,4 +87,4 @@
+ len_list([], 0).
+ len_list([_|A], B) :-
+     len_list(A, C),
+-    B is C+1.
++    B is C+1.
+

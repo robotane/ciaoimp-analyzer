@@ -1,0 +1,651 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/size/term_size.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/size/term_size.pl').
+
+
+predicate(general_term_size/8,11,static,private,monofile,global,2).
+
+
+clause(general_term_size(void,_,_,_,_,_,_,0),[
+    get_atom(void,0),
+    get_integer(0,7),
+    proceed]).
+
+
+clause(:-(general_term_size(A,B,C,D,E,F,G,H),','(\==(A,void),','(ground_term_size(A,G,I),;(->(==(I,bot),nonground_term_size(A,B,C,D,E,F,G,H)),=(H,I))))),[
+    allocate(9),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    put_value(y(0),0),
+    put_atom(void,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(6),1),
+    put_variable(y(8),2),
+    call((ground_term_size)/3),
+    put_unsafe_value(y(8),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(3),4),
+    put_value(y(4),5),
+    put_value(y(5),6),
+    put_value(y(6),7),
+    put_value(y(7),8),
+    deallocate,
+    execute(('$general_term_size/8_$aux1')/9)]).
+
+
+predicate('$general_term_size/8_$aux1'/9,12,static,private,monofile,local,2).
+
+
+clause(:-('$general_term_size/8_$aux1'(A,B,C,D,E,F,G,H,I),','('$get_cut_level'(J),','(==(A,bot),','('$cut'(J),nonground_term_size(B,C,D,E,F,G,H,I))))),[
+    allocate(9),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    get_variable(y(7),8),
+    get_variable(y(8),9),
+    put_atom(bot,1),
+    call((==)/2),
+    cut(y(8)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(6),6),
+    put_value(y(7),7),
+    deallocate,
+    execute((nonground_term_size)/8)]).
+
+
+clause(:-('$general_term_size/8_$aux1'(A,_,_,_,_,_,_,_,B),=(B,A)),[
+    get_value(x(0),8),
+    proceed]).
+
+
+predicate(nonground_term_size/8,30,static,private,monofile,global,1).
+
+
+clause(:-(nonground_term_size(A,B,C,D,E,F,G,H),','(common_predecessor(G,E,F,I),','(general_term_diff(C,D,A,B,I,G,J),;(->(==(J,bot),;(->(compound_cas(G),general_subterm_size(A,B,C,D,E,F,G,H)),=(H,J))),=(H,J))))),[
+    allocate(10),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    put_value(y(6),0),
+    put_value(y(4),1),
+    put_value(y(5),2),
+    put_variable(y(8),3),
+    call((common_predecessor)/4),
+    put_value(y(2),0),
+    put_value(y(3),1),
+    put_value(y(0),2),
+    put_value(y(1),3),
+    put_value(y(8),4),
+    put_value(y(6),5),
+    put_variable(y(9),6),
+    call((general_term_diff)/7),
+    put_unsafe_value(y(9),0),
+    put_value(y(6),1),
+    put_value(y(0),2),
+    put_value(y(1),3),
+    put_value(y(2),4),
+    put_value(y(3),5),
+    put_value(y(4),6),
+    put_value(y(5),7),
+    put_value(y(7),8),
+    deallocate,
+    execute(('$nonground_term_size/8_$aux1')/9)]).
+
+
+predicate('$nonground_term_size/8_$aux1'/9,30,static,private,monofile,local,2).
+
+
+clause(:-('$nonground_term_size/8_$aux1'(A,B,C,D,E,F,G,H,I),','('$get_cut_level'(J),','(==(A,bot),','('$cut'(J),;(','('$get_cut_level'(K),','(compound_cas(B),','('$cut'(K),general_subterm_size(C,D,E,F,G,H,B,I)))),=(I,A)))))),[
+    allocate(10),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),8),
+    get_variable(y(9),9),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((==)/2),
+    cut(y(9)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    put_value(y(5),4),
+    put_value(y(6),5),
+    put_value(y(7),6),
+    put_value(y(8),7),
+    put_value(y(0),8),
+    deallocate,
+    execute(('$nonground_term_size/8_$aux2')/9)]).
+
+
+clause(:-('$nonground_term_size/8_$aux1'(A,_,_,_,_,_,_,_,B),=(B,A)),[
+    get_value(x(0),8),
+    proceed]).
+
+
+predicate('$nonground_term_size/8_$aux2'/9,30,static,private,monofile,local,2).
+
+
+clause(:-('$nonground_term_size/8_$aux2'(A,B,C,D,E,F,G,H,_),','('$get_cut_level'(I),','(compound_cas(A),','('$cut'(I),general_subterm_size(B,C,D,E,F,G,A,H))))),[
+    allocate(9),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),9),
+    put_value(y(0),0),
+    call((compound_cas)/1),
+    cut(y(8)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    put_value(y(5),4),
+    put_value(y(6),5),
+    put_value(y(0),6),
+    put_value(y(7),7),
+    deallocate,
+    execute((general_subterm_size)/8)]).
+
+
+clause(:-('$nonground_term_size/8_$aux2'(_,_,_,_,_,_,_,A,B),=(A,B)),[
+    get_value(x(8),7),
+    proceed]).
+
+
+predicate(common_predecessor/4,43,static,private,monofile,global,3).
+
+
+clause(:-(common_predecessor(A,_,B,B),atomic(A)),[
+    get_value(x(3),2),
+    execute((atomic)/1)]).
+
+
+clause(:-(common_predecessor(A,B,C,D),','(var(A),','(find_gvars_field(B,A,def,E),intersection(C,E,D)))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call((var)/1),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_atom(def,2),
+    put_variable(y(4),3),
+    call((find_gvars_field)/4),
+    put_value(y(2),0),
+    put_unsafe_value(y(4),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((intersection)/3)]).
+
+
+clause(:-(common_predecessor(A,B,C,D),','(compound_cas(A),','(functor(A,_,E),common_predecessor(E,A,B,C,D)))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call((compound_cas)/1),
+    put_value(y(0),0),
+    put_void(1),
+    put_variable(y(4),2),
+    call((functor)/3),
+    put_unsafe_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(3),4),
+    deallocate,
+    execute((common_predecessor)/5)]).
+
+
+predicate(common_predecessor/5,71,static,private,monofile,global,2).
+
+
+clause(common_predecessor(0,_,_,A,A),[
+    get_integer(0,0),
+    get_value(x(4),3),
+    proceed]).
+
+
+clause(:-(common_predecessor(A,B,C,D,E),','(>(A,0),','(arg(A,B,F),','(common_predecessor(F,C,D,G),','(is(H,-(A,1)),common_predecessor(H,B,C,G,E)))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(5),2),
+    call((arg)/3),
+    put_value(y(5),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_variable(y(6),3),
+    call((common_predecessor)/4),
+    put_variable(y(7),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_unsafe_value(y(7),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_unsafe_value(y(6),3),
+    put_value(y(4),4),
+    deallocate,
+    execute((common_predecessor)/5)]).
+
+
+predicate(general_subterm_size/8,82,static,private,monofile,global,4).
+
+
+clause(:-(general_subterm_size(int,A,B,C,D,E,F,G),','(functor(F,H,I),subterm_int(I,H,F,B,C,A,D,E,G))),[
+    allocate(9),
+    get_atom(int,0),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    put_value(y(5),0),
+    put_variable(y(7),1),
+    put_variable(y(8),2),
+    call((functor)/3),
+    put_unsafe_value(y(8),0),
+    put_unsafe_value(y(7),1),
+    put_value(y(5),2),
+    put_value(y(1),3),
+    put_value(y(2),4),
+    put_value(y(0),5),
+    put_value(y(3),6),
+    put_value(y(4),7),
+    put_value(y(6),8),
+    deallocate,
+    execute((subterm_int)/9)]).
+
+
+clause(:-(general_subterm_size(length,A,B,C,D,E,F,G),','(subterm_length(A,B,C,D,E,F,H),addition(H,1,G))),[
+    allocate(2),
+    get_atom(length,0),
+    get_variable(y(0),7),
+    put_value(x(1),0),
+    put_value(x(2),1),
+    put_value(x(3),2),
+    put_value(x(4),3),
+    put_value(x(5),4),
+    put_value(x(6),5),
+    put_variable(y(1),6),
+    call((subterm_length)/7),
+    put_unsafe_value(y(1),0),
+    put_integer(1,1),
+    put_value(y(0),2),
+    deallocate,
+    execute((addition)/3)]).
+
+
+clause(:-(general_subterm_size(size,A,B,C,D,E,F,G),','(functor(F,_,H),','(subterm_size(H,A,B,C,D,E,F,I),addition(I,1,G)))),[
+    allocate(9),
+    get_atom(size,0),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    put_value(y(5),0),
+    put_void(1),
+    put_variable(y(7),2),
+    call((functor)/3),
+    put_value(y(7),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(3),4),
+    put_value(y(4),5),
+    put_value(y(5),6),
+    put_variable(y(8),7),
+    call((subterm_size)/8),
+    put_unsafe_value(y(8),0),
+    put_integer(1,1),
+    put_value(y(6),2),
+    deallocate,
+    execute((addition)/3)]).
+
+
+clause(:-(general_subterm_size(depth(A),B,C,D,E,F,G,H),','(functor(G,_,I),','(subterm_depth(I,B,C,D,E,F,A,G,J),addition(J,1,H)))),[
+    allocate(10),
+    get_structure((depth)/1,0),
+    unify_variable(y(0)),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    put_value(y(6),0),
+    put_void(1),
+    put_variable(y(8),2),
+    call((functor)/3),
+    put_value(y(8),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(0),6),
+    put_value(y(6),7),
+    put_variable(y(9),8),
+    call((subterm_depth)/9),
+    put_unsafe_value(y(9),0),
+    put_integer(1,1),
+    put_value(y(7),2),
+    deallocate,
+    execute((addition)/3)]).
+
+
+predicate(subterm_int/9,100,static,private,monofile,global,2).
+
+
+clause(:-(subterm_int(1,A,B,C,D,E,F,G,H),','(arg(1,B,I),','(general_term_size(int,E,C,D,F,G,I,J),=..(H,'.'(A,'.'(J,[])))))),[
+    allocate(9),
+    get_integer(1,0),
+    get_variable(y(0),1),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),6),
+    get_variable(y(5),7),
+    get_variable(y(6),8),
+    put_value(x(2),1),
+    put_integer(1,0),
+    put_variable(y(7),2),
+    call((arg)/3),
+    put_atom(int,0),
+    put_value(y(3),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(7),6),
+    put_variable(y(8),7),
+    call((general_term_size)/8),
+    put_value(y(6),0),
+    put_list(1),
+    unify_local_value(y(0)),
+    unify_list,
+    unify_local_value(y(8)),
+    unify_nil,
+    deallocate,
+    execute((=..)/2)]).
+
+
+clause(:-(subterm_int(2,A,B,C,D,E,F,G,H),','(arg(1,B,I),','(general_term_size(int,E,C,D,F,G,I,J),','(arg(2,B,K),','(general_term_size(int,E,C,D,F,G,K,L),=..(H,'.'(A,'.'(J,'.'(L,[]))))))))),[
+    allocate(12),
+    get_integer(2,0),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    get_variable(y(7),8),
+    put_integer(1,0),
+    put_value(y(1),1),
+    put_variable(y(8),2),
+    call((arg)/3),
+    put_atom(int,0),
+    put_value(y(4),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(5),4),
+    put_value(y(6),5),
+    put_value(y(8),6),
+    put_variable(y(9),7),
+    call((general_term_size)/8),
+    put_integer(2,0),
+    put_value(y(1),1),
+    put_variable(y(10),2),
+    call((arg)/3),
+    put_atom(int,0),
+    put_value(y(4),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(5),4),
+    put_value(y(6),5),
+    put_value(y(10),6),
+    put_variable(y(11),7),
+    call((general_term_size)/8),
+    put_value(y(7),0),
+    put_list(1),
+    unify_local_value(y(0)),
+    unify_list,
+    unify_local_value(y(9)),
+    unify_list,
+    unify_local_value(y(11)),
+    unify_nil,
+    deallocate,
+    execute((=..)/2)]).
+
+
+predicate(subterm_length/7,114,static,private,monofile,global,2).
+
+
+clause(:-(subterm_length(_,_,_,_,_,A,bot),nonlist_cas(A)),[
+    get_atom(bot,6),
+    put_value(x(5),0),
+    execute((nonlist_cas)/1)]).
+
+
+clause(:-(subterm_length(A,B,C,D,E,'.'(_,F),G),general_term_size(length,A,B,C,D,E,F,G)),[
+    get_variable(x(7),6),
+    get_variable(x(8),4),
+    get_variable(x(4),3),
+    get_variable(x(3),2),
+    get_variable(x(2),1),
+    get_list(5),
+    unify_void(1),
+    unify_variable(x(6)),
+    put_value(x(0),1),
+    put_value(x(8),5),
+    put_atom(length,0),
+    execute((general_term_size)/8)]).
+
+
+predicate(subterm_size/8,122,static,private,monofile,global,2).
+
+
+clause(subterm_size(0,_,_,_,_,_,_,0),[
+    get_integer(0,0),
+    get_integer(0,7),
+    proceed]).
+
+
+clause(:-(subterm_size(A,B,C,D,E,F,G,H),','(>(A,0),','(arg(A,G,I),','(general_term_size(size,B,C,D,E,F,I,J),','(is(K,-(A,1)),','(subterm_size(K,B,C,D,E,F,G,L),addition(J,L,H))))))),[
+    allocate(12),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(0),0),
+    put_value(y(6),1),
+    put_variable(y(8),2),
+    call((arg)/3),
+    put_atom(size,0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(8),6),
+    put_variable(y(9),7),
+    call((general_term_size)/8),
+    put_variable(y(10),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(10),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(6),6),
+    put_variable(y(11),7),
+    call((subterm_size)/8),
+    put_unsafe_value(y(9),0),
+    put_unsafe_value(y(11),1),
+    put_value(y(7),2),
+    deallocate,
+    execute((addition)/3)]).
+
+
+predicate(subterm_depth/9,134,static,private,monofile,global,2).
+
+
+clause(subterm_depth(0,_,_,_,_,_,_,_,0),[
+    get_integer(0,0),
+    get_integer(0,8),
+    proceed]).
+
+
+clause(:-(subterm_depth(A,B,C,D,E,F,G,H,I),','(>(A,0),','(;(->(member_cas(G,A),','(arg(A,H,J),general_term_size(depth(G),B,C,D,E,F,J,K))),=(K,0)),','(is(L,-(A,1)),','(subterm_depth(L,B,C,D,E,F,G,H,M),maximum(K,M,I)))))),[
+    allocate(12),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),8),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(6),0),
+    put_value(y(0),1),
+    put_value(y(7),2),
+    put_value(y(1),3),
+    put_value(y(2),4),
+    put_value(y(3),5),
+    put_value(y(4),6),
+    put_value(y(5),7),
+    put_variable(y(9),8),
+    call(('$subterm_depth/9_$aux1')/9),
+    put_variable(y(10),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(10),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(6),6),
+    put_value(y(7),7),
+    put_variable(y(11),8),
+    call((subterm_depth)/9),
+    put_unsafe_value(y(9),0),
+    put_unsafe_value(y(11),1),
+    put_value(y(8),2),
+    deallocate,
+    execute((maximum)/3)]).
+
+
+predicate('$subterm_depth/9_$aux1'/9,135,static,private,monofile,local,2).
+
+
+clause(:-('$subterm_depth/9_$aux1'(A,B,C,D,E,F,G,H,I),','('$get_cut_level'(J),','(member_cas(A,B),','('$cut'(J),','(arg(B,C,K),general_term_size(depth(A),D,E,F,G,H,K,I)))))),[
+    allocate(11),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),8),
+    get_variable(y(9),9),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((member_cas)/2),
+    cut(y(9)),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(10),2),
+    call((arg)/3),
+    put_structure((depth)/1,0),
+    unify_local_value(y(0)),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    put_value(y(6),4),
+    put_value(y(7),5),
+    put_unsafe_value(y(10),6),
+    put_value(y(8),7),
+    deallocate,
+    execute((general_term_size)/8)]).
+
+
+clause(:-('$subterm_depth/9_$aux1'(_,_,_,_,_,_,_,_,A),=(A,0)),[
+    get_integer(0,8),
+    proceed]).

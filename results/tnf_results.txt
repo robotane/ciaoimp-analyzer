@@ -1,0 +1,81 @@
+=== auction ===
+ANSWER 1: [1000, 850, 150, 0]
+max_trail= 162 max_todo= 199
+TOTAL ANSWERS: 1
+
+=== ballot ===
+ANSWER 1: ['prop_a']
+max_trail= 70 max_todo= 79
+TOTAL ANSWERS: 1
+
+=== blind_auction ===
+ANSWER 1: [850, 1000, 150, 0]
+max_trail= 234 max_todo= 249
+TOTAL ANSWERS: 1
+
+=== crowdfunding ===
+ANSWER 1: [800, 850, 350, 0]
+max_trail= 146 max_todo= 161
+TOTAL ANSWERS: 1
+
+=== crypto_buddy ===
+ANSWER 1: [700, 0, 200, 100]
+max_trail= 62 max_todo= 87
+TOTAL ANSWERS: 1
+
+=== crypto_shark ===
+ANSWER 1: ['charlie', 1, 1]
+max_trail= 53 max_todo= 54
+TOTAL ANSWERS: 1
+
+=== distributor ===
+ANSWER 1: [1150, 1150, 700, 0]
+max_trail= 141 max_todo= 157
+TOTAL ANSWERS: 1
+
+=== example_coin ===
+ANSWER 1: [999500, 400, 200, 1000100]
+max_trail= 58 max_todo= 52
+TOTAL ANSWERS: 1
+
+=== example_erc721 ===
+ANSWER 1: ['bob', 'alice', 1, 1]
+max_trail= 54 max_todo= 61
+TOTAL ANSWERS: 1
+
+=== gradual_ponzi ===
+ANSWER 1: [3000, 1000, -1000, 0]
+max_trail= 190 max_todo= 241
+TOTAL ANSWERS: 1
+
+=== shared_entity ===
+ANSWER 1: [1500, 1000, 500, 0]
+max_trail= 110 max_todo= 141
+TOTAL ANSWERS: 1
+
+=== simple_auction ===
+ANSWER 1: [1000, 800, 200, 0]
+max_trail= 158 max_todo= 199
+TOTAL ANSWERS: 1
+
+=== simple_ponzi ===
+ANSWER 1: [1020, 880, 100]
+max_trail= 94 max_todo= 120
+TOTAL ANSWERS: 1
+
+=== simple_pyramid ===
+ANSWER 1: [2705, 1505, 290, 0]
+max_trail= 193 max_todo= 241
+TOTAL ANSWERS: 1
+
+=== simple_shared_entity ===
+ANSWER 1: [1200, 1000, 800, 0]
+max_trail= 110 max_todo= 141
+TOTAL ANSWERS: 1
+
+=== tictactoe ===
+ANSWER 1: [900, 900, 200]
+max_trail= 141 max_todo= 140
+TOTAL ANSWERS: 1
+
+TNF : 16 OK, 0 ERREURS

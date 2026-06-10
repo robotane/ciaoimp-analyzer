@@ -1,0 +1,444 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/init/scc.pl
+% date    : 2 6 2003
+% time    : 10:15:30
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/init/scc.pl').
+
+
+predicate(strongly_connected_component/2,13,static,private,user,1).
+
+
+clause(:-(strongly_connected_component(A,B),strongly_connected_component(A,B,[],-1,C,0,D,[],E)),[
+    put_nil(2),
+    put_integer(-1,3),
+    put_void(4),
+    put_integer(0,5),
+    put_void(6),
+    put_nil(7),
+    put_void(8),
+    execute(strongly_connected_component/9)]).
+
+
+predicate(strongly_connected_component/9,16,static,private,user,1).
+
+
+clause(:-(strongly_connected_component(A,B,C,D,E,F,G,H,I),','(find_call_vertex(A,J),;(->(var(J),=(B,C)),','(scc(J,A,B,K,D,L,F,M,H,N,O),strongly_connected_component(A,K,C,L,E,M,G,N,I))))),[
+    allocate(10),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),8),
+    put_value(y(0),0),
+    put_variable(y(9),1),
+    call(find_call_vertex/2),
+    put_unsafe_value(y(9),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(0),3),
+    put_value(y(3),4),
+    put_value(y(5),5),
+    put_value(y(7),6),
+    put_value(y(4),7),
+    put_value(y(6),8),
+    put_value(y(8),9),
+    deallocate,
+    execute('$strongly_connected_component/9_$aux1'/10)]).
+
+
+predicate('$strongly_connected_component/9_$aux1'/10,16,static,private,user,2).
+
+
+clause(:-('$strongly_connected_component/9_$aux1'(A,B,C,D,E,F,G,H,I,J),','('$get_cut_level'(K),','(var(A),','('$cut'(K),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),10),
+    call(var/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$strongly_connected_component/9_$aux1'(A,B,C,D,E,F,G,H,I,J),','(scc(A,D,B,K,E,L,F,M,G,N,O),strongly_connected_component(D,K,C,L,H,M,I,N,J))),[
+    allocate(9),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),7),
+    get_variable(y(3),8),
+    get_variable(y(4),9),
+    get_variable(x(8),6),
+    put_value(x(1),2),
+    put_value(x(5),6),
+    put_value(y(1),1),
+    put_variable(y(5),3),
+    put_variable(y(6),5),
+    put_variable(y(7),7),
+    put_variable(y(8),9),
+    put_void(10),
+    call(scc/11),
+    put_value(y(1),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(0),2),
+    put_unsafe_value(y(6),3),
+    put_value(y(2),4),
+    put_unsafe_value(y(7),5),
+    put_value(y(3),6),
+    put_unsafe_value(y(8),7),
+    put_value(y(4),8),
+    deallocate,
+    execute(strongly_connected_component/9)]).
+
+
+predicate(scc/11,29,static,private,user,1).
+
+
+clause(:-(scc(A,B,C,D,E,F,G,H,I,J,K),','(insert_call_field_number(B,A,number,E),','(is(L,-(E,1)),','(push(I,A,M),','(find_call_field(B,A,edge,N),','(scc_edges(N,A,E,K,B,C,O,L,F,G,P,M,Q),generate_new_component(K,E,A,B,O,D,P,H,Q,J))))))),[
+    allocate(17),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),8),
+    get_variable(y(9),9),
+    get_variable(y(10),10),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_atom(number,2),
+    put_value(y(4),3),
+    call(insert_call_field_number/4),
+    put_variable(y(11),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(4)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(8),0),
+    put_value(y(0),1),
+    put_variable(y(12),2),
+    call(push/3),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_atom(edge,2),
+    put_variable(y(13),3),
+    call(find_call_field/4),
+    put_value(y(13),0),
+    put_value(y(0),1),
+    put_value(y(4),2),
+    put_value(y(10),3),
+    put_value(y(1),4),
+    put_value(y(2),5),
+    put_variable(y(14),6),
+    put_value(y(11),7),
+    put_value(y(5),8),
+    put_value(y(6),9),
+    put_variable(y(15),10),
+    put_value(y(12),11),
+    put_variable(y(16),12),
+    call(scc_edges/13),
+    put_value(y(10),0),
+    put_value(y(4),1),
+    put_value(y(0),2),
+    put_value(y(1),3),
+    put_unsafe_value(y(14),4),
+    put_value(y(3),5),
+    put_unsafe_value(y(15),6),
+    put_value(y(7),7),
+    put_unsafe_value(y(16),8),
+    put_value(y(9),9),
+    deallocate,
+    execute(generate_new_component/10)]).
+
+
+predicate(scc_edges/13,43,static,private,user,2).
+
+
+clause(:-(scc_edges(A,B,C,C,D,E,E,F,F,G,G,H,H),var(A)),[
+    get_value(x(12),11),
+    get_value(x(10),9),
+    get_value(x(8),7),
+    get_value(x(6),5),
+    get_value(x(3),2),
+    execute(var/1)]).
+
+
+clause(:-(scc_edges(A,B,C,D,E,F,G,H,I,J,K,L,M),','(nonvar(A),','(=(A,'.'(N,O)),','(find_call_field(E,N,number,P),','(find_call_field(E,N,component,Q),','(scc_edge(N,P,Q,C,R,E,F,S,H,T,J,U,L,V),scc_edges(O,B,R,D,E,S,G,T,I,U,K,V,M))))))),[
+    allocate(22),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    get_variable(y(7),7),
+    get_variable(y(8),8),
+    get_variable(y(9),9),
+    get_variable(y(10),10),
+    get_variable(y(11),11),
+    get_variable(y(12),12),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(y(13)),
+    unify_variable(y(14)),
+    put_value(y(4),0),
+    put_value(y(13),1),
+    put_atom(number,2),
+    put_variable(y(15),3),
+    call(find_call_field/4),
+    put_value(y(4),0),
+    put_value(y(13),1),
+    put_atom(component,2),
+    put_variable(y(16),3),
+    call(find_call_field/4),
+    put_value(y(13),0),
+    put_value(y(15),1),
+    put_value(y(16),2),
+    put_value(y(2),3),
+    put_variable(y(17),4),
+    put_value(y(4),5),
+    put_value(y(5),6),
+    put_variable(y(18),7),
+    put_value(y(7),8),
+    put_variable(y(19),9),
+    put_value(y(9),10),
+    put_variable(y(20),11),
+    put_value(y(11),12),
+    put_variable(y(21),13),
+    call(scc_edge/14),
+    put_value(y(14),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(17),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_unsafe_value(y(18),5),
+    put_value(y(6),6),
+    put_unsafe_value(y(19),7),
+    put_value(y(8),8),
+    put_unsafe_value(y(20),9),
+    put_value(y(10),10),
+    put_unsafe_value(y(21),11),
+    put_value(y(12),12),
+    deallocate,
+    execute(scc_edges/13)]).
+
+
+predicate(scc_edge/14,60,static,private,user,3).
+
+
+clause(:-(scc_edge(A,B,C,D,E,F,G,H,I,J,K,L,M,N),','(var(B),','(scc(A,F,G,H,I,J,K,L,M,N,O),max(D,O,E)))),[
+    allocate(13),
+    get_variable(y(0),0),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),6),
+    get_variable(y(5),7),
+    get_variable(y(6),8),
+    get_variable(y(7),9),
+    get_variable(y(8),10),
+    get_variable(y(9),11),
+    get_variable(y(10),12),
+    get_variable(y(11),13),
+    put_value(x(1),0),
+    call(var/1),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_value(y(4),2),
+    put_value(y(5),3),
+    put_value(y(6),4),
+    put_value(y(7),5),
+    put_value(y(8),6),
+    put_value(y(9),7),
+    put_value(y(10),8),
+    put_value(y(11),9),
+    put_variable(y(12),10),
+    call(scc/11),
+    put_value(y(1),0),
+    put_unsafe_value(y(12),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(max/3)]).
+
+
+clause(:-(scc_edge(A,B,C,D,E,F,G,G,H,H,I,I,J,J),','(nonvar(B),','(var(C),max(D,B,E)))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_value(x(13),12),
+    get_value(x(11),10),
+    get_value(x(9),8),
+    get_value(x(7),6),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(1),0),
+    call(var/1),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(3),2),
+    deallocate,
+    execute(max/3)]).
+
+
+clause(:-(scc_edge(A,B,C,D,D,E,F,F,G,G,H,H,I,I),','(nonvar(B),nonvar(C))),[
+    allocate(1),
+    get_variable(y(0),2),
+    get_value(x(13),12),
+    get_value(x(11),10),
+    get_value(x(9),8),
+    get_value(x(7),6),
+    get_value(x(4),3),
+    put_value(x(1),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    deallocate,
+    execute(nonvar/1)]).
+
+
+predicate(generate_new_component/10,79,static,private,user,2).
+
+
+clause(:-(generate_new_component(A,B,C,D,E,E,F,F,G,G),=\=(A,B)),[
+    get_value(x(9),8),
+    get_value(x(7),6),
+    get_value(x(5),4),
+    execute((=\=)/2)]).
+
+
+clause(:-(generate_new_component(A,A,B,C,'.'(D,E),E,F,G,H,I),','(is(G,+(F,1)),gen_new_component(B,C,D,G,H,I))),[
+    allocate(6),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(3),7),
+    get_variable(y(4),8),
+    get_variable(y(5),9),
+    get_value(x(1),0),
+    get_list(4),
+    unify_variable(y(2)),
+    unify_local_value(x(5)),
+    put_structure((+)/2,1),
+    unify_local_value(x(6)),
+    unify_integer(1),
+    put_value(y(3),0),
+    call((is)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    deallocate,
+    execute(gen_new_component/6)]).
+
+
+predicate(gen_new_component/6,91,static,private,user,1).
+
+
+clause(:-(gen_new_component(A,B,C,D,E,F),','(pop(E,G,H),','(insert_call_field_component(B,G,component,D),','(=(C,'.'(G,I)),;(->(==(G,A),','(=(F,H),=(I,[]))),gen_new_component(A,B,I,D,H,F)))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),5),
+    put_value(x(4),0),
+    put_variable(y(5),1),
+    put_variable(y(6),2),
+    call(pop/3),
+    put_value(y(1),0),
+    put_value(y(5),1),
+    put_atom(component,2),
+    put_value(y(3),3),
+    call(insert_call_field_component/4),
+    put_value(y(2),0),
+    get_list(0),
+    unify_local_value(y(5)),
+    unify_variable(x(4)),
+    put_unsafe_value(y(5),0),
+    put_value(y(0),1),
+    put_value(y(4),2),
+    put_unsafe_value(y(6),3),
+    put_value(y(1),5),
+    put_value(y(3),6),
+    deallocate,
+    execute('$gen_new_component/6_$aux1'/7)]).
+
+
+predicate('$gen_new_component/6_$aux1'/7,91,static,private,user,2).
+
+
+clause(:-('$gen_new_component/6_$aux1'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(==(A,B),','('$cut'(H),','(=(C,D),=(E,[])))))),[
+    allocate(4),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),7),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    put_value(y(2),0),
+    get_nil(0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$gen_new_component/6_$aux1'(A,B,C,D,E,F,G),gen_new_component(B,F,E,G,D,C)),[
+    get_variable(x(8),5),
+    get_variable(x(7),4),
+    get_variable(x(4),3),
+    get_variable(x(5),2),
+    put_value(x(1),0),
+    put_value(x(8),1),
+    put_value(x(7),2),
+    put_value(x(6),3),
+    execute(gen_new_component/6)]).
+
+
+predicate(print_scc_list_cas/1,105,static,private,user,1).
+
+
+clause(:-(print_scc_list_cas(A),','(tell(scc_list_cas),','(p_scc_list_cas(A),told))),[
+    allocate(1),
+    get_variable(y(0),0),
+    put_atom(scc_list_cas,0),
+    call(tell/1),
+    put_value(y(0),0),
+    call(p_scc_list_cas/1),
+    deallocate,
+    execute(told/0)]).
+
+
+predicate(p_scc_list_cas/1,110,static,private,user,2).
+
+
+clause(p_scc_list_cas([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(p_scc_list_cas('.'(A,B)),','(write(A),','(nl,p_scc_list_cas(B)))),[
+    allocate(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(write/1),
+    call(nl/0),
+    put_value(y(0),0),
+    deallocate,
+    execute(p_scc_list_cas/1)]).

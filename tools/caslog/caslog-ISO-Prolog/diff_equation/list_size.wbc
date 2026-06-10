@@ -1,0 +1,398 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/diff_equation/list_size.pl
+% date    : 2 6 2003
+% time    : 10:15:41
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/diff_equation/list_size.pl').
+
+
+predicate(list_cas_size_diff_equ/6,7,static,private,user,1).
+
+
+clause(:-(list_cas_size_diff_equ(A,B,/(C,D),E,F,G),','(=(A,expr(H,G)),mutual_list_cas_term(H,B,C))),[
+    get_structure((/)/2,2),
+    unify_variable(x(2)),
+    unify_void(1),
+    get_structure(expr/2,0),
+    unify_variable(x(0)),
+    unify_local_value(x(5)),
+    execute(mutual_list_cas_term/3)]).
+
+
+predicate(mutual_list_cas_term/3,11,static,private,user,1).
+
+
+clause(:-(mutual_list_cas_term('.'(A,'.'(B,[])),C,D),','(mutual_list_cas_head(B,C,D),mutual_list_cas_tail(A,C,D))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    put_value(y(1),1),
+    put_value(y(2),2),
+    call(mutual_list_cas_head/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(mutual_list_cas_tail/3)]).
+
+
+predicate(mutual_list_cas_head/3,15,static,private,user,1).
+
+
+clause(:-(mutual_list_cas_head(term('.'(A,[]),'.'(factor([],1),[])),B,C),','(userfunc(A),','(functor(A,C,1),','(arg(1,A,D),general_form(D,head(B)))))),[
+    allocate(4),
+    get_structure(term/2,0),
+    unify_variable(x(3)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(3),
+    unify_variable(y(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_integer(1),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(userfunc/1),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_integer(1,2),
+    call(functor/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call(arg/3),
+    put_unsafe_value(y(3),0),
+    put_structure(head/1,1),
+    unify_local_value(y(1)),
+    deallocate,
+    execute(general_form/2)]).
+
+
+predicate(mutual_list_cas_tail/3,19,static,private,user,1).
+
+
+clause(:-(mutual_list_cas_tail(term('.'(A,[]),'.'(factor([],1),[])),B,C),','(userfunc(A),','(functor(A,C,1),','(arg(1,A,D),general_form(D,tail(B)))))),[
+    allocate(4),
+    get_structure(term/2,0),
+    unify_variable(x(3)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(3),
+    unify_variable(y(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_integer(1),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(userfunc/1),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_integer(1,2),
+    call(functor/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call(arg/3),
+    put_unsafe_value(y(3),0),
+    put_structure(tail/1,1),
+    unify_local_value(y(1)),
+    deallocate,
+    execute(general_form/2)]).
+
+
+predicate(solve_lsde/4,27,static,private,user,2).
+
+
+clause(:-(solve_lsde(A,B,C,D),','(mutual_list_cas_solvable(C,A),','(normal_form(1,E),','(=(B,'.'(val(E,F),[])),','(general_form(F,G),','(!,solve_lsde1(A,C,G,D))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    call(mutual_list_cas_solvable/2),
+    put_integer(1,0),
+    put_variable(y(5),1),
+    call(normal_form/2),
+    put_value(y(1),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(val/2,0),
+    unify_local_value(y(5)),
+    unify_variable(x(0)),
+    put_variable(y(6),1),
+    call(general_form/2),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_unsafe_value(y(6),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(solve_lsde1/4)]).
+
+
+clause(solve_lsde(A,B,C,inf),[
+    get_atom(inf,3),
+    proceed]).
+
+
+predicate(solve_lsde1/4,34,static,private,user,2).
+
+
+clause(:-(solve_lsde1(A,[],B,C),normal_form(*(max(1,B),A),C)),[
+    get_nil(1),
+    get_variable(x(1),0),
+    put_structure(max/2,4),
+    unify_integer(1),
+    unify_local_value(x(2)),
+    put_structure((*)/2,0),
+    unify_value(x(4)),
+    unify_local_value(x(1)),
+    put_value(x(3),1),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_lsde1(A,B,C,D),','(\==(B,[]),solve_lsde2(B,A,C,D))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(1),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(solve_lsde2/4)]).
+
+
+predicate(solve_lsde2/4,37,static,private,user,2).
+
+
+clause(:-(solve_lsde2([],A,B,C),normal_form(0,C)),[
+    get_nil(0),
+    put_value(x(3),1),
+    put_integer(0,0),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_lsde2('.'(A,B),C,D,E),','(solve_lsde3(A,C,D,F),','(solve_lsde2(B,C,D,G),add_expr(F,G,E)))),[
+    allocate(6),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(4),3),
+    call(solve_lsde3/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(5),3),
+    call(solve_lsde2/4),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(3),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+predicate(solve_lsde3/4,43,static,private,user,4).
+
+
+clause(:-(solve_lsde3(factor([],A),B,C,D),normal_form(*(max(A,C),B),D)),[
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    put_structure(max/2,4),
+    unify_value(x(0)),
+    unify_local_value(x(2)),
+    put_structure((*)/2,0),
+    unify_value(x(4)),
+    unify_local_value(x(1)),
+    put_value(x(3),1),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_lsde3(factor('.'(A,[]),B),A,C,D),normal_form(*(*(/(max(B,C),2),A),+(A,1)),D)),[
+    get_structure(factor/2,0),
+    unify_variable(x(4)),
+    unify_variable(x(0)),
+    get_list(4),
+    unify_local_value(x(1)),
+    unify_nil,
+    put_structure(max/2,4),
+    unify_value(x(0)),
+    unify_local_value(x(2)),
+    put_structure((/)/2,0),
+    unify_value(x(4)),
+    unify_integer(2),
+    put_structure((*)/2,2),
+    unify_value(x(0)),
+    unify_local_value(x(1)),
+    put_structure((*)/2,0),
+    unify_value(x(2)),
+    unify_structure((+)/2),
+    unify_local_value(x(1)),
+    unify_integer(1),
+    put_value(x(3),1),
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_lsde3(factor('.'(head(A),[]),B),C,D,E),','(normal_form(C,A),normal_form(/(*(max(B,D),exp(-(C,1),2)),2),E))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(head/1,0),
+    unify_variable(x(1)),
+    put_value(y(1),0),
+    call(normal_form/2),
+    put_structure(max/2,2),
+    unify_value(y(0)),
+    unify_local_value(y(2)),
+    put_structure((-)/2,0),
+    unify_local_value(y(1)),
+    unify_integer(1),
+    put_structure((*)/2,1),
+    unify_value(x(2)),
+    unify_structure(exp/2),
+    unify_value(x(0)),
+    unify_integer(2),
+    put_structure((/)/2,0),
+    unify_value(x(1)),
+    unify_integer(2),
+    put_value(y(3),1),
+    deallocate,
+    execute(normal_form/2)]).
+
+
+clause(:-(solve_lsde3(factor('.'(tail(A),[]),B),C,D,E),','(normal_form(C,A),normal_form(/(*(max(B,D),exp(-(C,1),2)),2),E))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(tail/1,0),
+    unify_variable(x(1)),
+    put_value(y(1),0),
+    call(normal_form/2),
+    put_structure(max/2,2),
+    unify_value(y(0)),
+    unify_local_value(y(2)),
+    put_structure((-)/2,0),
+    unify_local_value(y(1)),
+    unify_integer(1),
+    put_structure((*)/2,1),
+    unify_value(x(2)),
+    unify_structure(exp/2),
+    unify_value(x(0)),
+    unify_integer(2),
+    put_structure((/)/2,0),
+    unify_value(x(1)),
+    unify_integer(2),
+    put_value(y(3),1),
+    deallocate,
+    execute(normal_form/2)]).
+
+
+predicate(mutual_list_cas_solvable/2,53,static,private,user,2).
+
+
+clause(mutual_list_cas_solvable([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(mutual_list_cas_solvable('.'(A,B),C),','(mutual_list_cas_solvable1(A,C),mutual_list_cas_solvable(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    call(mutual_list_cas_solvable1/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(mutual_list_cas_solvable/2)]).
+
+
+predicate(mutual_list_cas_solvable1/2,58,static,private,user,4).
+
+
+clause(mutual_list_cas_solvable1(factor([],A),B),[
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_void(1),
+    proceed]).
+
+
+clause(mutual_list_cas_solvable1(factor('.'(A,[]),B),A),[
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_nil,
+    proceed]).
+
+
+clause(:-(mutual_list_cas_solvable1(factor('.'(head(A),[]),B),C),normal_form(C,A)),[
+    get_variable(x(2),1),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(head/1,0),
+    unify_variable(x(1)),
+    put_value(x(2),0),
+    execute(normal_form/2)]).
+
+
+clause(:-(mutual_list_cas_solvable1(factor('.'(tail(A),[]),B),C),normal_form(C,A)),[
+    get_variable(x(2),1),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(tail/1,0),
+    unify_variable(x(1)),
+    put_value(x(2),0),
+    execute(normal_form/2)]).

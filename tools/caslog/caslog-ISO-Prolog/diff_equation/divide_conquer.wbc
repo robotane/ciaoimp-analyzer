@@ -1,0 +1,344 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/diff_equation/divide_conquer.pl
+% date    : 2 6 2003
+% time    : 10:15:40
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/diff_equation/divide_conquer.pl').
+
+
+predicate(divide_conquer_diff_equ/6,10,static,private,user,1).
+
+
+clause(:-(divide_conquer_diff_equ(A,B,/(C,D),E,F,G),','(=(A,expr('.'(term('.'(H,[]),I),[]),G)),','(userfunc(H),','(functor(H,C,1),','(arg(1,H,J),','(=(J,expr([],'.'(factor('.'(B,[]),K),[]))),','(<(K,1),','(is(F,/(1,K)),','(=(I,'.'(factor([],E),[])),divide_conquer_solvable(G,B)))))))))),[
+    allocate(9),
+    get_variable(y(0),1),
+    get_structure((/)/2,2),
+    unify_variable(y(1)),
+    unify_void(1),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_structure(expr/2,0),
+    unify_variable(x(0)),
+    unify_local_value(y(4)),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(term/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(6)),
+    get_list(0),
+    unify_variable(y(5)),
+    unify_nil,
+    put_value(y(5),0),
+    call(userfunc/1),
+    put_value(y(5),0),
+    put_value(y(1),1),
+    put_integer(1,2),
+    call(functor/3),
+    put_integer(1,0),
+    put_value(y(5),1),
+    put_variable(y(7),2),
+    call(arg/3),
+    put_value(y(7),0),
+    get_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(8)),
+    get_list(0),
+    unify_local_value(y(0)),
+    unify_nil,
+    put_value(y(8),0),
+    put_integer(1,1),
+    call((<)/2),
+    put_value(y(3),0),
+    put_structure((/)/2,1),
+    unify_integer(1),
+    unify_value(y(8)),
+    call((is)/2),
+    put_value(y(6),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_local_value(y(2)),
+    put_value(y(4),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(divide_conquer_solvable/2)]).
+
+
+predicate(solve_dcde/6,24,static,private,user,2).
+
+
+clause(:-(solve_dcde(A,'.'(val(B,C),[]),D,E,F,G),','(normal_form(1,B),','(!,','(divide_conquer_par_sol(F,A,D,E,H),','(normal_form(exp(A,log(E,D)),I),','(multiply_expr(C,I,J),add_expr(J,H,G))))))),[
+    allocate(10),
+    get_variable(y(0),0),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_list(1),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(val/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(6),6),
+    put_integer(1,0),
+    call(normal_form/2),
+    cut(y(6)),
+    put_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_variable(y(7),4),
+    call(divide_conquer_par_sol/5),
+    put_structure(exp/2,0),
+    unify_local_value(y(0)),
+    unify_structure(log/2),
+    unify_local_value(y(3)),
+    unify_local_value(y(2)),
+    put_variable(y(8),1),
+    call(normal_form/2),
+    put_value(y(1),0),
+    put_value(y(8),1),
+    put_variable(y(9),2),
+    call(multiply_expr/3),
+    put_unsafe_value(y(9),0),
+    put_unsafe_value(y(7),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+clause(solve_dcde(A,B,C,D,E,inf),[
+    get_atom(inf,5),
+    proceed]).
+
+
+predicate(divide_conquer_par_sol/5,34,static,private,user,2).
+
+
+clause(:-(divide_conquer_par_sol([],A,B,C,D),normal_form(0,D)),[
+    get_nil(0),
+    put_value(x(4),1),
+    put_integer(0,0),
+    execute(normal_form/2)]).
+
+
+clause(:-(divide_conquer_par_sol('.'(factor(A,B),C),D,E,F,G),','(divide_conquer_order(A,D,H),','(simplification(exp(F,H),I),','(divide_conquer_par_sol1(H,I,D,E,F,J),','(normal_form(B,K),','(multiply_expr(K,J,L),','(divide_conquer_par_sol(C,D,E,F,M),add_expr(L,M,G)))))))),[
+    allocate(12),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_variable(y(4),3),
+    get_variable(y(5),4),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(2),1),
+    put_variable(y(6),2),
+    call(divide_conquer_order/3),
+    put_structure(exp/2,0),
+    unify_local_value(y(4)),
+    unify_local_value(y(6)),
+    put_variable(y(7),1),
+    call(simplification/2),
+    put_value(y(6),0),
+    put_value(y(7),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_variable(y(8),5),
+    call(divide_conquer_par_sol1/6),
+    put_value(y(0),0),
+    put_variable(y(9),1),
+    call(normal_form/2),
+    put_value(y(9),0),
+    put_value(y(8),1),
+    put_variable(y(10),2),
+    call(multiply_expr/3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    put_value(y(4),3),
+    put_variable(y(11),4),
+    call(divide_conquer_par_sol/5),
+    put_unsafe_value(y(10),0),
+    put_unsafe_value(y(11),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+predicate(divide_conquer_par_sol1/6,47,static,private,user,2).
+
+
+clause(:-(divide_conquer_par_sol1(A,B,C,D,E,F),','(=:=(D,B),normal_form(*(exp(C,A),log(E,C)),F))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    put_value(x(3),0),
+    call((=:=)/2),
+    put_structure(exp/2,1),
+    unify_local_value(y(1)),
+    unify_local_value(y(0)),
+    put_structure((*)/2,0),
+    unify_value(x(1)),
+    unify_structure(log/2),
+    unify_local_value(y(2)),
+    unify_local_value(y(1)),
+    put_value(y(3),1),
+    deallocate,
+    execute(normal_form/2)]).
+
+
+clause(:-(divide_conquer_par_sol1(A,B,C,D,E,F),','(=\=(D,B),','(=(G,-(exp(C,log(E,D)),exp(C,A))),','(=(H,-(D,exp(E,A))),','(=(I,*(exp(E,A),/(G,H))),normal_form(I,F)))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    put_value(y(2),0),
+    call((=\=)/2),
+    put_structure(exp/2,0),
+    unify_local_value(y(1)),
+    unify_structure(log/2),
+    unify_local_value(y(3)),
+    unify_local_value(y(2)),
+    put_structure((-)/2,2),
+    unify_value(x(0)),
+    unify_structure(exp/2),
+    unify_local_value(y(1)),
+    unify_local_value(y(0)),
+    put_structure((-)/2,1),
+    unify_local_value(y(2)),
+    unify_structure(exp/2),
+    unify_local_value(y(3)),
+    unify_local_value(y(0)),
+    put_structure(exp/2,3),
+    unify_local_value(y(3)),
+    unify_local_value(y(0)),
+    put_structure((*)/2,0),
+    unify_value(x(3)),
+    unify_structure((/)/2),
+    unify_value(x(2)),
+    unify_value(x(1)),
+    put_value(y(4),1),
+    deallocate,
+    execute(normal_form/2)]).
+
+
+predicate(divide_conquer_order/3,59,static,private,user,3).
+
+
+clause(divide_conquer_order([],A,0),[
+    get_nil(0),
+    get_integer(0,2),
+    proceed]).
+
+
+clause(divide_conquer_order('.'(A,[]),A,1),[
+    get_integer(1,2),
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_nil,
+    proceed]).
+
+
+clause(:-(divide_conquer_order('.'(exp(A,B),[]),C,D),','(normal_form(C,A),','(general_form(B,E),is(D,integer(E))))),[
+    allocate(3),
+    get_variable(y(1),2),
+    get_variable(x(2),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(x(2),0),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    call(general_form/2),
+    put_value(y(1),0),
+    put_structure(integer/1,1),
+    unify_local_value(y(2)),
+    deallocate,
+    execute((is)/2)]).
+
+
+predicate(divide_conquer_solvable/2,68,static,private,user,2).
+
+
+clause(divide_conquer_solvable([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(divide_conquer_solvable('.'(factor(A,B),C),D),','(divide_conquer_solvable1(A,D),divide_conquer_solvable(C,D))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_value(y(1),1),
+    call(divide_conquer_solvable1/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(divide_conquer_solvable/2)]).
+
+
+predicate(divide_conquer_solvable1/2,73,static,private,user,3).
+
+
+clause(divide_conquer_solvable1([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(divide_conquer_solvable1('.'(A,[]),A),[
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_nil,
+    proceed]).
+
+
+clause(:-(divide_conquer_solvable1('.'(exp(A,B),[]),C),','(normal_form(C,A),','(general_form(B,D),','(is(E,integer(D)),=:=(D,E))))),[
+    allocate(3),
+    get_variable(x(2),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(x(2),0),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(1),1),
+    call(general_form/2),
+    put_variable(y(2),0),
+    put_structure(integer/1,1),
+    unify_local_value(y(1)),
+    call((is)/2),
+    put_unsafe_value(y(1),0),
+    put_unsafe_value(y(2),1),
+    deallocate,
+    execute((=:=)/2)]).

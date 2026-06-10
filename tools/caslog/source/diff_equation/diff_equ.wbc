@@ -1,0 +1,450 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/diff_equation/diff_equ.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/diff_equation/diff_equ.pl').
+
+
+predicate(solve_typed_diff_equ/8,11,static,private,monofile,global,2).
+
+
+clause(:-(solve_typed_diff_equ(size,A,B,C,D,E,F,G),;(->(product_diff_equ(A,E,H),','(diff_equ_type(H,C,E,I,J,K,L),','(log_base_equs(B,M),','(solve_one_index_size_diff_equ(L,M,C,I,J,K,D,E,F,N),exp_solution(N,G))))),','(diff_equ_type(A,C,E,I,J,K,L),solve_one_index_size_diff_equ(L,B,C,I,J,K,D,E,F,G)))),[
+    get_atom(size,0),
+    get_variable(x(8),3),
+    get_variable(x(3),2),
+    put_value(x(1),0),
+    put_value(x(5),1),
+    put_value(x(8),2),
+    put_value(x(6),5),
+    put_value(x(7),6),
+    execute(('$solve_typed_diff_equ/8_$aux1')/7)]).
+
+
+clause(:-(solve_typed_diff_equ(comp,A,B,C,D,E,F,G),;(->(product_diff_equ(A,E,H),','(diff_equ_type(H,C,E,I,J,K,L),','(log_base_equs(B,M),','(solve_one_index_comp_diff_equ(L,M,C,I,J,K,D,E,F,N),exp_solution(N,G))))),','(diff_equ_type(A,C,E,I,J,K,L),solve_one_index_comp_diff_equ(L,B,C,I,J,K,D,E,F,G)))),[
+    get_atom(comp,0),
+    get_variable(x(8),3),
+    get_variable(x(3),2),
+    put_value(x(1),0),
+    put_value(x(5),1),
+    put_value(x(8),2),
+    put_value(x(6),5),
+    put_value(x(7),6),
+    execute(('$solve_typed_diff_equ/8_$aux2')/7)]).
+
+
+predicate('$solve_typed_diff_equ/8_$aux2'/7,27,static,private,monofile,local,2).
+
+
+clause(:-('$solve_typed_diff_equ/8_$aux2'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(product_diff_equ(A,B,I),','('$cut'(H),','(diff_equ_type(I,C,B,J,K,L,M),','(log_base_equs(D,N),','(solve_one_index_comp_diff_equ(M,N,C,J,K,L,E,B,F,O),exp_solution(O,G)))))))),[
+    allocate(14),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    put_value(y(0),1),
+    put_variable(y(7),2),
+    call((product_diff_equ)/3),
+    cut(y(6)),
+    put_value(y(7),0),
+    put_value(y(1),1),
+    put_value(y(0),2),
+    put_variable(y(8),3),
+    put_variable(y(9),4),
+    put_variable(y(10),5),
+    put_variable(y(11),6),
+    call((diff_equ_type)/7),
+    put_value(y(2),0),
+    put_variable(y(12),1),
+    call((log_base_equs)/2),
+    put_value(y(11),0),
+    put_value(y(12),1),
+    put_value(y(1),2),
+    put_value(y(8),3),
+    put_value(y(9),4),
+    put_value(y(10),5),
+    put_value(y(3),6),
+    put_value(y(0),7),
+    put_value(y(4),8),
+    put_variable(y(13),9),
+    call((solve_one_index_comp_diff_equ)/10),
+    put_unsafe_value(y(13),0),
+    put_value(y(5),1),
+    deallocate,
+    execute((exp_solution)/2)]).
+
+
+clause(:-('$solve_typed_diff_equ/8_$aux2'(A,B,C,D,E,F,G),','(diff_equ_type(A,C,B,H,I,J,K),solve_one_index_comp_diff_equ(K,D,C,H,I,J,E,B,F,G))),[
+    allocate(10),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    put_value(y(1),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    put_variable(y(7),4),
+    put_variable(y(8),5),
+    put_variable(y(9),6),
+    call((diff_equ_type)/7),
+    put_unsafe_value(y(9),0),
+    put_value(y(2),1),
+    put_value(y(1),2),
+    put_unsafe_value(y(6),3),
+    put_unsafe_value(y(7),4),
+    put_unsafe_value(y(8),5),
+    put_value(y(3),6),
+    put_value(y(0),7),
+    put_value(y(4),8),
+    put_value(y(5),9),
+    deallocate,
+    execute((solve_one_index_comp_diff_equ)/10)]).
+
+
+predicate('$solve_typed_diff_equ/8_$aux1'/7,11,static,private,monofile,local,2).
+
+
+clause(:-('$solve_typed_diff_equ/8_$aux1'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(product_diff_equ(A,B,I),','('$cut'(H),','(diff_equ_type(I,C,B,J,K,L,M),','(log_base_equs(D,N),','(solve_one_index_size_diff_equ(M,N,C,J,K,L,E,B,F,O),exp_solution(O,G)))))))),[
+    allocate(14),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    put_value(y(0),1),
+    put_variable(y(7),2),
+    call((product_diff_equ)/3),
+    cut(y(6)),
+    put_value(y(7),0),
+    put_value(y(1),1),
+    put_value(y(0),2),
+    put_variable(y(8),3),
+    put_variable(y(9),4),
+    put_variable(y(10),5),
+    put_variable(y(11),6),
+    call((diff_equ_type)/7),
+    put_value(y(2),0),
+    put_variable(y(12),1),
+    call((log_base_equs)/2),
+    put_value(y(11),0),
+    put_value(y(12),1),
+    put_value(y(1),2),
+    put_value(y(8),3),
+    put_value(y(9),4),
+    put_value(y(10),5),
+    put_value(y(3),6),
+    put_value(y(0),7),
+    put_value(y(4),8),
+    put_variable(y(13),9),
+    call((solve_one_index_size_diff_equ)/10),
+    put_unsafe_value(y(13),0),
+    put_value(y(5),1),
+    deallocate,
+    execute((exp_solution)/2)]).
+
+
+clause(:-('$solve_typed_diff_equ/8_$aux1'(A,B,C,D,E,F,G),','(diff_equ_type(A,C,B,H,I,J,K),solve_one_index_size_diff_equ(K,D,C,H,I,J,E,B,F,G))),[
+    allocate(10),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    put_value(y(1),1),
+    put_value(y(0),2),
+    put_variable(y(6),3),
+    put_variable(y(7),4),
+    put_variable(y(8),5),
+    put_variable(y(9),6),
+    call((diff_equ_type)/7),
+    put_unsafe_value(y(9),0),
+    put_value(y(2),1),
+    put_value(y(1),2),
+    put_unsafe_value(y(6),3),
+    put_unsafe_value(y(7),4),
+    put_unsafe_value(y(8),5),
+    put_value(y(3),6),
+    put_value(y(0),7),
+    put_value(y(4),8),
+    put_value(y(5),9),
+    deallocate,
+    execute((solve_one_index_size_diff_equ)/10)]).
+
+
+predicate(diff_equ_type/7,52,static,private,monofile,global,9).
+
+
+clause(:-(diff_equ_type(A,B,C,D,E,F,first_order),','(first_order_diff_equ(A,B,C,D,E,F),!)),[
+    allocate(1),
+    get_atom(first_order,6),
+    get_variable(y(0),7),
+    call((first_order_diff_equ)/6),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(diff_equ_type(A,B,C,D,E,F,second_order),','(second_order_diff_equ(A,B,C,D,E,F),!)),[
+    allocate(1),
+    get_atom(second_order,6),
+    get_variable(y(0),7),
+    call((second_order_diff_equ)/6),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(diff_equ_type(A,B,C,D,E,F,higher_order),','(higher_order_diff_equ(A,B,C,D,E,F),!)),[
+    allocate(1),
+    get_atom(higher_order,6),
+    get_variable(y(0),7),
+    call((higher_order_diff_equ)/6),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(diff_equ_type(A,B,C,D,E,F,divide_conquer),','(divide_conquer_diff_equ(A,B,C,D,E,F),!)),[
+    allocate(1),
+    get_atom(divide_conquer,6),
+    get_variable(y(0),7),
+    call((divide_conquer_diff_equ)/6),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(diff_equ_type(A,B,C,D,E,F,mutual_size),','(mutual_size_diff_equ(A,B,C,D,E,F),!)),[
+    allocate(1),
+    get_atom(mutual_size,6),
+    get_variable(y(0),7),
+    call((mutual_size_diff_equ)/6),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(diff_equ_type(A,B,C,D,E,F,implicit_size),','(implicit_size_diff_equ(A,B,C,D,E,F),!)),[
+    allocate(1),
+    get_atom(implicit_size,6),
+    get_variable(y(0),7),
+    call((implicit_size_diff_equ)/6),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(diff_equ_type(A,B,C,D,E,F,explicit_size),','(explicit_size_diff_equ(A,B,C,D,E,F),!)),[
+    allocate(1),
+    get_atom(explicit_size,6),
+    get_variable(y(0),7),
+    call((explicit_size_diff_equ)/6),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(diff_equ_type(A,B,C,D,E,F,list_cas_size),','(list_cas_size_diff_equ(A,B,C,D,E,F),!)),[
+    allocate(1),
+    get_atom(list_cas_size,6),
+    get_variable(y(0),7),
+    call((list_cas_size_diff_equ)/6),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(diff_equ_type(_,_,_,_,_,_,no_match),[
+    get_atom(no_match,6),
+    proceed]).
+
+
+predicate(solve_diff_equ/7,76,static,private,monofile,global,1).
+
+
+clause(:-(solve_diff_equ(A,B,C,D,E,F,G),;(->(==(A,first_order),solve_fode(B,F,C,E,G)),;(->(==(A,second_order),solve_sode(B,F,C,D,E,G)),;(->(==(A,higher_order),solve_hode(B,F,C,E,G)),;(->(==(A,-(divide,conquer)),solve_dcde(B,F,C,D,E,G)),;(->(==(A,mutual_size),solve_msde(B,F,C,E,G)),;(->(==(A,implicit_size),solve_isde(B,F,E,G)),;(->(==(A,explicit_size),solve_esde(B,F,E,G)),->(==(A,list_cas_size),solve_lsde(B,F,E,G)))))))))),[
+    get_variable(x(7),6),
+    get_variable(x(6),3),
+    get_variable(x(3),2),
+    put_value(x(5),2),
+    put_value(x(7),5),
+    execute(('$solve_diff_equ/7_$aux1')/7)]).
+
+
+predicate('$solve_diff_equ/7_$aux1'/7,76,static,private,monofile,local,8).
+
+
+clause(:-('$solve_diff_equ/7_$aux1'(A,B,C,D,E,F,_),','('$get_cut_level'(G),','(==(A,first_order),','('$cut'(G),solve_fode(B,C,D,E,F))))),[
+    allocate(6),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),7),
+    put_atom(first_order,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    deallocate,
+    execute((solve_fode)/5)]).
+
+
+clause(:-('$solve_diff_equ/7_$aux1'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(==(A,second_order),','('$cut'(H),solve_sode(B,C,D,G,E,F))))),[
+    allocate(7),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    put_atom(second_order,1),
+    call((==)/2),
+    cut(y(6)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(5),3),
+    put_value(y(3),4),
+    put_value(y(4),5),
+    deallocate,
+    execute((solve_sode)/6)]).
+
+
+clause(:-('$solve_diff_equ/7_$aux1'(A,B,C,D,E,F,_),','('$get_cut_level'(G),','(==(A,higher_order),','('$cut'(G),solve_hode(B,C,D,E,F))))),[
+    allocate(6),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),7),
+    put_atom(higher_order,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    deallocate,
+    execute((solve_hode)/5)]).
+
+
+clause(:-('$solve_diff_equ/7_$aux1'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(==(A,-(divide,conquer)),','('$cut'(H),solve_dcde(B,C,D,G,E,F))))),[
+    allocate(7),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    put_structure((-)/2,1),
+    unify_atom(divide),
+    unify_atom(conquer),
+    call((==)/2),
+    cut(y(6)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(5),3),
+    put_value(y(3),4),
+    put_value(y(4),5),
+    deallocate,
+    execute((solve_dcde)/6)]).
+
+
+clause(:-('$solve_diff_equ/7_$aux1'(A,B,C,D,E,F,_),','('$get_cut_level'(G),','(==(A,mutual_size),','('$cut'(G),solve_msde(B,C,D,E,F))))),[
+    allocate(6),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),7),
+    put_atom(mutual_size,1),
+    call((==)/2),
+    cut(y(5)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    deallocate,
+    execute((solve_msde)/5)]).
+
+
+clause(:-('$solve_diff_equ/7_$aux1'(A,B,C,_,D,E,_),','('$get_cut_level'(F),','(==(A,implicit_size),','('$cut'(F),solve_isde(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),7),
+    put_atom(implicit_size,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((solve_isde)/4)]).
+
+
+clause(:-('$solve_diff_equ/7_$aux1'(A,B,C,_,D,E,_),','('$get_cut_level'(F),','(==(A,explicit_size),','('$cut'(F),solve_esde(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),7),
+    put_atom(explicit_size,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((solve_esde)/4)]).
+
+
+clause(:-('$solve_diff_equ/7_$aux1'(A,B,C,_,D,E,_),','('$get_current_choice'(F),','(==(A,list_cas_size),','('$cut'(F),solve_lsde(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_current_choice(y(4)),
+    put_atom(list_cas_size,1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute((solve_lsde)/4)]).
+
+
+predicate(solve_diff_equ/5,105,static,private,monofile,global,1).
+
+
+clause(solve_diff_equ(no_match,_,_,_,inf),[
+    get_atom(no_match,0),
+    get_atom(inf,4),
+    proceed]).

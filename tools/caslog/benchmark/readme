@@ -1,0 +1,23 @@
+This directory contains the following benchmarks:
+
+add_poly.pl	add two polynomials
+append.pl 	append two lists
+color.pl	graph coloring
+copy.pl		create a copy of a term
+eight_queen.pl  eight-queens
+fib.pl		fibonacci
+flat.pl		flatten a term into a list of atom
+flatten.pl 	flatten a list into a list of atom
+hanoi.pl	hanoi
+intersect.pl	intersection of two list
+iqueen5.pl	inverse five-queens
+list_diff.pl	difference of two list
+msort.pl	merge sort
+nrev.pl		naive reverse of a list
+part.pl		database of bicycle parts
+perm.pl		permutation
+qsort.pl  	quick sort
+queen.pl	n-queens
+schedule.pl	job scheduling
+substitute.pl	substitution
+tr.pl		tree traverse

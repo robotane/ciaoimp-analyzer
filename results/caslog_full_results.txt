@@ -1,0 +1,411 @@
+CasLog - contrats annotes (ciaoimp_pipeline)
+================================================================
+========================================================
+  CONTRAT : distributor
+========================================================
+GNU Prolog 1.5.0 (64 bits)
+Compiled Mar 31 2026, 12:54:16 with gcc
+Copyright (C) 1999-2026 Daniel Diaz
+
+| ?- 
+
+(85 ms) yes
+| ?- 
+Caslog 1.0, April 1992.
+
+
+*********************************************************
+                         aux_cond_2/5                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate aux_cond_2/5 :
+
+[[1],[2]]
+
+
+---------------------------------------------------------
+* Size functions for predicate aux_cond_2/5 :
+
+[0,0,0,0,0]
+
+---------------------------------------------------------
+* Relation functions for predicate aux_cond_2/5 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate aux_cond_2/5 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate aux_cond_2/5 :
+
+[1]
+
+
+*********************************************************
+                         loop_aux_1/4                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate loop_aux_1/4 :
+
+[[1],[2]]
+
+
+---------------------------------------------------------
+* Size functions for predicate loop_aux_1/4 :
+
+[$1,0,0,0]
+
+---------------------------------------------------------
+* Relation functions for predicate loop_aux_1/4 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate loop_aux_1/4 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate loop_aux_1/4 :
+
+[2* $1+1]
+
+
+*********************************************************
+                         get_bal/3                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate get_bal/3 :
+
+[[1]]
+
+
+---------------------------------------------------------
+* Size functions for predicate get_bal/3 :
+
+[0,$2,0]
+
+---------------------------------------------------------
+* Relation functions for predicate get_bal/3 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate get_bal/3 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate get_bal/3 :
+
+[2* $2+2]
+
+
+*********************************************************
+                         aux_cond_3/5                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate aux_cond_3/5 :
+
+[[1],[2]]
+
+
+---------------------------------------------------------
+* Size functions for predicate aux_cond_3/5 :
+
+[0,0,0,0,0]
+
+---------------------------------------------------------
+* Relation functions for predicate aux_cond_3/5 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate aux_cond_3/5 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate aux_cond_3/5 :
+
+[1]
+
+
+*********************************************************
+                         loop_aux_2/4                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate loop_aux_2/4 :
+
+[[1],[2]]
+
+
+---------------------------------------------------------
+* Size functions for predicate loop_aux_2/4 :
+
+[$1,0,0,$1]
+
+---------------------------------------------------------
+* Relation functions for predicate loop_aux_2/4 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate loop_aux_2/4 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate loop_aux_2/4 :
+
+[2* $1+1]
+
+
+*********************************************************
+                         set_bal/4                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate set_bal/4 :
+
+[[1]]
+
+
+---------------------------------------------------------
+* Size functions for predicate set_bal/4 :
+
+[0,0,$3,$3]
+
+---------------------------------------------------------
+* Relation functions for predicate set_bal/4 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate set_bal/4 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate set_bal/4 :
+
+[2* $3+2]
+
+
+*********************************************************
+                         transfer/5                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate transfer/5 :
+
+[[1]]
+
+
+---------------------------------------------------------
+* Size functions for predicate transfer/5 :
+
+[0,0,$3,$4,$4]
+
+---------------------------------------------------------
+* Relation functions for predicate transfer/5 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate transfer/5 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate transfer/5 :
+
+[8* $4+9]
+
+
+*********************************************************
+                         init/4                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate init/4 :
+
+[[1]]
+
+
+---------------------------------------------------------
+* Size functions for predicate init/4 :
+
+[0,0,0,0]
+
+---------------------------------------------------------
+* Relation functions for predicate init/4 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate init/4 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate init/4 :
+
+[1]
+
+
+*********************************************************
+                         add_as_payee/5                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate add_as_payee/5 :
+
+[[1]]
+
+
+---------------------------------------------------------
+* Size functions for predicate add_as_payee/5 :
+
+[0,0,$3,0,$3+1]
+
+---------------------------------------------------------
+* Relation functions for predicate add_as_payee/5 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate add_as_payee/5 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate add_as_payee/5 :
+
+[1]
+
+
+*********************************************************
+                         len_list/2                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate len_list/2 :
+
+[[1],[2]]
+
+
+---------------------------------------------------------
+* Size functions for predicate len_list/2 :
+
+[$1,$1]
+
+---------------------------------------------------------
+* Relation functions for predicate len_list/2 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate len_list/2 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate len_list/2 :
+
+[$1+1]
+
+
+*********************************************************
+                         loop_aux_3/4                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate loop_aux_3/4 :
+
+[[1],[2]]
+
+
+---------------------------------------------------------
+* Size functions for predicate loop_aux_3/4 :
+
+[$1,0,$3,0]
+
+---------------------------------------------------------
+* Relation functions for predicate loop_aux_3/4 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate loop_aux_3/4 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate loop_aux_3/4 :
+
+[8*($3* $1)+10* $1+1]
+
+
+*********************************************************
+                         aux_cond_1/6                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate aux_cond_1/6 :
+
+[[1],[2]]
+
+
+---------------------------------------------------------
+* Size functions for predicate aux_cond_1/6 :
+
+[0,0,0,$4,$5,0]
+
+---------------------------------------------------------
+* Relation functions for predicate aux_cond_1/6 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate aux_cond_1/6 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate aux_cond_1/6 :
+
+[8*($5* $4)+10* $5+8* $4+11]
+
+
+*********************************************************
+                         distribute/8                           
+*********************************************************
+
+* Mutually exclusive classes of clauses for predicate distribute/8 :
+
+[[1]]
+
+
+---------------------------------------------------------
+* Size functions for predicate distribute/8 :
+
+[0,0,0,$4,0,$6,$7,0]
+
+---------------------------------------------------------
+* Relation functions for predicate distribute/8 :
+
+[inf]
+
+---------------------------------------------------------
+* Solution functions for predicate distribute/8 :
+
+[1]
+
+---------------------------------------------------------
+* Time functions for predicate distribute/8 :
+
+[8*($7* $4)+8* $7+11* $4+13]
+
+{Exexution Time: 22 msec}
+
+{End of Caslog execution.}
+
+(23 ms) yes
+| ?- 

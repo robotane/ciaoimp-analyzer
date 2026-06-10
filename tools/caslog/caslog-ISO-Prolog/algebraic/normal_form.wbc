@@ -1,0 +1,803 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/algebraic/normal_form.pl
+% date    : 2 6 2003
+% time    : 10:15:43
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/algebraic/normal_form.pl').
+
+
+predicate(list_cas_simplification/2,12,static,private,user,2).
+
+
+clause(list_cas_simplification([],[]),[
+    get_nil(0),
+    get_nil(1),
+    proceed]).
+
+
+clause(:-(list_cas_simplification('.'(A,B),'.'(C,D)),','(simplification(A,C),list_cas_simplification(B,D))),[
+    allocate(2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    call(simplification/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(list_cas_simplification/2)]).
+
+
+predicate(simplification/2,20,static,private,user,1).
+
+
+clause(:-(simplification(A,B),','(normal_form(A,C),general_form(C,B))),[
+    allocate(2),
+    get_variable(y(0),1),
+    put_variable(y(1),1),
+    call(normal_form/2),
+    put_unsafe_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(general_form/2)]).
+
+
+predicate(normal_form/2,27,static,private,user,4).
+
+
+clause(normal_form(bot,bot),[
+    get_atom(bot,0),
+    get_atom(bot,1),
+    proceed]).
+
+
+clause(normal_form(inf,inf),[
+    get_atom(inf,0),
+    get_atom(inf,1),
+    proceed]).
+
+
+clause(:-(normal_form(A,B),','(number(A),number_normal_form(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(number_normal_form/2)]).
+
+
+clause(:-(normal_form(A,B),','(compound_cas(A),comp_normal_form(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(compound_cas/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(comp_normal_form/2)]).
+
+
+predicate(number_normal_form/2,39,static,private,user,2).
+
+
+clause(:-(number_normal_form(A,expr([],'.'(factor([],A),[]))),=\=(A,0)),[
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure(factor/2,1),
+    unify_nil,
+    unify_local_value(x(0)),
+    put_integer(0,1),
+    execute((=\=)/2)]).
+
+
+clause(:-(number_normal_form(A,expr([],[])),=:=(A,0)),[
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_nil,
+    put_integer(0,1),
+    execute((=:=)/2)]).
+
+
+predicate(comp_normal_form/2,48,static,private,user,18).
+
+
+clause(:-(comp_normal_form(A,B),','(variable(A),var_normal_form(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(variable/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(var_normal_form/2)]).
+
+
+clause(:-(comp_normal_form(+(A,B),C),','(normal_form(A,D),','(normal_form(B,E),add_expr(D,E,C)))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_structure((+)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+clause(:-(comp_normal_form(-(A,B),C),','(normal_form(A,D),','(normal_form(B,E),subtract_expr(D,E,C)))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_structure((-)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(subtract_expr/3)]).
+
+
+clause(:-(comp_normal_form(*(A,B),C),','(normal_form(A,D),','(normal_form(B,E),multiply_expr(D,E,C)))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_structure((*)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+clause(:-(comp_normal_form(/(A,B),C),','(normal_form(A,D),','(normal_form(B,E),divide_expr(D,E,C)))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_structure((/)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(divide_expr/3)]).
+
+
+clause(:-(comp_normal_form(-(A),B),','(is(C,-1),','(normal_form(C,D),','(normal_form(A,E),multiply_expr(D,E,B))))),[
+    allocate(5),
+    get_structure((-)/1,0),
+    unify_variable(y(0)),
+    get_variable(y(1),1),
+    put_variable(y(2),0),
+    put_integer(-1,1),
+    call((is)/2),
+    put_value(y(2),0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_unsafe_value(y(3),0),
+    put_unsafe_value(y(4),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+clause(:-(comp_normal_form(exp(A,B),C),','(normal_form(A,D),','(normal_form(B,E),exp_expr(D,E,C)))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_structure(exp/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(exp_expr/3)]).
+
+
+clause(:-(comp_normal_form(log(A,B),C),','(normal_form(A,D),','(normal_form(B,E),log_expr(D,E,C)))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_structure(log/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(log_expr/3)]).
+
+
+clause(:-(comp_normal_form(fact(A),B),','(normal_form(A,C),factorial_expr(C,B))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_structure(fact/1,0),
+    unify_variable(x(0)),
+    put_variable(y(1),1),
+    call(normal_form/2),
+    put_unsafe_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(factorial_expr/2)]).
+
+
+clause(:-(comp_normal_form(max(A,B),C),','(normal_form(A,D),','(normal_form(B,E),max_expr(D,E,C)))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_structure(max/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(max_expr/3)]).
+
+
+clause(:-(comp_normal_form(min(A,B),C),','(normal_form(A,D),','(normal_form(B,E),min_expr(D,E,C)))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_structure(min/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(min_expr/3)]).
+
+
+clause(:-(comp_normal_form(A,B),','(functor(A,sum,4),sum_normal_form(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_atom(sum,1),
+    put_integer(4,2),
+    call(functor/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(sum_normal_form/2)]).
+
+
+clause(:-(comp_normal_form(A,B),','(functor(A,prod,4),prod_normal_form(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_atom(prod,1),
+    put_integer(4,2),
+    call(functor/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(prod_normal_form/2)]).
+
+
+clause(:-(comp_normal_form(A,B),','(functor(A,arg,2),function_expr(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_atom(arg,1),
+    put_integer(2,2),
+    call(functor/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(function_expr/2)]).
+
+
+clause(:-(comp_normal_form(A,B),','(functor(A,arity,1),function_expr(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_atom(arity,1),
+    put_integer(1,2),
+    call(functor/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(function_expr/2)]).
+
+
+clause(:-(comp_normal_form(A,B),','(functor(A,head,1),function_expr(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_atom(head,1),
+    put_integer(1,2),
+    call(functor/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(function_expr/2)]).
+
+
+clause(:-(comp_normal_form(A,B),','(functor(A,tail,1),function_expr(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_atom(tail,1),
+    put_integer(1,2),
+    call(functor/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(function_expr/2)]).
+
+
+clause(:-(comp_normal_form(A,B),','(userfunc(A),userfunc_normal_form(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(userfunc/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(userfunc_normal_form/2)]).
+
+
+predicate(var_normal_form/2,116,static,private,user,1).
+
+
+clause(var_normal_form(A,expr([],'.'(factor('.'(A,[]),1),[]))),[
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure(factor/2,1),
+    unify_variable(x(1)),
+    unify_integer(1),
+    get_list(1),
+    unify_local_value(x(0)),
+    unify_nil,
+    proceed]).
+
+
+predicate(sum_normal_form/2,118,static,private,user,2).
+
+
+clause(:-(sum_normal_form(A,B),','(functor(A,sum,4),','(arg(1,A,C),','(arg(2,A,1),','(arg(3,A,arity(D)),','(arg(4,A,arg(D,C)),','(!,normal_form(-(D,1),B)))))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_atom(sum,1),
+    put_integer(4,2),
+    call(functor/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call(arg/3),
+    put_integer(2,0),
+    put_value(y(0),1),
+    put_integer(1,2),
+    call(arg/3),
+    put_integer(3,0),
+    put_value(y(0),1),
+    put_structure(arity/1,2),
+    unify_variable(y(4)),
+    call(arg/3),
+    put_integer(4,0),
+    put_value(y(0),1),
+    put_structure(arg/2,2),
+    unify_value(y(4)),
+    unify_local_value(y(3)),
+    call(arg/3),
+    cut(y(2)),
+    put_structure((-)/2,0),
+    unify_value(y(4)),
+    unify_integer(1),
+    put_value(y(1),1),
+    deallocate,
+    execute(normal_form/2)]).
+
+
+clause(:-(sum_normal_form(A,B),','(functor(A,sum,4),','(arg(1,A,C),','(arg(2,A,D),','(normal_form(D,E),','(arg(3,A,F),','(normal_form(F,G),','(arg(4,A,H),','(normal_form(H,I),sum_expr(C,E,G,I,B)))))))))),[
+    allocate(9),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_atom(sum,1),
+    put_integer(4,2),
+    call(functor/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(2),2),
+    call(arg/3),
+    put_integer(2,0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call(arg/3),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_integer(3,0),
+    put_value(y(0),1),
+    put_variable(y(5),2),
+    call(arg/3),
+    put_value(y(5),0),
+    put_variable(y(6),1),
+    call(normal_form/2),
+    put_integer(4,0),
+    put_value(y(0),1),
+    put_variable(y(7),2),
+    call(arg/3),
+    put_value(y(7),0),
+    put_variable(y(8),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(4),1),
+    put_unsafe_value(y(6),2),
+    put_unsafe_value(y(8),3),
+    put_value(y(1),4),
+    deallocate,
+    execute(sum_expr/5)]).
+
+
+predicate(prod_normal_form/2,136,static,private,user,1).
+
+
+clause(:-(prod_normal_form(A,B),','(functor(A,prod,4),','(arg(1,A,C),','(arg(2,A,D),','(normal_form(D,E),','(arg(3,A,F),','(normal_form(F,G),','(arg(4,A,H),','(normal_form(H,I),prod_expr(C,E,G,I,B)))))))))),[
+    allocate(9),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_atom(prod,1),
+    put_integer(4,2),
+    call(functor/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(2),2),
+    call(arg/3),
+    put_integer(2,0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call(arg/3),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_integer(3,0),
+    put_value(y(0),1),
+    put_variable(y(5),2),
+    call(arg/3),
+    put_value(y(5),0),
+    put_variable(y(6),1),
+    call(normal_form/2),
+    put_integer(4,0),
+    put_value(y(0),1),
+    put_variable(y(7),2),
+    call(arg/3),
+    put_value(y(7),0),
+    put_variable(y(8),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(4),1),
+    put_unsafe_value(y(6),2),
+    put_unsafe_value(y(8),3),
+    put_value(y(1),4),
+    deallocate,
+    execute(prod_expr/5)]).
+
+
+predicate(function_expr/2,151,static,private,user,1).
+
+
+clause(:-(function_expr(A,expr([],'.'(factor('.'(B,[]),1),[]))),','(functor(A,C,D),','(functor(B,C,D),function_normal_form(D,A,B)))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_integer(1),
+    get_list(0),
+    unify_variable(y(1)),
+    unify_nil,
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    put_variable(y(3),2),
+    call(functor/3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    call(functor/3),
+    put_unsafe_value(y(3),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(function_normal_form/3)]).
+
+
+predicate(function_normal_form/3,156,static,private,user,2).
+
+
+clause(function_normal_form(0,A,B),[
+    get_integer(0,0),
+    proceed]).
+
+
+clause(:-(function_normal_form(A,B,C),','(>(A,0),','(arg(A,B,D),','(normal_form(D,E),','(arg(A,C,E),','(is(F,-(A,1)),function_normal_form(F,B,C))))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(3),2),
+    call(arg/3),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(4),2),
+    call(arg/3),
+    put_variable(y(5),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_unsafe_value(y(5),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(function_normal_form/3)]).
+
+
+predicate(userfunc_normal_form/2,169,static,private,user,1).
+
+
+clause(:-(userfunc_normal_form(A,expr('.'(term('.'(B,[]),'.'(factor([],1),[])),[]),[])),','(functor(A,C,D),','(functor(B,C,D),function_normal_form(D,A,B)))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_structure(expr/2,1),
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(term/2,0),
+    unify_variable(x(1)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(1),
+    unify_variable(y(1)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_integer(1),
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    put_variable(y(3),2),
+    call(functor/3),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    call(functor/3),
+    put_unsafe_value(y(3),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(function_normal_form/3)]).
+
+
+predicate(variable/1,177,static,private,user,2).
+
+
+clause(variable($(A)),[
+    get_structure(($) /1,0),
+    unify_void(1),
+    proceed]).
+
+
+clause(variable($(A,B)),[
+    get_structure(($) /2,0),
+    unify_void(2),
+    proceed]).
+
+
+predicate(userfunc/1,184,static,private,user,1).
+
+
+clause(:-(userfunc(A),','(functor(A,B,C),','(\==(','(B,C),','($,1)),','(\==(','(B,C),','($,2)),','(\==(','(B,C),','(+,2)),','(\==(','(B,C),','(-,2)),','(\==(','(B,C),','(*,2)),','(\==(','(B,C),','(/,2)),','(\==(','(B,C),','(-,1)),','(\==(','(B,C),','(exp,2)),','(\==(','(B,C),','(log,2)),','(\==(','(B,C),','(fact,1)),','(\==(','(B,C),','(max,2)),','(\==(','(B,C),','(min,2)),','(\==(','(B,C),','(arg,2)),','(\==(','(B,C),','(arity,1)),','(\==(','(B,C),','(head,1)),','(\==(','(B,C),','(tail,1)),','(\==(','(B,C),','(sum,4)),\==(','(B,C),','(prod,4))))))))))))))))))))),[
+    allocate(2),
+    put_variable(y(0),1),
+    put_variable(y(1),2),
+    call(functor/3),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom($),
+    unify_integer(1),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom($),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(+),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(-),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(*),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(/),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(-),
+    unify_integer(1),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(exp),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(log),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(fact),
+    unify_integer(1),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(max),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(min),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(arg),
+    unify_integer(2),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(arity),
+    unify_integer(1),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(head),
+    unify_integer(1),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(tail),
+    unify_integer(1),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(sum),
+    unify_integer(4),
+    call((\==)/2),
+    put_structure((',')/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((',')/2,1),
+    unify_atom(prod),
+    unify_integer(4),
+    deallocate,
+    execute((\==)/2)]).

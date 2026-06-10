@@ -1,0 +1,197 @@
+digraph ciaoimp_pipeline_flow {
+  graph [
+    rankdir=TB,
+    bgcolor="#fbfaf7",
+    pad="0.35",
+    nodesep="0.45",
+    ranksep="0.55",
+    splines=spline,
+    outputorder=edgesfirst
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="DejaVu Sans",
+    fontsize=14,
+    margin="0.14,0.08",
+    penwidth=1.4,
+    color="#28323f",
+    fillcolor="#ffffff",
+    fontcolor="#16202a"
+  ];
+
+  edge [
+    color="#52606d",
+    penwidth=1.8,
+    arrowsize=0.8,
+    fontname="DejaVu Sans",
+    fontsize=11,
+    fontcolor="#3b4652"
+  ];
+
+  subgraph cluster_common {
+    label="Tronc commun";
+    labelloc=t;
+    fontname="DejaVu Sans";
+    fontsize=16;
+    color="#c9d3df";
+    penwidth=1.2;
+    style="rounded";
+
+    source [
+      label="data/source/*.pl\ncontrats source",
+      fillcolor="#fff6d8",
+      color="#9a6b00"
+    ];
+
+    ciaopp [
+      label="Expansion CiaoPP",
+      fillcolor="#e8f4ff",
+      color="#236192"
+    ];
+
+    transform [
+      label="Nettoyage + transformation Prolog\ncaslog_clean.py + caslog_transform.pl",
+      fillcolor="#e8f4ff",
+      color="#236192"
+    ];
+
+    executable [
+      label="build/executable/*.pl\npremière forme stable",
+      fillcolor="#eef7e8",
+      color="#3f7a35"
+    ];
+
+    normalize [
+      label="Normalisation\ndestate + fix_dlist",
+      fillcolor="#e8f4ff",
+      color="#236192"
+    ];
+
+    normalized [
+      label="build/normalized/*.pl\nforme commune",
+      fillcolor="#eef7e8",
+      color="#3f7a35"
+    ];
+  }
+
+  subgraph cluster_caslog {
+    label="Branche CasLog";
+    labelloc=t;
+    fontname="DejaVu Sans";
+    fontsize=16;
+    color="#e5b7c1";
+    penwidth=1.2;
+    style="rounded";
+
+    annotate [
+      label="Annotation CasLog\nmode/2 + measure/2 + démotion",
+      fillcolor="#fdecef",
+      color="#9b3447"
+    ];
+
+    annotated [
+      label="build/annotated/*.pl\nentrée CasLog",
+      fillcolor="#fdecef",
+      color="#9b3447"
+    ];
+
+    caslog [
+      label="CasLog\ncaslog.gprolog",
+      fillcolor="#fdecef",
+      color="#9b3447"
+    ];
+
+    caslog_results [
+      label="results/caslog_*.txt\nrapports CasLog",
+      fillcolor="#f7eefc",
+      color="#6f4a8e"
+    ];
+  }
+
+  subgraph cluster_tnf {
+    label="Branche TNF";
+    labelloc=t;
+    fontname="DejaVu Sans";
+    fontsize=16;
+    color="#b8c5ee";
+    penwidth=1.2;
+    style="rounded";
+
+    tnf_compile [
+      label="Compilation TNF\ntnf.pro",
+      fillcolor="#edf2ff",
+      color="#405aa8"
+    ];
+
+    asm [
+      label="build/tnf_asm/*.txt\nassembleur TNF",
+      fillcolor="#edf2ff",
+      color="#405aa8"
+    ];
+
+    tnf_vm [
+      label="VM TNF Python\ntnf.py",
+      fillcolor="#edf2ff",
+      color="#405aa8"
+    ];
+
+    tnf_results [
+      label="results/tnf_*.txt\nrapports TNF",
+      fillcolor="#f7eefc",
+      color="#6f4a8e"
+    ];
+  }
+
+  subgraph cluster_prolog_cafe {
+    label="Branche Prolog Cafe";
+    labelloc=t;
+    fontname="DejaVu Sans";
+    fontsize=16;
+    color="#d1e5d9";
+    penwidth=1.2;
+    style="rounded";
+
+    plcafe_compile [
+      label="Prolog Cafe\nplcafe.jar",
+      fillcolor="#f2f9f5",
+      color="#4a8e63"
+    ];
+
+    plcafe_classes [
+      label="build/prolog_cafe_classes/\nbytecode Java",
+      fillcolor="#f2f9f5",
+      color="#4a8e63"
+    ];
+
+    java_vm [
+      label="JVM\njava",
+      fillcolor="#f2f9f5",
+      color="#4a8e63"
+    ];
+
+    plcafe_results [
+      label="results/prolog_cafe_*.txt\nrapports Prolog Cafe",
+      fillcolor="#f7eefc",
+      color="#6f4a8e"
+    ];
+  }
+
+  stage_diff [
+    label="results/stage_diffs.txt\ncomparaison source / executable / normalized / annotated",
+    fillcolor="#f7eefc",
+    color="#6f4a8e"
+  ];
+
+  source -> ciaopp -> transform -> executable -> normalize -> normalized;
+
+  normalized -> annotate -> annotated -> caslog -> caslog_results;
+  normalized -> tnf_compile -> asm -> tnf_vm -> tnf_results;
+  normalized -> plcafe_compile -> plcafe_classes -> java_vm -> plcafe_results;
+
+  source -> stage_diff [style=dashed, arrowhead=none, color="#9aa4af"];
+  executable -> stage_diff [style=dashed, arrowhead=none, color="#9aa4af"];
+  normalized -> stage_diff [style=dashed, arrowhead=none, color="#9aa4af"];
+  annotated -> stage_diff [style=dashed, arrowhead=none, color="#9aa4af"];
+}

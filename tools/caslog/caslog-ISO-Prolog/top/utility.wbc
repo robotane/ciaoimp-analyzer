@@ -1,0 +1,1949 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/top/utility.pl
+% date    : 2 6 2003
+% time    : 10:15:27
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/top/utility.pl').
+
+
+predicate(addition/3,14,static,private,user,12).
+
+
+clause(:-(addition(A,B,C),','(number(A),','(number(B),is(C,+(A,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(2),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    deallocate,
+    execute((is)/2)]).
+
+
+clause(addition(bot,bot,bot),[
+    get_atom(bot,0),
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(addition(A,bot,bot),\==(A,bot)),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(addition(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(addition(inf,inf,inf),[
+    get_atom(inf,0),
+    get_atom(inf,1),
+    get_atom(inf,2),
+    proceed]).
+
+
+clause(:-(addition(A,inf,inf),','(\==(A,inf),\==(A,bot))),[
+    allocate(1),
+    get_variable(y(0),0),
+    get_atom(inf,1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(addition(inf,A,inf),','(\==(A,inf),\==(A,bot))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(addition(A,B,A),','(number(B),','(=:=(B,0),','(nonnumber(A),','(\==(A,inf),\==(A,bot)))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_value(y(0),2),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(1),0),
+    put_integer(0,1),
+    call((=:=)/2),
+    put_value(y(0),0),
+    call(nonnumber/1),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(addition(A,B,B),','(number(A),','(=:=(A,0),','(nonnumber(B),','(\==(B,inf),\==(B,bot)))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_value(y(1),2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((=:=)/2),
+    put_value(y(1),0),
+    call(nonnumber/1),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(addition(A,B,+(A,B)),','(\==(A,bot),','(\==(A,inf),','(nonnumber(A),','(\==(B,bot),','(\==(B,inf),nonnumber(B))))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((+)/2,2),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    call(nonnumber/1),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    deallocate,
+    execute(nonnumber/1)]).
+
+
+clause(:-(addition(A,B,+(A,B)),','(number(A),','(=\=(A,0),','(\==(B,bot),','(\==(B,inf),nonnumber(B)))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((+)/2,2),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((=\=)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    deallocate,
+    execute(nonnumber/1)]).
+
+
+clause(:-(addition(A,B,+(A,B)),','(number(B),','(=\=(B,0),','(\==(A,bot),','(\==(A,inf),nonnumber(A)))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((+)/2,2),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(1),0),
+    put_integer(0,1),
+    call((=\=)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    deallocate,
+    execute(nonnumber/1)]).
+
+
+predicate(subtraction/3,65,static,private,user,9).
+
+
+clause(:-(subtraction(A,B,C),','(number(A),','(number(B),is(C,-(A,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(2),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    deallocate,
+    execute((is)/2)]).
+
+
+clause(subtraction(bot,bot,bot),[
+    get_atom(bot,0),
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(subtraction(A,bot,bot),\==(A,bot)),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(subtraction(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(subtraction(A,B,A),','(number(B),','(=:=(B,0),','(nonnumber(A),\==(A,bot))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_value(y(0),2),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(1),0),
+    put_integer(0,1),
+    call((=:=)/2),
+    put_value(y(0),0),
+    call(nonnumber/1),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(subtraction(A,B,-(B)),','(number(A),','(=:=(A,0),','(nonnumber(B),\==(B,bot))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((-)/1,2),
+    unify_local_value(y(1)),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((=:=)/2),
+    put_value(y(1),0),
+    call(nonnumber/1),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(subtraction(A,B,-(A,B)),','(nonnumber(A),','(nonnumber(B),','(\==(A,bot),\==(B,bot))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((-)/2,2),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_value(y(0),0),
+    call(nonnumber/1),
+    put_value(y(1),0),
+    call(nonnumber/1),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(subtraction(A,B,-(A,B)),','(number(A),','(=\=(A,0),','(nonnumber(B),\==(B,bot))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((-)/2,2),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((=\=)/2),
+    put_value(y(1),0),
+    call(nonnumber/1),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(subtraction(A,B,-(A,B)),','(nonnumber(A),','(\==(A,bot),','(number(B),=\=(B,0))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((-)/2,2),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_value(y(0),0),
+    call(nonnumber/1),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(1),0),
+    put_integer(0,1),
+    deallocate,
+    execute((=\=)/2)]).
+
+
+predicate(multiply/3,103,static,private,user,14).
+
+
+clause(:-(multiply(A,B,C),','(number(A),','(number(B),is(C,*(A,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(2),0),
+    put_structure((*)/2,1),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    deallocate,
+    execute((is)/2)]).
+
+
+clause(multiply(bot,bot,bot),[
+    get_atom(bot,0),
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(multiply(A,bot,bot),\==(A,bot)),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(multiply(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(multiply(inf,inf,inf),[
+    get_atom(inf,0),
+    get_atom(inf,1),
+    get_atom(inf,2),
+    proceed]).
+
+
+clause(:-(multiply(A,inf,inf),','(\==(A,inf),\==(A,bot))),[
+    allocate(1),
+    get_variable(y(0),0),
+    get_atom(inf,1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(multiply(inf,A,inf),','(\==(A,inf),\==(A,bot))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(multiply(A,B,B),','(number(B),','(=:=(B,0),','(nonnumber(A),','(\==(A,inf),\==(A,bot)))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_value(y(1),2),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(1),0),
+    put_integer(0,1),
+    call((=:=)/2),
+    put_value(y(0),0),
+    call(nonnumber/1),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(multiply(A,B,A),','(number(A),','(=:=(A,0),','(nonnumber(B),','(\==(B,inf),\==(B,bot)))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((=:=)/2),
+    put_value(y(1),0),
+    call(nonnumber/1),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(multiply(A,B,A),','(number(B),','(=:=(B,1),','(nonnumber(A),','(\==(A,inf),\==(A,bot)))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_value(y(0),2),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(1),0),
+    put_integer(1,1),
+    call((=:=)/2),
+    put_value(y(0),0),
+    call(nonnumber/1),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(multiply(A,B,B),','(number(A),','(=:=(A,1),','(nonnumber(B),','(\==(B,inf),\==(B,bot)))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_value(y(1),2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(0),0),
+    put_integer(1,1),
+    call((=:=)/2),
+    put_value(y(1),0),
+    call(nonnumber/1),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(multiply(A,B,*(A,B)),','(\==(A,bot),','(\==(A,inf),','(nonnumber(A),','(\==(B,bot),','(\==(B,inf),nonnumber(B))))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((*)/2,2),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    call(nonnumber/1),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    deallocate,
+    execute(nonnumber/1)]).
+
+
+clause(:-(multiply(A,B,*(A,B)),','(number(A),','(=\=(A,0),','(=\=(A,1),','(\==(B,bot),','(\==(B,inf),nonnumber(B))))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((*)/2,2),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((=\=)/2),
+    put_value(y(0),0),
+    put_integer(1,1),
+    call((=\=)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    deallocate,
+    execute(nonnumber/1)]).
+
+
+clause(:-(multiply(A,B,*(A,B)),','(number(B),','(=\=(B,0),','(=\=(B,1),','(\==(A,bot),','(\==(A,inf),nonnumber(A))))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_structure((*)/2,2),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(1),0),
+    put_integer(0,1),
+    call((=\=)/2),
+    put_value(y(1),0),
+    put_integer(1,1),
+    call((=\=)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    deallocate,
+    execute(nonnumber/1)]).
+
+
+predicate(minus/2,166,static,private,user,4).
+
+
+clause(minus(bot,bot),[
+    get_atom(bot,0),
+    get_atom(bot,1),
+    proceed]).
+
+
+clause(minus(inf,bot),[
+    get_atom(inf,0),
+    get_atom(bot,1),
+    proceed]).
+
+
+clause(:-(minus(A,B),','(number(A),','(!,;(->(=:=(A,0),=(B,0)),is(B,-(A)))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute('$minus/2_$aux1'/2)]).
+
+
+clause(:-(minus(A,-(A)),','(\==(A,bot),\==(A,inf))),[
+    allocate(1),
+    get_variable(y(0),0),
+    get_structure((-)/1,1),
+    unify_local_value(y(0)),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+predicate('$minus/2_$aux1'/2,168,static,private,user,2).
+
+
+clause(:-('$minus/2_$aux1'(A,B),','('$get_cut_level'(C),','(=:=(A,0),','('$cut'(C),=(B,0))))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    put_integer(0,1),
+    call((=:=)/2),
+    cut(y(1)),
+    put_value(y(0),0),
+    get_integer(0,0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$minus/2_$aux1'(A,B),is(B,-(A))),[
+    get_variable(x(2),1),
+    put_structure((-)/1,1),
+    unify_local_value(x(0)),
+    put_value(x(2),0),
+    execute((is)/2)]).
+
+
+predicate(add/3,181,static,private,user,4).
+
+
+clause(add(bot,bot,bot),[
+    get_atom(bot,0),
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(add(A,bot,bot),\==(A,bot)),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(add(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(add(A,B,C),','(\==(A,bot),','(\==(B,bot),is(C,+(A,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    deallocate,
+    execute((is)/2)]).
+
+
+predicate(sub/3,194,static,private,user,4).
+
+
+clause(sub(bot,bot,bot),[
+    get_atom(bot,0),
+    get_atom(bot,1),
+    get_atom(bot,2),
+    proceed]).
+
+
+clause(:-(sub(A,bot,bot),\==(A,bot)),[
+    get_atom(bot,1),
+    get_atom(bot,2),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(sub(bot,A,bot),\==(A,bot)),[
+    get_atom(bot,0),
+    get_atom(bot,2),
+    put_value(x(1),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(sub(A,B,C),','(\==(A,bot),','(\==(B,bot),is(C,-(A,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    deallocate,
+    execute((is)/2)]).
+
+
+predicate(max/3,207,static,private,user,2).
+
+
+clause(:-(max(A,B,A),>=(A,B)),[
+    get_value(x(2),0),
+    put_value(x(2),0),
+    execute((>=)/2)]).
+
+
+clause(:-(max(A,B,B),<(A,B)),[
+    get_value(x(2),1),
+    put_value(x(2),1),
+    execute((<)/2)]).
+
+
+predicate(min/3,215,static,private,user,2).
+
+
+clause(:-(min(A,B,A),<(A,B)),[
+    get_value(x(2),0),
+    put_value(x(2),0),
+    execute((<)/2)]).
+
+
+clause(:-(min(A,B,B),>=(A,B)),[
+    get_value(x(2),1),
+    put_value(x(2),1),
+    execute((>=)/2)]).
+
+
+predicate(maximum/3,224,static,private,user,11).
+
+
+clause(:-(maximum(A,B,C),','(number(A),','(number(B),max(A,B,C)))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(max/3)]).
+
+
+clause(maximum(A,top,top),[
+    get_atom(top,1),
+    get_atom(top,2),
+    proceed]).
+
+
+clause(:-(maximum(top,A,top),\==(A,top)),[
+    get_atom(top,0),
+    get_atom(top,2),
+    put_value(x(1),0),
+    put_atom(top,1),
+    execute((\==)/2)]).
+
+
+clause(:-(maximum(A,bot,A),\==(A,top)),[
+    get_atom(bot,1),
+    get_value(x(2),0),
+    put_value(x(2),0),
+    put_atom(top,1),
+    execute((\==)/2)]).
+
+
+clause(:-(maximum(bot,A,A),','(\==(A,top),\==(A,bot))),[
+    allocate(1),
+    get_atom(bot,0),
+    get_variable(y(0),1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(maximum(A,inf,inf),','(\==(A,top),\==(A,bot))),[
+    allocate(1),
+    get_variable(y(0),0),
+    get_atom(inf,1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(maximum(inf,A,inf),','(\==(A,top),','(\==(A,bot),\==(A,inf)))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(maximum(A,neginf,A),','(\==(A,top),','(\==(A,bot),\==(A,inf)))),[
+    allocate(1),
+    get_variable(y(0),0),
+    get_atom(neginf,1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(maximum(neginf,A,A),','(\==(A,top),','(\==(A,bot),','(\==(A,inf),\==(A,neginf))))),[
+    allocate(1),
+    get_atom(neginf,0),
+    get_variable(y(0),1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(neginf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(maximum(A,A,A),','(\==(A,top),','(\==(A,bot),','(\==(A,inf),','(\==(A,neginf),nonnumber(A)))))),[
+    allocate(1),
+    get_variable(y(0),0),
+    get_value(y(0),1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(neginf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    deallocate,
+    execute(nonnumber/1)]).
+
+
+clause(:-(maximum(A,B,C),','(\==(A,B),','(\==(A,top),','(\==(A,bot),','(\==(A,inf),','(\==(A,neginf),','(\==(B,top),','(\==(B,bot),','(\==(B,inf),','(\==(B,neginf),','(;(nonnumber(A),nonnumber(B)),=(C,max(A,B))))))))))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(neginf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(neginf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call('$maximum/3_$aux1'/2),
+    put_value(y(2),0),
+    get_structure(max/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    deallocate,
+    proceed]).
+
+
+predicate('$maximum/3_$aux1'/2,258,static,private,user,2).
+
+
+clause(:-('$maximum/3_$aux1'(A,B),nonnumber(A)),[
+    execute(nonnumber/1)]).
+
+
+clause(:-('$maximum/3_$aux1'(A,B),nonnumber(B)),[
+    put_value(x(1),0),
+    execute(nonnumber/1)]).
+
+
+predicate(minimum/3,276,static,private,user,11).
+
+
+clause(:-(minimum(A,B,C),','(integer(A),','(integer(B),min(A,B,C)))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(integer/1),
+    put_value(y(1),0),
+    call(integer/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(min/3)]).
+
+
+clause(minimum(A,top,top),[
+    get_atom(top,1),
+    get_atom(top,2),
+    proceed]).
+
+
+clause(:-(minimum(top,A,top),\==(A,top)),[
+    get_atom(top,0),
+    get_atom(top,2),
+    put_value(x(1),0),
+    put_atom(top,1),
+    execute((\==)/2)]).
+
+
+clause(:-(minimum(A,bot,A),\==(A,top)),[
+    get_atom(bot,1),
+    get_value(x(2),0),
+    put_value(x(2),0),
+    put_atom(top,1),
+    execute((\==)/2)]).
+
+
+clause(:-(minimum(bot,A,A),','(\==(A,top),\==(A,bot))),[
+    allocate(1),
+    get_atom(bot,0),
+    get_variable(y(0),1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(minimum(A,inf,A),','(\==(A,top),\==(A,bot))),[
+    allocate(1),
+    get_variable(y(0),0),
+    get_atom(inf,1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(minimum(inf,A,A),','(\==(A,top),','(\==(A,bot),\==(A,inf)))),[
+    allocate(1),
+    get_atom(inf,0),
+    get_variable(y(0),1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(minimum(A,neginf,neginf),','(\==(A,top),','(\==(A,bot),\==(A,inf)))),[
+    allocate(1),
+    get_variable(y(0),0),
+    get_atom(neginf,1),
+    get_atom(neginf,2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(minimum(neginf,A,neginf),','(\==(A,top),','(\==(A,bot),','(\==(A,inf),\==(A,neginf))))),[
+    allocate(1),
+    get_atom(neginf,0),
+    get_variable(y(0),1),
+    get_atom(neginf,2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(neginf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(minimum(A,A,A),','(\==(A,top),','(\==(A,bot),','(\==(A,inf),','(\==(A,neginf),noninteger(A)))))),[
+    allocate(1),
+    get_variable(y(0),0),
+    get_value(y(0),1),
+    get_value(y(0),2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(neginf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    deallocate,
+    execute(noninteger/1)]).
+
+
+clause(:-(minimum(A,B,C),','(\==(A,B),','(\==(A,top),','(\==(A,bot),','(\==(A,inf),','(\==(A,neginf),','(\==(B,top),','(\==(B,bot),','(\==(B,inf),','(\==(B,neginf),;(->(noninteger(A),=(C,min(A,B))),->(noninteger(B),=(C,min(A,B)))))))))))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(neginf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(top,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(neginf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_value(y(1),2),
+    deallocate,
+    execute('$minimum/3_$aux1'/3)]).
+
+
+predicate('$minimum/3_$aux1'/3,310,static,private,user,2).
+
+
+clause(:-('$minimum/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(noninteger(A),','('$cut'(D),=(B,min(A,C)))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(noninteger/1),
+    cut(y(3)),
+    put_value(y(1),0),
+    get_structure(min/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(2)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$minimum/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(noninteger(C),','('$cut'(D),=(B,min(A,C)))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(2),0),
+    call(noninteger/1),
+    cut(y(3)),
+    put_value(y(1),0),
+    get_structure(min/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(2)),
+    deallocate,
+    proceed]).
+
+
+predicate(close_list_cas/1,330,static,private,user,2).
+
+
+clause(:-(close_list_cas(A),','(var(A),=(A,[]))),[
+    allocate(1),
+    get_variable(y(0),0),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(0),0),
+    get_nil(0),
+    deallocate,
+    proceed]).
+
+
+clause(:-(close_list_cas(A),','(nonvar(A),','(=(A,'.'(B,C)),close_list_cas(C)))),[
+    allocate(1),
+    get_variable(y(0),0),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_void(1),
+    unify_variable(x(0)),
+    deallocate,
+    execute(close_list_cas/1)]).
+
+
+predicate(member_cas/2,341,static,private,user,3).
+
+
+clause(:-(member_cas([],A),fail),[
+    get_nil(0),
+    fail]).
+
+
+clause(:-(member_cas('.'(A,B),C),==(A,C)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_void(1),
+    execute((==)/2)]).
+
+
+clause(:-(member_cas('.'(A,B),C),','(\==(A,C),member_cas(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(member_cas/2)]).
+
+
+predicate(ith_list_cas_element/3,351,static,private,user,4).
+
+
+clause(:-(ith_list_cas_element(A,B,C),','(var(B),fail)),[
+    allocate(0),
+    put_value(x(1),0),
+    call(var/1),
+    fail]).
+
+
+clause(:-(ith_list_cas_element(A,B,C),','(nonvar(B),','(==(B,[]),fail))),[
+    allocate(1),
+    get_variable(y(0),1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    put_nil(1),
+    call((==)/2),
+    fail]).
+
+
+clause(:-(ith_list_cas_element(A,B,C),','(>(A,1),','(nonvar(B),','(=(B,'.'(D,E)),','(is(F,-(A,1)),ith_list_cas_element(F,E,C)))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_integer(1,1),
+    call((>)/2),
+    put_value(y(1),0),
+    call(nonvar/1),
+    put_value(y(1),0),
+    get_list(0),
+    unify_void(1),
+    unify_variable(y(3)),
+    put_variable(y(4),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_unsafe_value(y(4),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(ith_list_cas_element/3)]).
+
+
+clause(:-(ith_list_cas_element(1,A,B),','(nonvar(A),=(A,'.'(B,C)))),[
+    allocate(2),
+    get_integer(1,0),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+predicate(select_list_cas_elements/3,372,static,private,user,2).
+
+
+clause(select_list_cas_elements([],A,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(select_list_cas_elements('.'(A,B),C,'.'(D,E)),','(ith_list_cas_element(A,C,D),select_list_cas_elements(B,C,E))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_variable(y(2)),
+    put_value(y(1),1),
+    call(ith_list_cas_element/3),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(select_list_cas_elements/3)]).
+
+
+predicate(append_cas/3,380,static,private,user,2).
+
+
+clause(append_cas([],A,A),[
+    get_nil(0),
+    get_value(x(2),1),
+    proceed]).
+
+
+clause(:-(append_cas('.'(A,B),C,'.'(A,D)),append_cas(B,C,D)),[
+    get_list(0),
+    unify_variable(x(3)),
+    unify_variable(x(0)),
+    get_list(2),
+    unify_value(x(3)),
+    unify_variable(x(2)),
+    execute(append_cas/3)]).
+
+
+predicate(init_queue/2,391,static,private,user,1).
+
+
+clause(init_queue(A,A),[
+    get_value(x(1),0),
+    proceed]).
+
+
+predicate(empty_queue/2,397,static,private,user,1).
+
+
+clause(:-(empty_queue(A,B),==(A,B)),[
+    execute((==)/2)]).
+
+
+predicate(nonempty_queue/2,403,static,private,user,1).
+
+
+clause(:-(nonempty_queue(A,B),\==(A,B)),[
+    execute((\==)/2)]).
+
+
+predicate(get_queue/3,409,static,private,user,1).
+
+
+clause(get_queue('.'(A,B),A,B),[
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_local_value(x(2)),
+    proceed]).
+
+
+predicate(put_queue/3,414,static,private,user,1).
+
+
+clause(put_queue('.'(A,B),A,B),[
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_local_value(x(2)),
+    proceed]).
+
+
+predicate(set_put_queue/3,419,static,private,user,3).
+
+
+clause(:-(set_put_queue(A,B,A),var(B)),[
+    get_value(x(2),0),
+    put_value(x(1),0),
+    execute(var/1)]).
+
+
+clause(:-(set_put_queue(A,B,A),','(nonvar(B),=(B,[]))),[
+    allocate(1),
+    get_variable(y(0),1),
+    get_value(x(2),0),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_nil(0),
+    deallocate,
+    proceed]).
+
+
+clause(:-(set_put_queue(A,B,C),','(nonvar(B),','(=(B,'.'(D,E)),','(put_queue(A,D,F),set_put_queue(F,E,C))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(1),0),
+    call(nonvar/1),
+    put_value(y(1),0),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(3)),
+    put_value(y(0),0),
+    put_variable(y(4),2),
+    call(put_queue/3),
+    put_unsafe_value(y(4),0),
+    put_value(y(3),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(set_put_queue/3)]).
+
+
+predicate(print_queue/2,433,static,private,user,2).
+
+
+clause(:-(print_queue(A,B),empty_queue(A,B)),[
+    execute(empty_queue/2)]).
+
+
+clause(:-(print_queue(A,B),','(nonempty_queue(A,B),','(get_queue(A,C,D),','(write(C),','(nl,print_queue(D,B)))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call(nonempty_queue/2),
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    put_variable(y(3),2),
+    call(get_queue/3),
+    put_value(y(2),0),
+    call(write/1),
+    call(nl/0),
+    put_unsafe_value(y(3),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(print_queue/2)]).
+
+
+predicate(empty_stack/1,448,static,private,user,1).
+
+
+clause(empty_stack([]),[
+    get_nil(0),
+    proceed]).
+
+
+predicate(nonempty_stack/1,453,static,private,user,1).
+
+
+clause(:-(nonempty_stack(A),\==(A,[])),[
+    put_nil(1),
+    execute((\==)/2)]).
+
+
+predicate(push/3,459,static,private,user,1).
+
+
+clause(push(A,B,'.'(B,A)),[
+    get_list(2),
+    unify_local_value(x(1)),
+    unify_local_value(x(0)),
+    proceed]).
+
+
+predicate(pop/3,464,static,private,user,2).
+
+
+clause(pop([],A,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(pop('.'(A,B),A,B),[
+    get_list(0),
+    unify_local_value(x(1)),
+    unify_local_value(x(2)),
+    proceed]).
+
+
+predicate(opened_set_equivalent/2,474,static,private,user,1).
+
+
+clause(:-(opened_set_equivalent(A,B),','(opened_set_inclusion(A,B),opened_set_inclusion(B,A))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call(opened_set_inclusion/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(opened_set_inclusion/2)]).
+
+
+predicate(opened_set_inclusion/2,481,static,private,user,2).
+
+
+clause(:-(opened_set_inclusion(A,B),var(A)),[
+    execute(var/1)]).
+
+
+clause(:-(opened_set_inclusion(A,B),','(nonvar(B),','(nonvar(A),','(=(A,'.'(C,D)),','(opened_set_member_cas(B,C),opened_set_inclusion(D,B)))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(1),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(2)),
+    put_value(y(1),0),
+    call(opened_set_member_cas/2),
+    put_value(y(2),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(opened_set_inclusion/2)]).
+
+
+predicate(opened_set_member_cas/2,493,static,private,user,1).
+
+
+clause(:-(opened_set_member_cas(A,B),','(nonvar(A),','(=(A,'.'(C,D)),;(->(==(B,C),true),opened_set_member_cas(D,B))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(x(2)),
+    put_value(y(1),0),
+    deallocate,
+    execute('$opened_set_member_cas/2_$aux1'/3)]).
+
+
+predicate('$opened_set_member_cas/2_$aux1'/3,493,static,private,user,2).
+
+
+clause(:-('$opened_set_member_cas/2_$aux1'(A,B,C),','('$get_cut_level'(D),','(==(A,B),','('$cut'(D),true)))),[
+    allocate(1),
+    get_variable(y(0),3),
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$opened_set_member_cas/2_$aux1'(A,B,C),opened_set_member_cas(C,A)),[
+    get_variable(x(1),0),
+    put_value(x(2),0),
+    execute(opened_set_member_cas/2)]).
+
+
+predicate(opened_set_insertion/2,504,static,private,user,2).
+
+
+clause(:-(opened_set_insertion(A,B),','(var(A),','(!,=(A,'.'(B,C))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(var/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(opened_set_insertion(A,B),','(nonvar(A),','(=(A,'.'(C,D)),;(->(==(B,C),true),opened_set_insertion(D,B))))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(x(2)),
+    put_value(y(1),0),
+    deallocate,
+    execute('$opened_set_insertion/2_$aux1'/3)]).
+
+
+predicate('$opened_set_insertion/2_$aux1'/3,507,static,private,user,2).
+
+
+clause(:-('$opened_set_insertion/2_$aux1'(A,B,C),','('$get_cut_level'(D),','(==(A,B),','('$cut'(D),true)))),[
+    allocate(1),
+    get_variable(y(0),3),
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$opened_set_insertion/2_$aux1'(A,B,C),opened_set_insertion(C,A)),[
+    get_variable(x(1),0),
+    put_value(x(2),0),
+    execute(opened_set_insertion/2)]).
+
+
+predicate(opened_set_union/2,517,static,private,user,2).
+
+
+clause(opened_set_union([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(opened_set_union('.'(A,B),C),','(opened_set_insertion(C,A),opened_set_union(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(opened_set_insertion/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(opened_set_union/2)]).
+
+
+predicate(intersection/3,525,static,private,user,2).
+
+
+clause(intersection([],A,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(intersection('.'(A,B),C,D),','(;(->(member_cas(C,A),=(D,'.'(A,E))),=(D,E)),intersection(B,C,E))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    put_variable(y(2),3),
+    call('$intersection/3_$aux1'/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(2),2),
+    deallocate,
+    execute(intersection/3)]).
+
+
+predicate('$intersection/3_$aux1'/4,526,static,private,user,2).
+
+
+clause(:-('$intersection/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(member_cas(A,B),','('$cut'(E),=(C,'.'(B,D)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_value(y(0),1),
+    call(member_cas/2),
+    cut(y(3)),
+    put_value(y(1),0),
+    get_list(0),
+    unify_local_value(y(0)),
+    unify_local_value(y(2)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$intersection/3_$aux1'(A,B,C,D),=(C,D)),[
+    get_value(x(3),2),
+    proceed]).
+
+
+predicate(union/3,532,static,private,user,2).
+
+
+clause(union([],A,A),[
+    get_nil(0),
+    get_value(x(2),1),
+    proceed]).
+
+
+clause(:-(union('.'(A,B),C,D),','(;(->(member_cas(C,A),=(D,E)),=(D,'.'(A,E))),union(B,C,E))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    put_variable(y(2),3),
+    call('$union/3_$aux1'/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(2),2),
+    deallocate,
+    execute(union/3)]).
+
+
+predicate('$union/3_$aux1'/4,533,static,private,user,2).
+
+
+clause(:-('$union/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(member_cas(A,B),','('$cut'(E),=(C,D))))),[
+    allocate(3),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    call(member_cas/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$union/3_$aux1'(A,B,C,D),=(C,'.'(B,D))),[
+    get_list(2),
+    unify_local_value(x(1)),
+    unify_local_value(x(3)),
+    proceed]).
+
+
+predicate(compound_cas/1,546,static,private,user,1).
+
+
+clause(:-(compound_cas(A),','(nonvar(A),','(functor(A,B,C),>(C,0)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    put_void(1),
+    put_variable(y(1),2),
+    call(functor/3),
+    put_unsafe_value(y(1),0),
+    put_integer(0,1),
+    deallocate,
+    execute((>)/2)]).
+
+
+predicate(noncompound_cas/1,554,static,private,user,2).
+
+
+clause(:-(noncompound_cas(A),var(A)),[
+    execute(var/1)]).
+
+
+clause(:-(noncompound_cas(A),atomic(A)),[
+    execute(atomic/1)]).
+
+
+predicate(noninteger/1,562,static,private,user,4).
+
+
+clause(:-(noninteger(A),var(A)),[
+    execute(var/1)]).
+
+
+clause(:-(noninteger(A),compound_cas(A)),[
+    execute(compound_cas/1)]).
+
+
+clause(:-(noninteger(A),atom(A)),[
+    execute(atom/1)]).
+
+
+clause(:-(noninteger(A),float(A)),[
+    execute(float/1)]).
+
+
+predicate(nonnumber/1,574,static,private,user,3).
+
+
+clause(:-(nonnumber(A),var(A)),[
+    execute(var/1)]).
+
+
+clause(:-(nonnumber(A),compound_cas(A)),[
+    execute(compound_cas/1)]).
+
+
+clause(:-(nonnumber(A),atom(A)),[
+    execute(atom/1)]).
+
+
+predicate(list_cas/1,584,static,private,user,2).
+
+
+clause(list_cas([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(list_cas('.'(A,B)),[
+    get_list(0),
+    unify_void(2),
+    proceed]).
+
+
+predicate(nonlist_cas/1,590,static,private,user,3).
+
+
+clause(:-(nonlist_cas(A),var(A)),[
+    execute(var/1)]).
+
+
+clause(:-(nonlist_cas(A),','(atomic(A),\==(A,[]))),[
+    allocate(1),
+    get_variable(y(0),0),
+    put_value(y(0),0),
+    call(atomic/1),
+    put_value(y(0),0),
+    put_nil(1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(nonlist_cas(A),','(compound_cas(A),','(functor(A,B,C),\==(/(B,C),/('.',2))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    put_value(y(0),0),
+    call(compound_cas/1),
+    put_value(y(0),0),
+    put_variable(y(1),1),
+    put_variable(y(2),2),
+    call(functor/3),
+    put_structure((/)/2,0),
+    unify_local_value(y(1)),
+    unify_local_value(y(2)),
+    put_structure((/)/2,1),
+    unify_atom('.'),
+    unify_integer(2),
+    deallocate,
+    execute((\==)/2)]).
+
+
+predicate(nonsequence/1,603,static,private,user,2).
+
+
+clause(:-(nonsequence(A),var(A)),[
+    execute(var/1)]).
+
+
+clause(:-(nonsequence(A),','(functor(A,B,C),\==(/(B,C),/('.',2)))),[
+    allocate(2),
+    put_variable(y(0),1),
+    put_variable(y(1),2),
+    call(functor/3),
+    put_structure((/)/2,0),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    put_structure((/)/2,1),
+    unify_atom('.'),
+    unify_integer(2),
+    deallocate,
+    execute((\==)/2)]).
+
+
+predicate(subterm/2,632,static,private,user,2).
+
+
+clause(subterm(A,A),[
+    get_value(x(1),0),
+    proceed]).
+
+
+clause(:-(subterm(A,B),','(\==(A,B),','(compound_cas(B),','(functor(B,C,D),subterm(D,A,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(1),0),
+    call(compound_cas/1),
+    put_value(y(1),0),
+    put_void(1),
+    put_variable(y(2),2),
+    call(functor/3),
+    put_unsafe_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(subterm/3)]).
+
+
+predicate(subterm/3,639,static,private,user,2).
+
+
+clause(:-(subterm(A,B,C),','(>(A,1),','(is(D,-(A,1)),subterm(D,B,C)))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_integer(1,1),
+    call((>)/2),
+    put_variable(y(3),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_unsafe_value(y(3),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(subterm/3)]).
+
+
+clause(:-(subterm(A,B,C),','(arg(A,C,D),subterm(B,D))),[
+    allocate(2),
+    get_variable(y(0),1),
+    put_value(x(2),1),
+    put_variable(y(1),2),
+    call(arg/3),
+    put_value(y(0),0),
+    put_unsafe_value(y(1),1),
+    deallocate,
+    execute(subterm/2)]).

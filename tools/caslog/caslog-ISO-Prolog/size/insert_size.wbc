@@ -1,0 +1,35 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/size/insert_size.pl
+% date    : 2 6 2003
+% time    : 10:15:35
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/size/insert_size.pl').
+
+
+predicate(insert_size_function/3,3,static,private,user,2).
+
+
+clause(insert_size_function([],A,B),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(insert_size_function('.'(A,B),'.'(C,D),E),','(insert_symbol_field_size(E,A,size,C),insert_size_function(B,D,E))),[
+    allocate(3),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(1),
+    unify_variable(x(3)),
+    unify_variable(y(1)),
+    put_value(x(0),1),
+    put_value(y(2),0),
+    put_atom(size,2),
+    call(insert_symbol_field_size/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(insert_size_function/3)]).

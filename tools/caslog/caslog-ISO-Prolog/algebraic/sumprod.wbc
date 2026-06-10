@@ -1,0 +1,2292 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/algebraic/sumprod.pl
+% date    : 2 6 2003
+% time    : 10:15:44
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/algebraic/sumprod.pl').
+
+
+predicate(sum_expr/5,13,static,private,user,7).
+
+
+clause(sum_expr(A,B,C,bot,bot),[
+    get_atom(bot,3),
+    get_atom(bot,4),
+    proceed]).
+
+
+clause(:-(sum_expr(A,B,bot,C,bot),\==(C,bot)),[
+    get_atom(bot,2),
+    get_atom(bot,4),
+    put_value(x(3),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(sum_expr(A,bot,B,C,bot),','(\==(C,bot),\==(B,bot))),[
+    allocate(1),
+    get_atom(bot,1),
+    get_variable(y(0),2),
+    get_atom(bot,4),
+    put_value(x(3),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(sum_expr(A,B,C,inf,inf),','(\==(C,bot),\==(B,bot))),[
+    allocate(1),
+    get_variable(y(0),1),
+    get_atom(inf,3),
+    get_atom(inf,4),
+    put_value(x(2),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(sum_expr(A,B,inf,C,inf),','(\==(C,bot),','(\==(C,inf),\==(B,bot)))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    get_variable(y(1),3),
+    get_atom(inf,4),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(sum_expr(A,inf,B,C,bot),','(\==(C,bot),','(\==(C,inf),','(\==(B,bot),\==(B,inf))))),[
+    allocate(2),
+    get_atom(inf,1),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_atom(bot,4),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(sum_expr(A,B,C,expr(D,E),F),','(sum_factors(A,B,C,E,G),','(sum_terms(A,B,C,D,H),add_expr(H,G,F)))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(4),4),
+    get_structure(expr/2,3),
+    unify_variable(y(3)),
+    unify_variable(x(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(5),4),
+    call(sum_factors/5),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_variable(y(6),4),
+    call(sum_terms/5),
+    put_unsafe_value(y(6),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(4),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+predicate(sum_factors/5,39,static,private,user,2).
+
+
+clause(:-(sum_factors(A,B,C,[],D),normal_form(0,D)),[
+    get_nil(3),
+    put_value(x(4),1),
+    put_integer(0,0),
+    execute(normal_form/2)]).
+
+
+clause(:-(sum_factors(A,B,C,'.'(D,E),F),','(sum_factor(A,B,C,D,G),','(sum_factors(A,B,C,E,H),add_expr(G,H,F)))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(4),4),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_variable(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(5),4),
+    call(sum_factor/5),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_variable(y(6),4),
+    call(sum_factors/5),
+    put_unsafe_value(y(5),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(4),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+predicate(sum_factor/5,46,static,private,user,6).
+
+
+clause(:-(sum_factor(A,B,C,factor(D,E),F),','(rel_const_items(D,A),','(!,','(const_sum_factor(B,C,G),','(=(H,expr([],'.'(factor(D,E),[]))),multiply_expr(H,G,F)))))),[
+    allocate(7),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_structure(factor/2,3),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(x(0),1),
+    put_value(y(2),0),
+    call(rel_const_items/2),
+    cut(y(5)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(6),2),
+    call(const_sum_factor/3),
+    put_structure(factor/2,1),
+    unify_value(y(2)),
+    unify_value(y(3)),
+    put_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_value(x(1)),
+    unify_nil,
+    put_unsafe_value(y(6),1),
+    put_value(y(4),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+clause(:-(sum_factor(A,B,C,factor(D,E),F),','(rel_linear_items(D,A),','(!,','(linear_items_coeff(D,A,G),','(normal_form(1,H),','(poly_sum_factor(A,B,C,H,I),','(=(J,expr([],'.'(factor(G,E),[]))),multiply_expr(J,I,F)))))))),[
+    allocate(10),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_structure(factor/2,3),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    get_variable(y(5),4),
+    get_variable(y(6),5),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    call(rel_linear_items/2),
+    cut(y(6)),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    put_variable(y(7),2),
+    call(linear_items_coeff/3),
+    put_integer(1,0),
+    put_variable(y(8),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(8),3),
+    put_variable(y(9),4),
+    call(poly_sum_factor/5),
+    put_structure(factor/2,1),
+    unify_local_value(y(7)),
+    unify_value(y(4)),
+    put_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_value(x(1)),
+    unify_nil,
+    put_unsafe_value(y(9),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+clause(:-(sum_factor(A,B,C,factor(D,E),F),','(rel_poly_items(D,A),','(!,','(poly_items_coeff(D,A,G,H),','(poly_sum_factor(A,B,C,H,I),','(=(J,expr([],'.'(factor(G,E),[]))),multiply_expr(J,I,F))))))),[
+    allocate(10),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_structure(factor/2,3),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    get_variable(y(5),4),
+    get_variable(y(6),5),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    call(rel_poly_items/2),
+    cut(y(6)),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    put_variable(y(7),2),
+    put_variable(y(8),3),
+    call(poly_items_coeff/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(8),3),
+    put_variable(y(9),4),
+    call(poly_sum_factor/5),
+    put_structure(factor/2,1),
+    unify_local_value(y(7)),
+    unify_value(y(4)),
+    put_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_value(x(1)),
+    unify_nil,
+    put_unsafe_value(y(9),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+clause(:-(sum_factor(A,B,C,factor(D,E),F),','(rel_exp_items(D,A,0),','(!,','(exp_items_coeff(D,A,G,H,I,J),','(exp_sum_factor(B,C,H,I,J,K),','(=(L,expr([],'.'(factor(G,E),[]))),multiply_expr(L,K,F))))))),[
+    allocate(12),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_structure(factor/2,3),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    get_variable(y(5),4),
+    get_variable(y(6),5),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    put_integer(0,2),
+    call(rel_exp_items/3),
+    cut(y(6)),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    put_variable(y(7),2),
+    put_variable(y(8),3),
+    put_variable(y(9),4),
+    put_variable(y(10),5),
+    call(exp_items_coeff/6),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_value(y(8),2),
+    put_value(y(9),3),
+    put_value(y(10),4),
+    put_variable(y(11),5),
+    call(exp_sum_factor/6),
+    put_structure(factor/2,1),
+    unify_local_value(y(7)),
+    unify_value(y(4)),
+    put_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_value(x(1)),
+    unify_nil,
+    put_unsafe_value(y(11),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+clause(:-(sum_factor(A,B,C,factor(D,E),F),','(rel_log_items(D,A,0),','(!,','(log_items_coeff(D,A,G,H,I),','(log_sum_factor(A,B,C,H,I,J),','(=(K,expr([],'.'(factor(G,E),[]))),multiply_expr(K,J,F))))))),[
+    allocate(11),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_structure(factor/2,3),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    get_variable(y(5),4),
+    get_variable(y(6),5),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    put_integer(0,2),
+    call(rel_log_items/3),
+    cut(y(6)),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    put_variable(y(7),2),
+    put_variable(y(8),3),
+    put_variable(y(9),4),
+    call(log_items_coeff/5),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(8),3),
+    put_value(y(9),4),
+    put_variable(y(10),5),
+    call(log_sum_factor/6),
+    put_structure(factor/2,1),
+    unify_local_value(y(7)),
+    unify_value(y(4)),
+    put_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_value(x(1)),
+    unify_nil,
+    put_unsafe_value(y(10),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+clause(:-(sum_factor(A,B,C,factor(D,E),F),','(normal_form(A,G),','(=(H,expr([],'.'(factor(D,E),[]))),=(F,expr([],'.'(factor('.'(sum(G,B,C,H),[]),1),[])))))),[
+    allocate(6),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_structure(factor/2,3),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_variable(y(4),4),
+    put_variable(y(5),1),
+    call(normal_form/2),
+    put_structure(factor/2,1),
+    unify_value(y(2)),
+    unify_value(y(3)),
+    put_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_value(x(1)),
+    unify_nil,
+    put_value(y(4),1),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure(factor/2,1),
+    unify_variable(x(1)),
+    unify_integer(1),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure(sum/4,1),
+    unify_local_value(y(5)),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    unify_value(x(0)),
+    deallocate,
+    proceed]).
+
+
+predicate(sum_terms/5,84,static,private,user,2).
+
+
+clause(:-(sum_terms(A,B,C,[],D),normal_form(0,D)),[
+    get_nil(3),
+    put_value(x(4),1),
+    put_integer(0,0),
+    execute(normal_form/2)]).
+
+
+clause(:-(sum_terms(A,B,C,'.'(D,E),F),','(sum_term(A,B,C,D,G),','(sum_terms(A,B,C,E,H),add_expr(G,H,F)))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(4),4),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_variable(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(5),4),
+    call(sum_term/5),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_variable(y(6),4),
+    call(sum_terms/5),
+    put_unsafe_value(y(5),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(4),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+predicate(sum_term/5,91,static,private,user,1).
+
+
+clause(:-(sum_term(A,B,C,D,E),','(normal_form(A,F),=(E,expr('.'(term('.'(sum(F,B,C,expr('.'(D,[]),[])),[]),'.'(factor([],1),[])),[]),[])))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_value(y(3),0),
+    get_structure(expr/2,0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(term/2,0),
+    unify_variable(x(1)),
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_list(1),
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure(sum/4,1),
+    unify_local_value(y(4)),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    unify_structure(expr/2),
+    unify_variable(x(1)),
+    unify_nil,
+    get_list(1),
+    unify_local_value(y(2)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_nil,
+    unify_integer(1),
+    deallocate,
+    proceed]).
+
+
+predicate(const_sum_factor/3,99,static,private,user,1).
+
+
+clause(:-(const_sum_factor(A,B,C),','(subtract_expr(B,A,D),','(normal_form(1,E),add_expr(D,E,C)))),[
+    allocate(3),
+    get_variable(y(0),2),
+    get_variable(x(2),1),
+    get_variable(x(1),0),
+    put_value(x(2),0),
+    put_variable(y(1),2),
+    call(subtract_expr/3),
+    put_integer(1,0),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_unsafe_value(y(1),0),
+    put_unsafe_value(y(2),1),
+    put_value(y(0),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+predicate(poly_sum_factor/5,107,static,private,user,1).
+
+
+clause(:-(poly_sum_factor(A,B,C,D,E),','(general_form(D,F),','(poly_indef_sum(F,A,C,G),;(->(default_lower_bound(B),=(E,G)),','(normal_form(1,H),','(subtract_expr(B,H,I),','(poly_indef_sum(F,A,I,J),subtract_expr(G,J,E)))))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),4),
+    put_value(x(3),0),
+    put_variable(y(4),1),
+    call(general_form/2),
+    put_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(2),2),
+    put_variable(y(5),3),
+    call(poly_indef_sum/4),
+    put_value(y(1),0),
+    put_value(y(3),1),
+    put_unsafe_value(y(5),2),
+    put_unsafe_value(y(4),3),
+    put_value(y(0),4),
+    deallocate,
+    execute('$poly_sum_factor/5_$aux1'/5)]).
+
+
+predicate('$poly_sum_factor/5_$aux1'/5,107,static,private,user,2).
+
+
+clause(:-('$poly_sum_factor/5_$aux1'(A,B,C,D,E),','('$get_cut_level'(F),','(default_lower_bound(A),','('$cut'(F),=(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),5),
+    call(default_lower_bound/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$poly_sum_factor/5_$aux1'(A,B,C,D,E),','(normal_form(1,F),','(subtract_expr(A,F,G),','(poly_indef_sum(D,E,G,H),subtract_expr(C,H,B))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_integer(1,0),
+    put_variable(y(5),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_value(y(5),1),
+    put_variable(y(6),2),
+    call(subtract_expr/3),
+    put_value(y(3),0),
+    put_value(y(4),1),
+    put_value(y(6),2),
+    put_variable(y(7),3),
+    call(poly_indef_sum/4),
+    put_value(y(2),0),
+    put_unsafe_value(y(7),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(subtract_expr/3)]).
+
+
+predicate(poly_indef_sum/4,120,static,private,user,2).
+
+
+clause(:-(poly_indef_sum(1,A,B,C),','(normal_form(1,D),','(add_expr(B,D,E),','(multiply_expr(B,E,F),','(normal_form(2,G),divide_expr(F,G,C)))))),[
+    allocate(6),
+    get_integer(1,0),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    put_integer(1,0),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_variable(y(3),2),
+    call(add_expr/3),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_variable(y(4),2),
+    call(multiply_expr/3),
+    put_integer(2,0),
+    put_variable(y(5),1),
+    call(normal_form/2),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(divide_expr/3)]).
+
+
+clause(:-(poly_indef_sum(A,B,C,D),','(>(A,1),','(gen_subsum_expr(A,B,E),','(normal_form(exp(B,A),F),','(subtract_expr(E,F,G),','(normal_form(1,H),','(sum_expr(B,H,C,G,I),','(gen_subsum(A,C,J),subtract_expr(J,I,D))))))))),[
+    allocate(10),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    put_integer(1,1),
+    call((>)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(4),2),
+    call(gen_subsum_expr/3),
+    put_structure(exp/2,0),
+    unify_local_value(y(1)),
+    unify_local_value(y(0)),
+    put_variable(y(5),1),
+    call(normal_form/2),
+    put_value(y(4),0),
+    put_value(y(5),1),
+    put_variable(y(6),2),
+    call(subtract_expr/3),
+    put_integer(1,0),
+    put_variable(y(7),1),
+    call(normal_form/2),
+    put_value(y(1),0),
+    put_value(y(7),1),
+    put_value(y(2),2),
+    put_value(y(6),3),
+    put_variable(y(8),4),
+    call(sum_expr/5),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_variable(y(9),2),
+    call(gen_subsum/3),
+    put_unsafe_value(y(9),0),
+    put_unsafe_value(y(8),1),
+    put_value(y(3),2),
+    deallocate,
+    execute(subtract_expr/3)]).
+
+
+predicate(gen_subsum_expr/3,139,static,private,user,2).
+
+
+clause(:-(gen_subsum_expr(1,A,B),normal_form(A,B)),[
+    get_integer(1,0),
+    put_value(x(1),0),
+    put_value(x(2),1),
+    execute(normal_form/2)]).
+
+
+clause(:-(gen_subsum_expr(A,B,C),','(>(A,1),','(is(D,-(A,1)),','(gen_subsum_expr(D,B,E),','(normal_form(-(B,D),F),multiply_expr(E,F,C)))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_integer(1,1),
+    call((>)/2),
+    put_variable(y(3),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_variable(y(4),2),
+    call(gen_subsum_expr/3),
+    put_structure((-)/2,0),
+    unify_local_value(y(1)),
+    unify_local_value(y(3)),
+    put_variable(y(5),1),
+    call(normal_form/2),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+predicate(gen_subsum/3,151,static,private,user,1).
+
+
+clause(:-(gen_subsum(A,B,C),','(gen_subsum_seq(A,B,D),','(normal_form(+(A,1),E),divide_expr(D,E,C)))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    put_value(y(0),0),
+    put_variable(y(2),2),
+    call(gen_subsum_seq/3),
+    put_structure((+)/2,0),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(3),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(divide_expr/3)]).
+
+
+predicate(gen_subsum_seq/3,156,static,private,user,2).
+
+
+clause(:-(gen_subsum_seq(0,A,B),','(normal_form(1,C),add_expr(A,C,B))),[
+    allocate(3),
+    get_integer(0,0),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    put_integer(1,0),
+    put_variable(y(2),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_unsafe_value(y(2),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(add_expr/3)]).
+
+
+clause(:-(gen_subsum_seq(A,B,C),','(>(A,0),','(is(D,-(A,1)),','(normal_form(D,E),','(subtract_expr(B,E,F),','(gen_subsum_seq(D,B,G),multiply_expr(F,G,C))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_variable(y(3),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(3),0),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_value(y(1),0),
+    put_value(y(4),1),
+    put_variable(y(5),2),
+    call(subtract_expr/3),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    put_variable(y(6),2),
+    call(gen_subsum_seq/3),
+    put_unsafe_value(y(5),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+predicate(exp_sum_factor/6,170,static,private,user,1).
+
+
+clause(:-(exp_sum_factor(A,B,C,D,E,F),','(normal_form(1,G),','(add_expr(B,G,H),','(multiply_expr(H,D,I),','(exp_expr(C,I,J),','(multiply_expr(A,D,K),','(exp_expr(C,K,L),','(subtract_expr(J,L,M),','(exp_expr(C,D,N),','(subtract_expr(N,G,O),','(divide_expr(M,O,P),','(exp_expr(C,E,Q),multiply_expr(Q,P,F))))))))))))),[
+    allocate(17),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_integer(1,0),
+    put_variable(y(6),1),
+    call(normal_form/2),
+    put_value(y(1),0),
+    put_value(y(6),1),
+    put_variable(y(7),2),
+    call(add_expr/3),
+    put_value(y(7),0),
+    put_value(y(3),1),
+    put_variable(y(8),2),
+    call(multiply_expr/3),
+    put_value(y(2),0),
+    put_value(y(8),1),
+    put_variable(y(9),2),
+    call(exp_expr/3),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_variable(y(10),2),
+    call(multiply_expr/3),
+    put_value(y(2),0),
+    put_value(y(10),1),
+    put_variable(y(11),2),
+    call(exp_expr/3),
+    put_value(y(9),0),
+    put_value(y(11),1),
+    put_variable(y(12),2),
+    call(subtract_expr/3),
+    put_value(y(2),0),
+    put_value(y(3),1),
+    put_variable(y(13),2),
+    call(exp_expr/3),
+    put_value(y(13),0),
+    put_value(y(6),1),
+    put_variable(y(14),2),
+    call(subtract_expr/3),
+    put_value(y(12),0),
+    put_value(y(14),1),
+    put_variable(y(15),2),
+    call(divide_expr/3),
+    put_value(y(2),0),
+    put_value(y(4),1),
+    put_variable(y(16),2),
+    call(exp_expr/3),
+    put_unsafe_value(y(16),0),
+    put_unsafe_value(y(15),1),
+    put_value(y(5),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+predicate(log_sum_factor/6,187,static,private,user,1).
+
+
+clause(:-(log_sum_factor(A,B,C,D,E,F),','(prod_expr(A,B,C,E,G),log_expr(D,G,F))),[
+    allocate(3),
+    get_variable(y(0),3),
+    get_variable(y(1),5),
+    put_value(x(4),3),
+    put_variable(y(2),4),
+    call(prod_expr/5),
+    put_value(y(0),0),
+    put_unsafe_value(y(2),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(log_expr/3)]).
+
+
+predicate(prod_expr/5,195,static,private,user,9).
+
+
+clause(prod_expr(A,B,C,bot,bot),[
+    get_atom(bot,3),
+    get_atom(bot,4),
+    proceed]).
+
+
+clause(:-(prod_expr(A,B,bot,C,bot),\==(C,bot)),[
+    get_atom(bot,2),
+    get_atom(bot,4),
+    put_value(x(3),0),
+    put_atom(bot,1),
+    execute((\==)/2)]).
+
+
+clause(:-(prod_expr(A,bot,B,C,bot),','(\==(C,bot),\==(B,bot))),[
+    allocate(1),
+    get_atom(bot,1),
+    get_variable(y(0),2),
+    get_atom(bot,4),
+    put_value(x(3),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(prod_expr(A,B,C,inf,inf),','(\==(C,bot),\==(B,bot))),[
+    allocate(1),
+    get_variable(y(0),1),
+    get_atom(inf,3),
+    get_atom(inf,4),
+    put_value(x(2),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(prod_expr(A,B,inf,C,inf),','(\==(C,bot),','(\==(C,inf),\==(B,bot)))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_atom(inf,2),
+    get_variable(y(1),3),
+    get_atom(inf,4),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(prod_expr(A,inf,B,C,bot),','(\==(C,bot),','(\==(C,inf),','(\==(B,bot),\==(B,inf))))),[
+    allocate(2),
+    get_atom(inf,1),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_atom(bot,4),
+    put_value(y(1),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(1),0),
+    put_atom(inf,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(bot,1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_atom(inf,1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(prod_expr(A,B,C,D,E),','(=(D,expr([],'.'(factor(F,G),[]))),','(!,','(prod_items(A,B,C,F,H),','(normal_form(G,I),','(const_prod_expr(B,C,I,J),multiply_expr(H,J,E))))))),[
+    allocate(7),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    get_structure(expr/2,3),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure(factor/2,1),
+    unify_variable(x(3)),
+    unify_variable(y(3)),
+    cut(x(5)),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_variable(y(4),4),
+    call(prod_items/5),
+    put_value(y(3),0),
+    put_variable(y(5),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(5),2),
+    put_variable(y(6),3),
+    call(const_prod_expr/4),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+clause(:-(prod_expr(A,B,C,D,E),','(=(D,expr([],F)),','(rel_const_factor(F,A),','(!,const_prod_expr(B,C,D,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(x(1),0),
+    get_variable(y(4),5),
+    put_value(y(2),0),
+    get_structure(expr/2,0),
+    unify_nil,
+    unify_variable(x(0)),
+    call(rel_const_factor/2),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(const_prod_expr/4)]).
+
+
+clause(:-(prod_expr(A,B,C,D,E),','(normal_form(A,F),=(E,expr([],'.'(factor('.'(prod(F,B,C,D),[]),1),[]))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_value(y(3),0),
+    get_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_integer(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(prod/4,0),
+    unify_local_value(y(4)),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    unify_local_value(y(2)),
+    deallocate,
+    proceed]).
+
+
+predicate(prod_items/5,230,static,private,user,2).
+
+
+clause(:-(prod_items(A,B,C,[],D),normal_form(1,D)),[
+    get_nil(3),
+    put_value(x(4),1),
+    put_integer(1,0),
+    execute(normal_form/2)]).
+
+
+clause(:-(prod_items(A,B,C,'.'(D,E),F),','(prod_item(A,B,C,D,G),','(prod_items(A,B,C,E,H),multiply_expr(G,H,F)))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(4),4),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_variable(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(5),4),
+    call(prod_item/5),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_variable(y(6),4),
+    call(prod_items/5),
+    put_unsafe_value(y(5),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(4),2),
+    deallocate,
+    execute(multiply_expr/3)]).
+
+
+predicate(prod_item/5,240,static,private,user,5).
+
+
+clause(:-(prod_item(A,B,C,D,E),','(rel_const_item(D,A),','(!,','(=(F,expr([],'.'(factor('.'(D,[]),1),[]))),const_prod_expr(B,C,F,E))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    put_value(x(0),1),
+    put_value(y(2),0),
+    call(rel_const_item/2),
+    cut(y(4)),
+    put_list(1),
+    unify_local_value(y(2)),
+    unify_nil,
+    put_structure(factor/2,0),
+    unify_value(x(1)),
+    unify_integer(1),
+    put_structure(expr/2,2),
+    unify_nil,
+    unify_list,
+    unify_value(x(0)),
+    unify_nil,
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(3),3),
+    deallocate,
+    execute(const_prod_expr/4)]).
+
+
+clause(:-(prod_item(A,B,C,A,D),','(!,linear_prod_expr(B,C,D))),[
+    get_value(x(3),0),
+    cut(x(5)),
+    put_value(x(1),0),
+    put_value(x(2),1),
+    put_value(x(4),2),
+    execute(linear_prod_expr/3)]).
+
+
+clause(:-(prod_item(A,B,C,D,E),','(rel_poly_item1(D,A),','(!,','(poly_items_coeff('.'(D,[]),A,F,G),','(linear_prod_expr(B,C,H),exp_expr(H,G,E)))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    call(rel_poly_item1/2),
+    cut(y(5)),
+    put_list(0),
+    unify_local_value(y(3)),
+    unify_nil,
+    put_value(y(0),1),
+    put_void(2),
+    put_variable(y(6),3),
+    call(poly_items_coeff/4),
+    put_value(y(1),0),
+    put_value(y(2),1),
+    put_variable(y(7),2),
+    call(linear_prod_expr/3),
+    put_unsafe_value(y(7),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(4),2),
+    deallocate,
+    execute(exp_expr/3)]).
+
+
+clause(:-(prod_item(A,B,C,D,E),','(rel_exp_item1(D,A),','(!,','(=(D,exp(F,G)),','(sum_expr(A,B,C,G,H),exp_expr(F,H,E)))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    put_value(y(3),0),
+    put_value(y(0),1),
+    call(rel_exp_item1/2),
+    cut(y(5)),
+    put_value(y(3),0),
+    get_structure(exp/2,0),
+    unify_variable(y(6)),
+    unify_variable(x(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(7),4),
+    call(sum_expr/5),
+    put_value(y(6),0),
+    put_unsafe_value(y(7),1),
+    put_value(y(4),2),
+    deallocate,
+    execute(exp_expr/3)]).
+
+
+clause(:-(prod_item(A,B,C,D,E),','(normal_form(A,F),','(=(G,expr([],'.'(factor('.'(D,[]),1),[]))),=(E,expr([],'.'(factor('.'(prod(F,B,C,G),[]),1),[])))))),[
+    allocate(5),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_variable(y(4),1),
+    call(normal_form/2),
+    put_list(0),
+    unify_local_value(y(2)),
+    unify_nil,
+    put_structure(factor/2,1),
+    unify_value(x(0)),
+    unify_integer(1),
+    put_structure(expr/2,0),
+    unify_nil,
+    unify_list,
+    unify_value(x(1)),
+    unify_nil,
+    put_value(y(3),1),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_list,
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure(factor/2,1),
+    unify_variable(x(1)),
+    unify_integer(1),
+    get_list(1),
+    unify_variable(x(1)),
+    unify_nil,
+    get_structure(prod/4,1),
+    unify_local_value(y(4)),
+    unify_local_value(y(0)),
+    unify_local_value(y(1)),
+    unify_value(x(0)),
+    deallocate,
+    proceed]).
+
+
+predicate(const_prod_expr/4,265,static,private,user,1).
+
+
+clause(:-(const_prod_expr(A,B,C,D),','(subtract_expr(B,A,E),','(normal_form(1,F),','(add_expr(E,F,G),exp_expr(C,G,D))))),[
+    allocate(5),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(x(2),1),
+    get_variable(x(1),0),
+    put_value(x(2),0),
+    put_variable(y(2),2),
+    call(subtract_expr/3),
+    put_integer(1,0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_value(y(2),0),
+    put_value(y(3),1),
+    put_variable(y(4),2),
+    call(add_expr/3),
+    put_value(y(0),0),
+    put_unsafe_value(y(4),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(exp_expr/3)]).
+
+
+predicate(linear_prod_expr/3,274,static,private,user,1).
+
+
+clause(:-(linear_prod_expr(A,B,C),','(factorial_expr(B,D),','(normal_form(1,E),','(subtract_expr(A,E,F),','(factorial_expr(F,G),divide_expr(D,G,C)))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    put_value(x(1),0),
+    put_variable(y(2),1),
+    call(factorial_expr/2),
+    put_integer(1,0),
+    put_variable(y(3),1),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_value(y(3),1),
+    put_variable(y(4),2),
+    call(subtract_expr/3),
+    put_value(y(4),0),
+    put_variable(y(5),1),
+    call(factorial_expr/2),
+    put_unsafe_value(y(2),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(divide_expr/3)]).
+
+
+predicate(rel_const_expr/2,284,static,private,user,1).
+
+
+clause(:-(rel_const_expr(A,expr([],B)),rel_const_factor(B,A)),[
+    get_variable(x(2),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_variable(x(0)),
+    put_value(x(2),1),
+    execute(rel_const_factor/2)]).
+
+
+predicate(rel_const_factor/2,290,static,private,user,2).
+
+
+clause(rel_const_factor([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(rel_const_factor('.'(factor(A,B),C),D),','(rel_const_items(A,D),rel_const_factor(C,D))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_value(y(1),1),
+    call(rel_const_items/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(rel_const_factor/2)]).
+
+
+predicate(rel_const_items/2,295,static,private,user,2).
+
+
+clause(rel_const_items([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(rel_const_items('.'(A,B),C),','(rel_const_item(A,C),rel_const_items(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    call(rel_const_item/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(rel_const_items/2)]).
+
+
+predicate(rel_const_item/2,303,static,private,user,4).
+
+
+clause(:-(rel_const_item(A,B),','(variable(A),\==(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(variable/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(rel_const_item(exp(A,B),C),','(rel_const_expr(C,A),rel_const_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_const_item(log(A,B),C),','(rel_const_expr(C,A),rel_const_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_structure(log/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_const_item(fact(A),B),rel_const_expr(B,A)),[
+    get_variable(x(2),1),
+    get_structure(fact/1,0),
+    unify_variable(x(1)),
+    put_value(x(2),0),
+    execute(rel_const_expr/2)]).
+
+
+predicate(rel_linear_expr/2,318,static,private,user,1).
+
+
+clause(:-(rel_linear_expr(A,expr([],B)),rel_linear_factor(B,A)),[
+    get_variable(x(2),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_variable(x(0)),
+    put_value(x(2),1),
+    execute(rel_linear_factor/2)]).
+
+
+predicate(rel_linear_factor/2,324,static,private,user,2).
+
+
+clause(rel_linear_factor([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(rel_linear_factor('.'(factor(A,B),C),D),','(rel_linear_items(A,D),rel_linear_factor(C,D))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_value(y(1),1),
+    call(rel_linear_items/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(rel_linear_factor/2)]).
+
+
+predicate(rel_linear_items/2,329,static,private,user,2).
+
+
+clause(rel_linear_items([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(rel_linear_items('.'(A,B),C),','(rel_linear_item(A,C),rel_linear_items(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    call(rel_linear_item/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(rel_linear_items/2)]).
+
+
+predicate(rel_linear_item/2,337,static,private,user,5).
+
+
+clause(:-(rel_linear_item(A,B),','(variable(A),\==(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(variable/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(rel_linear_item(exp(A,B),C),','(rel_const_expr(C,A),rel_const_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_linear_item(log(A,B),C),','(rel_const_expr(C,A),rel_const_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_structure(log/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_linear_item(fact(A),B),rel_const_expr(B,A)),[
+    get_variable(x(2),1),
+    get_structure(fact/1,0),
+    unify_variable(x(1)),
+    put_value(x(2),0),
+    execute(rel_const_expr/2)]).
+
+
+clause(rel_linear_item(A,A),[
+    get_value(x(1),0),
+    proceed]).
+
+
+predicate(linear_expr_coeff/4,353,static,private,user,1).
+
+
+clause(:-(linear_expr_coeff(A,expr([],B),expr([],C),expr([],D)),linear_factor_coeff(B,A,C,D)),[
+    get_variable(x(4),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_variable(x(0)),
+    get_structure(expr/2,2),
+    unify_nil,
+    unify_variable(x(2)),
+    get_structure(expr/2,3),
+    unify_nil,
+    unify_variable(x(3)),
+    put_value(x(4),1),
+    execute(linear_factor_coeff/4)]).
+
+
+predicate(linear_factor_coeff/4,356,static,private,user,2).
+
+
+clause(linear_factor_coeff([],A,[],[]),[
+    get_nil(0),
+    get_nil(2),
+    get_nil(3),
+    proceed]).
+
+
+clause(:-(linear_factor_coeff('.'(factor(A,B),C),D,E,F),','(linear_factor_coeff(C,D,G,H),','(linear_items_coeff(A,D,I),;(->(==(A,I),','(add_factor(H,factor(I,B),F),=(E,G))),','(add_factor(G,factor(I,B),E),=(F,H)))))),[
+    allocate(8),
+    get_variable(y(2),1),
+    get_variable(y(3),2),
+    get_variable(y(4),3),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(x(0)),
+    get_structure(factor/2,1),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    put_value(y(2),1),
+    put_variable(y(5),2),
+    put_variable(y(6),3),
+    call(linear_factor_coeff/4),
+    put_value(y(0),0),
+    put_value(y(2),1),
+    put_variable(y(7),2),
+    call(linear_items_coeff/3),
+    put_value(y(0),0),
+    put_unsafe_value(y(7),1),
+    put_unsafe_value(y(6),2),
+    put_value(y(1),3),
+    put_value(y(4),4),
+    put_value(y(3),5),
+    put_unsafe_value(y(5),6),
+    deallocate,
+    execute('$linear_factor_coeff/4_$aux1'/7)]).
+
+
+predicate('$linear_factor_coeff/4_$aux1'/7,357,static,private,user,2).
+
+
+clause(:-('$linear_factor_coeff/4_$aux1'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(==(A,B),','('$cut'(H),','(add_factor(C,factor(B,D),E),=(F,G)))))),[
+    allocate(7),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),7),
+    put_value(y(0),1),
+    call((==)/2),
+    cut(y(6)),
+    put_value(y(1),0),
+    put_structure(factor/2,1),
+    unify_local_value(y(0)),
+    unify_local_value(y(2)),
+    put_value(y(3),2),
+    call(add_factor/3),
+    put_value(y(4),0),
+    get_value(y(5),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$linear_factor_coeff/4_$aux1'(A,B,C,D,E,F,G),','(add_factor(G,factor(B,D),F),=(E,C))),[
+    allocate(2),
+    get_variable(y(0),2),
+    get_variable(y(1),4),
+    get_variable(x(0),1),
+    put_structure(factor/2,1),
+    unify_local_value(x(0)),
+    unify_local_value(x(3)),
+    put_value(x(6),0),
+    put_value(x(5),2),
+    call(add_factor/3),
+    put_value(y(1),0),
+    get_value(y(0),0),
+    deallocate,
+    proceed]).
+
+
+predicate(linear_items_coeff/3,366,static,private,user,2).
+
+
+clause(linear_items_coeff([],A,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(linear_items_coeff('.'(A,B),C,D),','(;(->(==(A,C),=(D,E)),=(D,'.'(A,E))),linear_items_coeff(B,C,E))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_variable(y(2),3),
+    call('$linear_items_coeff/3_$aux1'/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(2),2),
+    deallocate,
+    execute(linear_items_coeff/3)]).
+
+
+predicate('$linear_items_coeff/3_$aux1'/4,367,static,private,user,2).
+
+
+clause(:-('$linear_items_coeff/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,B),','('$cut'(E),=(C,D))))),[
+    allocate(3),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    call((==)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$linear_items_coeff/3_$aux1'(A,B,C,D),=(C,'.'(A,D))),[
+    get_list(2),
+    unify_local_value(x(0)),
+    unify_local_value(x(3)),
+    proceed]).
+
+
+predicate(rel_poly_expr/2,376,static,private,user,1).
+
+
+clause(:-(rel_poly_expr(A,expr([],B)),rel_poly_factor(B,A)),[
+    get_variable(x(2),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_variable(x(0)),
+    put_value(x(2),1),
+    execute(rel_poly_factor/2)]).
+
+
+predicate(rel_poly_factor/2,382,static,private,user,1).
+
+
+clause(:-(rel_poly_factor('.'(factor(A,B),[]),C),rel_poly_items(A,C)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    execute(rel_poly_items/2)]).
+
+
+predicate(rel_poly_items/2,385,static,private,user,2).
+
+
+clause(rel_poly_items([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(rel_poly_items('.'(A,B),C),','(rel_poly_item(A,C),rel_poly_items(B,C))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    call(rel_poly_item/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(rel_poly_items/2)]).
+
+
+predicate(rel_poly_item/2,393,static,private,user,5).
+
+
+clause(:-(rel_poly_item(A,B),','(variable(A),\==(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(variable/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(rel_poly_item(exp(A,B),C),','(rel_const_expr(C,A),rel_const_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_poly_item(log(A,B),C),','(rel_const_expr(C,A),rel_const_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_structure(log/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_poly_item(fact(A),B),rel_const_expr(B,A)),[
+    get_variable(x(2),1),
+    get_structure(fact/1,0),
+    unify_variable(x(1)),
+    put_value(x(2),0),
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_poly_item(exp(A,B),C),','(normal_form(C,A),','(general_form(B,D),integer(D)))),[
+    allocate(2),
+    get_variable(x(2),1),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(x(2),0),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(1),1),
+    call(general_form/2),
+    put_unsafe_value(y(1),0),
+    deallocate,
+    execute(integer/1)]).
+
+
+predicate(rel_poly_item1/2,409,static,private,user,1).
+
+
+clause(:-(rel_poly_item1(exp(A,B),C),','(normal_form(C,A),','(general_form(B,D),integer(D)))),[
+    allocate(2),
+    get_variable(x(2),1),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(x(2),0),
+    call(normal_form/2),
+    put_value(y(0),0),
+    put_variable(y(1),1),
+    call(general_form/2),
+    put_unsafe_value(y(1),0),
+    deallocate,
+    execute(integer/1)]).
+
+
+predicate(poly_expr_coeff/4,418,static,private,user,1).
+
+
+clause(:-(poly_expr_coeff(A,expr([],B),expr([],C),D),poly_factor_coeff(B,A,C,D)),[
+    get_variable(x(4),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_variable(x(0)),
+    get_structure(expr/2,2),
+    unify_nil,
+    unify_variable(x(2)),
+    put_value(x(4),1),
+    execute(poly_factor_coeff/4)]).
+
+
+predicate(poly_factor_coeff/4,421,static,private,user,1).
+
+
+clause(:-(poly_factor_coeff('.'(factor(A,B),[]),C,'.'(factor(D,B),[]),E),poly_items_coeff(A,C,D,E)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(4)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure(factor/2,2),
+    unify_variable(x(2)),
+    unify_value(x(4)),
+    execute(poly_items_coeff/4)]).
+
+
+predicate(poly_items_coeff/4,424,static,private,user,2).
+
+
+clause(poly_items_coeff([],A,[],B),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(poly_items_coeff('.'(A,B),C,D,E),','(;(->(','(=(A,exp(F,G)),','(normal_form(C,F),','(general_form(G,H),integer(H)))),','(=(D,I),=(E,G))),','(=(D,'.'(A,I)),=(E,J))),poly_items_coeff(B,C,I,J))),[
+    allocate(4),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(x(3),4),
+    put_value(y(1),1),
+    put_variable(y(2),3),
+    put_variable(y(3),5),
+    call('$poly_items_coeff/4_$aux1'/6),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(2),2),
+    put_unsafe_value(y(3),3),
+    deallocate,
+    execute(poly_items_coeff/4)]).
+
+
+predicate('$poly_items_coeff/4_$aux1'/6,425,static,private,user,2).
+
+
+clause(:-('$poly_items_coeff/4_$aux1'(A,B,C,D,E,F),','('$get_cut_level'(G),','(','(=(A,exp(H,I)),','(normal_form(B,H),','(general_form(I,J),integer(J)))),','('$cut'(G),','(=(C,D),=(E,I)))))),[
+    allocate(6),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(x(2),1),
+    get_variable(y(3),6),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(4)),
+    put_value(x(2),0),
+    call(normal_form/2),
+    put_value(y(4),0),
+    put_variable(y(5),1),
+    call(general_form/2),
+    put_value(y(5),0),
+    call(integer/1),
+    cut(y(3)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    put_value(y(2),0),
+    get_value(y(4),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$poly_items_coeff/4_$aux1'(A,B,C,D,E,F),','(=(C,'.'(A,D)),=(E,F))),[
+    get_list(2),
+    unify_local_value(x(0)),
+    unify_local_value(x(3)),
+    get_value(x(5),4),
+    proceed]).
+
+
+predicate(rel_exp_expr/2,436,static,private,user,1).
+
+
+clause(:-(rel_exp_expr(A,expr([],B)),rel_exp_factor(B,A)),[
+    get_variable(x(2),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_variable(x(0)),
+    put_value(x(2),1),
+    execute(rel_exp_factor/2)]).
+
+
+predicate(rel_exp_factor/2,442,static,private,user,1).
+
+
+clause(:-(rel_exp_factor('.'(factor(A,B),[]),C),rel_exp_items(A,C,0)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_integer(0,2),
+    execute(rel_exp_items/3)]).
+
+
+predicate(rel_exp_items/3,445,static,private,user,2).
+
+
+clause(rel_exp_items([],A,B),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(rel_exp_items('.'(A,B),C,D),','(rel_exp_item(A,C,D,E),rel_exp_items(B,C,E))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_variable(y(2),3),
+    call(rel_exp_item/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(2),2),
+    deallocate,
+    execute(rel_exp_items/3)]).
+
+
+predicate(rel_exp_item/4,453,static,private,user,5).
+
+
+clause(:-(rel_exp_item(A,B,C,C),','(variable(A),\==(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_value(x(3),2),
+    put_value(y(0),0),
+    call(variable/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(rel_exp_item(exp(A,B),C,D,D),','(rel_const_expr(C,A),rel_const_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_value(x(3),2),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_exp_item(log(A,B),C,D,D),','(rel_const_expr(C,A),rel_const_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_value(x(3),2),
+    get_structure(log/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_exp_item(fact(A),B,C,C),rel_const_expr(B,A)),[
+    get_value(x(3),2),
+    get_variable(x(2),1),
+    get_structure(fact/1,0),
+    unify_variable(x(1)),
+    put_value(x(2),0),
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_exp_item(exp(A,B),C,0,1),','(rel_const_expr(C,A),rel_linear_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_integer(0,2),
+    get_integer(1,3),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_linear_expr/2)]).
+
+
+predicate(rel_exp_item1/2,468,static,private,user,1).
+
+
+clause(:-(rel_exp_item1(exp(A,B),C),rel_const_expr(C,A)),[
+    get_variable(x(2),1),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_void(1),
+    put_value(x(2),0),
+    execute(rel_const_expr/2)]).
+
+
+predicate(exp_expr_coeff/6,475,static,private,user,1).
+
+
+clause(:-(exp_expr_coeff(A,expr([],B),expr([],C),D,E,F),exp_factor_coeff(B,A,C,D,E,F)),[
+    get_variable(x(6),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_variable(x(0)),
+    get_structure(expr/2,2),
+    unify_nil,
+    unify_variable(x(2)),
+    put_value(x(6),1),
+    execute(exp_factor_coeff/6)]).
+
+
+predicate(exp_factor_coeff/6,478,static,private,user,1).
+
+
+clause(:-(exp_factor_coeff('.'(factor(A,B),[]),C,'.'(factor(D,B),[]),E,F,G),exp_items_coeff(A,C,D,E,F,G)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(6)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure(factor/2,2),
+    unify_variable(x(2)),
+    unify_value(x(6)),
+    execute(exp_items_coeff/6)]).
+
+
+predicate(exp_items_coeff/6,481,static,private,user,2).
+
+
+clause(exp_items_coeff([],A,[],B,C,D),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(exp_items_coeff('.'(A,B),C,D,E,F,G),','(;(->(','(=(A,exp(H,I)),','(rel_const_expr(C,H),rel_linear_expr(C,I))),','(=(E,H),','(linear_expr_coeff(C,I,F,G),=(D,J)))),','(=(E,K),','(=(F,L),','(=(G,M),=(D,'.'(A,J)))))),exp_items_coeff(B,C,J,K,L,M))),[
+    allocate(6),
+    get_variable(y(1),1),
+    get_variable(x(1),5),
+    get_variable(x(5),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(x(3),2),
+    put_value(x(4),3),
+    put_value(x(1),4),
+    put_value(y(1),1),
+    put_variable(y(2),6),
+    put_variable(y(3),7),
+    put_variable(y(4),8),
+    put_variable(y(5),9),
+    call('$exp_items_coeff/6_$aux1'/10),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(2),2),
+    put_unsafe_value(y(3),3),
+    put_unsafe_value(y(4),4),
+    put_unsafe_value(y(5),5),
+    deallocate,
+    execute(exp_items_coeff/6)]).
+
+
+predicate('$exp_items_coeff/6_$aux1'/10,482,static,private,user,2).
+
+
+clause(:-('$exp_items_coeff/6_$aux1'(A,B,C,D,E,F,G,H,I,J),','('$get_cut_level'(K),','(','(=(A,exp(L,M)),','(rel_const_expr(B,L),rel_linear_expr(B,M))),','('$cut'(K),','(=(C,L),','(linear_expr_coeff(B,M,D,E),=(F,G))))))),[
+    allocate(9),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    get_variable(y(5),6),
+    get_variable(y(6),10),
+    get_structure(exp/2,0),
+    unify_variable(y(7)),
+    unify_variable(y(8)),
+    put_value(y(0),0),
+    put_value(y(7),1),
+    call(rel_const_expr/2),
+    put_value(y(0),0),
+    put_value(y(8),1),
+    call(rel_linear_expr/2),
+    cut(y(6)),
+    put_value(y(1),0),
+    get_value(y(7),0),
+    put_value(y(0),0),
+    put_value(y(8),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    call(linear_expr_coeff/4),
+    put_value(y(4),0),
+    get_value(y(5),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$exp_items_coeff/6_$aux1'(A,B,C,D,E,F,G,H,I,J),','(=(C,H),','(=(D,I),','(=(E,J),=(F,'.'(A,G)))))),[
+    get_value(x(7),2),
+    get_value(x(8),3),
+    get_value(x(9),4),
+    get_list(5),
+    unify_local_value(x(0)),
+    unify_local_value(x(6)),
+    proceed]).
+
+
+predicate(rel_log_expr/2,496,static,private,user,1).
+
+
+clause(:-(rel_log_expr(A,expr([],B)),rel_log_factor(B,A)),[
+    get_variable(x(2),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_variable(x(0)),
+    put_value(x(2),1),
+    execute(rel_log_factor/2)]).
+
+
+predicate(rel_log_factor/2,502,static,private,user,1).
+
+
+clause(:-(rel_log_factor('.'(factor(A,B),[]),C),rel_log_items(A,C,0)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_void(1),
+    put_integer(0,2),
+    execute(rel_log_items/3)]).
+
+
+predicate(rel_log_items/3,505,static,private,user,2).
+
+
+clause(rel_log_items([],A,B),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(rel_log_items('.'(A,B),C,D),','(rel_log_item(A,C,D,E),rel_log_items(B,C,E))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_variable(y(2),3),
+    call(rel_log_item/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(2),2),
+    deallocate,
+    execute(rel_log_items/3)]).
+
+
+predicate(rel_log_item/4,513,static,private,user,4).
+
+
+clause(:-(rel_log_item(A,B,C,C),','(variable(A),\==(A,B))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_value(x(3),2),
+    put_value(y(0),0),
+    call(variable/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(rel_log_item(exp(A,B),C,D,D),','(rel_const_expr(C,A),rel_const_expr(C,B))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_value(x(3),2),
+    get_structure(exp/2,0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(y(1),0),
+    call(rel_const_expr/2),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_log_item(fact(A),B,C,C),rel_const_expr(B,A)),[
+    get_value(x(3),2),
+    get_variable(x(2),1),
+    get_structure(fact/1,0),
+    unify_variable(x(1)),
+    put_value(x(2),0),
+    execute(rel_const_expr/2)]).
+
+
+clause(:-(rel_log_item(log(A,B),C,0,1),rel_const_expr(C,A)),[
+    get_integer(0,2),
+    get_integer(1,3),
+    get_variable(x(2),1),
+    get_structure(log/2,0),
+    unify_variable(x(1)),
+    unify_void(1),
+    put_value(x(2),0),
+    execute(rel_const_expr/2)]).
+
+
+predicate(log_expr_coeff/5,528,static,private,user,1).
+
+
+clause(:-(log_expr_coeff(A,expr([],B),expr([],C),D,E),log_factor_coeff(B,A,C,D,E)),[
+    get_variable(x(5),0),
+    get_structure(expr/2,1),
+    unify_nil,
+    unify_variable(x(0)),
+    get_structure(expr/2,2),
+    unify_nil,
+    unify_variable(x(2)),
+    put_value(x(5),1),
+    execute(log_factor_coeff/5)]).
+
+
+predicate(log_factor_coeff/5,531,static,private,user,1).
+
+
+clause(:-(log_factor_coeff('.'(factor(A,B),[]),C,'.'(factor(D,B),[]),E,F),log_items_coeff(A,C,D,E,F)),[
+    get_list(0),
+    unify_variable(x(0)),
+    unify_nil,
+    get_structure(factor/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(5)),
+    get_list(2),
+    unify_variable(x(2)),
+    unify_nil,
+    get_structure(factor/2,2),
+    unify_variable(x(2)),
+    unify_value(x(5)),
+    execute(log_items_coeff/5)]).
+
+
+predicate(log_items_coeff/5,534,static,private,user,2).
+
+
+clause(log_items_coeff([],A,[],B,C),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(log_items_coeff('.'(A,B),C,D,E,F),','(;(->(','(=(A,log(G,H)),rel_const_expr(C,G)),','(=(E,G),','(=(F,H),=(D,I)))),','(=(E,J),','(=(F,K),=(D,'.'(A,I))))),log_items_coeff(B,C,I,J,K))),[
+    allocate(5),
+    get_variable(y(1),1),
+    get_variable(x(1),4),
+    get_variable(x(4),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(x(3),2),
+    put_value(x(1),3),
+    put_value(y(1),1),
+    put_variable(y(2),5),
+    put_variable(y(3),6),
+    put_variable(y(4),7),
+    call('$log_items_coeff/5_$aux1'/8),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(2),2),
+    put_unsafe_value(y(3),3),
+    put_unsafe_value(y(4),4),
+    deallocate,
+    execute(log_items_coeff/5)]).
+
+
+predicate('$log_items_coeff/5_$aux1'/8,535,static,private,user,2).
+
+
+clause(:-('$log_items_coeff/5_$aux1'(A,B,C,D,E,F,G,H),','('$get_cut_level'(I),','(','(=(A,log(J,K)),rel_const_expr(B,J)),','('$cut'(I),','(=(C,J),','(=(D,K),=(E,F))))))),[
+    allocate(7),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),8),
+    get_structure(log/2,0),
+    unify_variable(y(5)),
+    unify_variable(y(6)),
+    put_value(x(1),0),
+    put_value(y(5),1),
+    call(rel_const_expr/2),
+    cut(y(4)),
+    put_value(y(0),0),
+    get_value(y(5),0),
+    put_value(y(1),0),
+    get_value(y(6),0),
+    put_value(y(2),0),
+    get_value(y(3),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$log_items_coeff/5_$aux1'(A,B,C,D,E,F,G,H),','(=(C,G),','(=(D,H),=(E,'.'(A,F))))),[
+    get_value(x(6),2),
+    get_value(x(7),3),
+    get_list(4),
+    unify_local_value(x(0)),
+    unify_local_value(x(5)),
+    proceed]).
+
+
+predicate(default_lower_bound/1,548,static,private,user,1).
+
+
+clause(:-(default_lower_bound(A),','(general_form(A,B),','(number(B),=:=(B,1)))),[
+    allocate(1),
+    put_variable(y(0),1),
+    call(general_form/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_unsafe_value(y(0),0),
+    put_integer(1,1),
+    deallocate,
+    execute((=:=)/2)]).

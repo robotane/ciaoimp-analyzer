@@ -1,0 +1,2145 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/determinacy/mutual_exclusion.pl
+% date    : 2 6 2003
+% time    : 10:15:32
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/determinacy/mutual_exclusion.pl').
+
+
+predicate(mutual_exclusive_classes/3,11,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_classes(A,B,C),','(initial_classes(A,D),mutual_exclusive_classes(A,B,1,D,C))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    call(initial_classes/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_integer(1,2),
+    put_unsafe_value(y(3),3),
+    put_value(y(2),4),
+    deallocate,
+    execute(mutual_exclusive_classes/5)]).
+
+
+predicate(initial_classes/2,18,static,private,user,2).
+
+
+clause(:-(initial_classes(A,[]),var(A)),[
+    get_nil(1),
+    execute(var/1)]).
+
+
+clause(:-(initial_classes(A,'.'([],B)),','(nonvar(A),','(=(A,'.'(C,D)),initial_classes(D,B)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_list(1),
+    unify_nil,
+    unify_variable(y(1)),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_void(1),
+    unify_variable(x(0)),
+    put_value(y(1),1),
+    deallocate,
+    execute(initial_classes/2)]).
+
+
+predicate(mutual_exclusive_classes/5,28,static,private,user,2).
+
+
+clause(:-(mutual_exclusive_classes(A,B,C,D,[]),var(A)),[
+    get_nil(4),
+    execute(var/1)]).
+
+
+clause(:-(mutual_exclusive_classes(A,B,C,D,E),','(nonvar(A),','(=(A,'.'(F,G)),','(=(D,'.'(H,I)),','(mutual_exclusive_clauses(G,F,I,H,B,C,J,K,L),','(;(->(;(==(K,1),==(L,1)),','(append_cas(H,'.'(C,[]),M),=(E,'.'(M,N)))),=(E,N)),','(is(O,+(C,1)),mutual_exclusive_classes(G,B,O,J,N)))))))),[
+    allocate(12),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(5)),
+    put_value(y(3),0),
+    get_list(0),
+    unify_variable(y(6)),
+    unify_variable(x(2)),
+    put_value(y(5),0),
+    put_value(y(6),3),
+    put_value(y(1),4),
+    put_value(y(2),5),
+    put_variable(y(7),6),
+    put_variable(y(8),7),
+    put_variable(y(9),8),
+    call(mutual_exclusive_clauses/9),
+    put_value(y(8),0),
+    put_value(y(9),1),
+    put_value(y(6),2),
+    put_value(y(2),3),
+    put_value(y(4),4),
+    put_variable(y(10),5),
+    call('$mutual_exclusive_classes/5_$aux1'/6),
+    put_variable(y(11),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(2)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(5),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(11),2),
+    put_unsafe_value(y(7),3),
+    put_unsafe_value(y(10),4),
+    deallocate,
+    execute(mutual_exclusive_classes/5)]).
+
+
+predicate('$mutual_exclusive_classes/5_$aux1'/6,30,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_classes/5_$aux1'(A,B,C,D,E,F),','('$get_cut_level'(G),','(;(==(A,1),==(B,1)),','('$cut'(G),','(append_cas(C,'.'(D,[]),H),=(E,'.'(H,F))))))),[
+    allocate(6),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),6),
+    call('$mutual_exclusive_classes/5_$aux2'/2),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_list(1),
+    unify_local_value(y(1)),
+    unify_nil,
+    put_variable(y(5),2),
+    call(append_cas/3),
+    put_value(y(2),0),
+    get_list(0),
+    unify_local_value(y(5)),
+    unify_local_value(y(3)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_classes/5_$aux1'(A,B,C,D,E,F),=(E,F)),[
+    get_value(x(5),4),
+    proceed]).
+
+
+predicate('$mutual_exclusive_classes/5_$aux2'/2,30,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_classes/5_$aux2'(A,B),==(A,1)),[
+    put_integer(1,1),
+    execute((==)/2)]).
+
+
+clause(:-('$mutual_exclusive_classes/5_$aux2'(A,B),==(B,1)),[
+    put_value(x(1),0),
+    put_integer(1,1),
+    execute((==)/2)]).
+
+
+predicate(mutual_exclusive_clauses/9,45,static,private,user,2).
+
+
+clause(:-(mutual_exclusive_clauses(A,B,C,D,E,F,[],1,1),var(A)),[
+    get_nil(6),
+    get_integer(1,7),
+    get_integer(1,8),
+    execute(var/1)]).
+
+
+clause(:-(mutual_exclusive_clauses(A,B,C,D,E,F,'.'(G,H),I,J),','(nonvar(A),','(=(A,'.'(K,L)),','(=(C,'.'(M,N)),','(;(->(mutual_exclusive_clause(B,K,E),','(=(O,1),','(=(P,1),=(G,M)))),','(=(O,0),','(;(->(set_inclusion(D,M),=(P,0)),=(P,1)),append_cas(M,'.'(F,[]),G)))),','(mutual_exclusive_clauses(L,B,N,D,E,F,H,Q,R),','(is(I,*(O,Q)),is(J,*(P,R))))))))),[
+    allocate(16),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_list(6),
+    unify_variable(y(6)),
+    unify_variable(y(7)),
+    get_variable(y(8),7),
+    get_variable(y(9),8),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(10)),
+    put_value(y(2),0),
+    get_list(0),
+    unify_variable(x(6)),
+    unify_variable(y(11)),
+    put_value(y(1),0),
+    put_value(y(4),2),
+    put_variable(y(12),3),
+    put_variable(y(13),4),
+    put_value(y(6),5),
+    put_value(y(3),7),
+    put_value(y(5),8),
+    call('$mutual_exclusive_clauses/9_$aux1'/9),
+    put_value(y(10),0),
+    put_value(y(1),1),
+    put_value(y(11),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(7),6),
+    put_variable(y(14),7),
+    put_variable(y(15),8),
+    call(mutual_exclusive_clauses/9),
+    put_value(y(8),0),
+    put_structure((*)/2,1),
+    unify_local_value(y(12)),
+    unify_local_value(y(14)),
+    call((is)/2),
+    put_value(y(9),0),
+    put_structure((*)/2,1),
+    unify_local_value(y(13)),
+    unify_local_value(y(15)),
+    deallocate,
+    execute((is)/2)]).
+
+
+predicate('$mutual_exclusive_clauses/9_$aux1'/9,47,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_clauses/9_$aux1'(A,B,C,D,E,F,G,H,I),','('$get_cut_level'(J),','(mutual_exclusive_clause(A,B,C),','('$cut'(J),','(=(D,1),','(=(E,1),=(F,G))))))),[
+    allocate(5),
+    get_variable(y(0),3),
+    get_variable(y(1),4),
+    get_variable(y(2),5),
+    get_variable(y(3),6),
+    get_variable(y(4),9),
+    call(mutual_exclusive_clause/3),
+    cut(y(4)),
+    put_value(y(0),0),
+    get_integer(1,0),
+    put_value(y(1),0),
+    get_integer(1,0),
+    put_value(y(2),0),
+    get_value(y(3),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clauses/9_$aux1'(A,B,C,D,E,F,G,H,I),','(=(D,0),','(;(','('$get_cut_level'(J),','(set_inclusion(H,G),','('$cut'(J),=(E,0)))),=(E,1)),append_cas(G,'.'(I,[]),F)))),[
+    allocate(3),
+    get_variable(y(0),5),
+    get_variable(y(1),6),
+    get_variable(y(2),8),
+    get_integer(0,3),
+    put_value(x(7),0),
+    put_value(x(4),2),
+    put_value(y(1),1),
+    call('$mutual_exclusive_clauses/9_$aux2'/3),
+    put_value(y(1),0),
+    put_list(1),
+    unify_local_value(y(2)),
+    unify_nil,
+    put_value(y(0),2),
+    deallocate,
+    execute(append_cas/3)]).
+
+
+predicate('$mutual_exclusive_clauses/9_$aux2'/3,47,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_clauses/9_$aux2'(A,B,C),','('$get_cut_level'(D),','(set_inclusion(A,B),','('$cut'(D),=(C,0))))),[
+    allocate(2),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    call(set_inclusion/2),
+    cut(y(1)),
+    put_value(y(0),0),
+    get_integer(0,0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clauses/9_$aux2'(A,B,C),=(C,1)),[
+    get_integer(1,2),
+    proceed]).
+
+
+predicate(mutual_exclusive_clause/3,70,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_clause(A,B,C),mutual_exclusive_clause1(A,B,C)),[
+    execute(mutual_exclusive_clause1/3)]).
+
+
+predicate(mutual_exclusive_clause1/3,73,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_clause1(A,B,C),;(->(;(fail_clause(A),fail_clause(B)),true),mutual_exclusive_clause2(A,B,C))),[
+    execute('$mutual_exclusive_clause1/3_$aux1'/3)]).
+
+
+predicate('$mutual_exclusive_clause1/3_$aux1'/3,73,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_clause1/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(;(fail_clause(A),fail_clause(B)),','('$cut'(D),true)))),[
+    allocate(1),
+    get_variable(y(0),3),
+    call('$mutual_exclusive_clause1/3_$aux2'/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clause1/3_$aux1'(A,B,C),mutual_exclusive_clause2(A,B,C)),[
+    execute(mutual_exclusive_clause2/3)]).
+
+
+predicate('$mutual_exclusive_clause1/3_$aux2'/2,73,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_clause1/3_$aux2'(A,B),fail_clause(A)),[
+    execute(fail_clause/1)]).
+
+
+clause(:-('$mutual_exclusive_clause1/3_$aux2'(A,B),fail_clause(B)),[
+    put_value(x(1),0),
+    execute(fail_clause/1)]).
+
+
+predicate(mutual_exclusive_clause2/3,78,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_clause2(A,B,C),;(->(cut_clause(A),true),mutual_exclusive_clause3(A,B,C))),[
+    execute('$mutual_exclusive_clause2/3_$aux1'/3)]).
+
+
+predicate('$mutual_exclusive_clause2/3_$aux1'/3,78,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_clause2/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(cut_clause(A),','('$cut'(D),true)))),[
+    allocate(1),
+    get_variable(y(0),3),
+    call(cut_clause/1),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clause2/3_$aux1'(A,B,C),mutual_exclusive_clause3(A,B,C)),[
+    execute(mutual_exclusive_clause3/3)]).
+
+
+predicate(mutual_exclusive_clause3/3,83,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_clause3(A,B,C),','(copy_term(A,D),','(clause_head(D,E),','(input_term(C,E,1,F),','(copy_term(B,G),','(clause_head(G,H),','(input_term(C,H,1,I),;(->(non_unifiable(F,I),true),;(->(mutual_exclusive_clause4(F,I,D,G),true),mutual_exclusive_clause5(F,I,D,G)))))))))),[
+    allocate(8),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    put_variable(y(2),1),
+    call(copy_term/2),
+    put_value(y(2),0),
+    put_variable(y(3),1),
+    call(clause_head/2),
+    put_value(y(1),0),
+    put_value(y(3),1),
+    put_integer(1,2),
+    put_variable(y(4),3),
+    call(input_term/4),
+    put_value(y(0),0),
+    put_variable(y(5),1),
+    call(copy_term/2),
+    put_value(y(5),0),
+    put_variable(y(6),1),
+    call(clause_head/2),
+    put_value(y(1),0),
+    put_value(y(6),1),
+    put_integer(1,2),
+    put_variable(y(7),3),
+    call(input_term/4),
+    put_unsafe_value(y(4),0),
+    put_unsafe_value(y(7),1),
+    put_unsafe_value(y(2),2),
+    put_unsafe_value(y(5),3),
+    deallocate,
+    execute('$mutual_exclusive_clause3/3_$aux1'/4)]).
+
+
+predicate('$mutual_exclusive_clause3/3_$aux1'/4,83,static,private,user,3).
+
+
+clause(:-('$mutual_exclusive_clause3/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(non_unifiable(A,B),','('$cut'(E),true)))),[
+    allocate(1),
+    get_variable(y(0),4),
+    call(non_unifiable/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clause3/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(mutual_exclusive_clause4(A,B,C,D),','('$cut'(E),true)))),[
+    allocate(1),
+    get_variable(y(0),4),
+    call(mutual_exclusive_clause4/4),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clause3/3_$aux1'(A,B,C,D),mutual_exclusive_clause5(A,B,C,D)),[
+    execute(mutual_exclusive_clause5/4)]).
+
+
+predicate(mutual_exclusive_clause4/4,96,static,private,user,5).
+
+
+clause(:-(mutual_exclusive_clause4('.'(A,B),'.'(C,D),E,F),','(number(A),','(var(C),','(!,;(->(mutual_exclusive_clause_number(F,C,=:=(C,A)),true),mutual_exclusive_clause4(B,D,E,F)))))),[
+    allocate(7),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_list(1),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_variable(y(4),2),
+    get_variable(y(5),3),
+    get_variable(y(6),4),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(2),0),
+    call(var/1),
+    cut(y(6)),
+    put_value(y(5),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(1),3),
+    put_value(y(3),4),
+    put_value(y(4),5),
+    deallocate,
+    execute('$mutual_exclusive_clause4/4_$aux1'/6)]).
+
+
+clause(:-(mutual_exclusive_clause4('.'(A,B),'.'(C,D),E,F),','(number(C),','(var(A),','(!,;(->(mutual_exclusive_clause_number(E,A,=:=(A,C)),true),mutual_exclusive_clause4(B,D,E,F)))))),[
+    allocate(7),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_list(1),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_variable(y(4),2),
+    get_variable(y(5),3),
+    get_variable(y(6),4),
+    put_value(y(2),0),
+    call(number/1),
+    put_value(y(0),0),
+    call(var/1),
+    cut(y(6)),
+    put_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(2),2),
+    put_value(y(1),3),
+    put_value(y(3),4),
+    put_value(y(5),5),
+    deallocate,
+    execute('$mutual_exclusive_clause4/4_$aux2'/6)]).
+
+
+clause(:-(mutual_exclusive_clause4('.'(A,B),'.'(C,D),E,F),','(atom(A),','(var(C),','(!,;(->(mutual_exclusive_clause_number(F,C,=:=(C,A)),true),mutual_exclusive_clause4(B,D,E,F)))))),[
+    allocate(7),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_list(1),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_variable(y(4),2),
+    get_variable(y(5),3),
+    get_variable(y(6),4),
+    put_value(y(0),0),
+    call(atom/1),
+    put_value(y(2),0),
+    call(var/1),
+    cut(y(6)),
+    put_value(y(5),0),
+    put_value(y(2),1),
+    put_value(y(0),2),
+    put_value(y(1),3),
+    put_value(y(3),4),
+    put_value(y(4),5),
+    deallocate,
+    execute('$mutual_exclusive_clause4/4_$aux3'/6)]).
+
+
+clause(:-(mutual_exclusive_clause4('.'(A,B),'.'(C,D),E,F),','(atom(C),','(var(A),','(!,;(->(mutual_exclusive_clause_number(E,A,=:=(A,C)),true),mutual_exclusive_clause4(B,D,E,F)))))),[
+    allocate(7),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_variable(y(1)),
+    get_list(1),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    get_variable(y(4),2),
+    get_variable(y(5),3),
+    get_variable(y(6),4),
+    put_value(y(2),0),
+    call(atom/1),
+    put_value(y(0),0),
+    call(var/1),
+    cut(y(6)),
+    put_value(y(4),0),
+    put_value(y(0),1),
+    put_value(y(2),2),
+    put_value(y(1),3),
+    put_value(y(3),4),
+    put_value(y(5),5),
+    deallocate,
+    execute('$mutual_exclusive_clause4/4_$aux4'/6)]).
+
+
+clause(:-(mutual_exclusive_clause4('.'(A,B),'.'(C,D),E,F),mutual_exclusive_clause4(B,D,E,F)),[
+    get_list(0),
+    unify_void(1),
+    unify_variable(x(0)),
+    get_list(1),
+    unify_void(1),
+    unify_variable(x(1)),
+    execute(mutual_exclusive_clause4/4)]).
+
+
+predicate('$mutual_exclusive_clause4/4_$aux4'/6,114,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_clause4/4_$aux4'(A,B,C,D,E,F),','('$get_cut_level'(G),','(mutual_exclusive_clause_number(A,B,=:=(B,C)),','('$cut'(G),true)))),[
+    allocate(1),
+    get_variable(x(3),2),
+    get_variable(y(0),6),
+    put_structure((=:=)/2,2),
+    unify_local_value(x(1)),
+    unify_local_value(x(3)),
+    call(mutual_exclusive_clause_number/3),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clause4/4_$aux4'(A,B,C,D,E,F),mutual_exclusive_clause4(D,E,A,F)),[
+    get_variable(x(2),0),
+    put_value(x(3),0),
+    put_value(x(4),1),
+    put_value(x(5),3),
+    execute(mutual_exclusive_clause4/4)]).
+
+
+predicate('$mutual_exclusive_clause4/4_$aux3'/6,108,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_clause4/4_$aux3'(A,B,C,D,E,F),','('$get_cut_level'(G),','(mutual_exclusive_clause_number(A,B,=:=(B,C)),','('$cut'(G),true)))),[
+    allocate(1),
+    get_variable(x(3),2),
+    get_variable(y(0),6),
+    put_structure((=:=)/2,2),
+    unify_local_value(x(1)),
+    unify_local_value(x(3)),
+    call(mutual_exclusive_clause_number/3),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clause4/4_$aux3'(A,B,C,D,E,F),mutual_exclusive_clause4(D,E,F,A)),[
+    get_variable(x(1),3),
+    get_variable(x(3),0),
+    put_value(x(1),0),
+    put_value(x(4),1),
+    put_value(x(5),2),
+    execute(mutual_exclusive_clause4/4)]).
+
+
+predicate('$mutual_exclusive_clause4/4_$aux2'/6,102,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_clause4/4_$aux2'(A,B,C,D,E,F),','('$get_cut_level'(G),','(mutual_exclusive_clause_number(A,B,=:=(B,C)),','('$cut'(G),true)))),[
+    allocate(1),
+    get_variable(x(3),2),
+    get_variable(y(0),6),
+    put_structure((=:=)/2,2),
+    unify_local_value(x(1)),
+    unify_local_value(x(3)),
+    call(mutual_exclusive_clause_number/3),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clause4/4_$aux2'(A,B,C,D,E,F),mutual_exclusive_clause4(D,E,A,F)),[
+    get_variable(x(2),0),
+    put_value(x(3),0),
+    put_value(x(4),1),
+    put_value(x(5),3),
+    execute(mutual_exclusive_clause4/4)]).
+
+
+predicate('$mutual_exclusive_clause4/4_$aux1'/6,96,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_clause4/4_$aux1'(A,B,C,D,E,F),','('$get_cut_level'(G),','(mutual_exclusive_clause_number(A,B,=:=(B,C)),','('$cut'(G),true)))),[
+    allocate(1),
+    get_variable(x(3),2),
+    get_variable(y(0),6),
+    put_structure((=:=)/2,2),
+    unify_local_value(x(1)),
+    unify_local_value(x(3)),
+    call(mutual_exclusive_clause_number/3),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_clause4/4_$aux1'(A,B,C,D,E,F),mutual_exclusive_clause4(D,E,F,A)),[
+    get_variable(x(1),3),
+    get_variable(x(3),0),
+    put_value(x(1),0),
+    put_value(x(4),1),
+    put_value(x(5),2),
+    execute(mutual_exclusive_clause4/4)]).
+
+
+predicate(mutual_exclusive_clause5/4,123,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_clause5(A,B,C,D),','(variable_set(A,[],E),','(length(E,F),','(variable_set(B,[],G),','(length(G,H),','(==(F,H),','(list_cas_substitute(G,E,B,I),','(==(A,I),','(!,','(list_cas_substitute(G,E,D,J),mutual_exclusive_clauses5(E,C,J))))))))))),[
+    allocate(11),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    put_value(y(0),0),
+    put_nil(1),
+    put_variable(y(5),2),
+    call(variable_set/3),
+    put_value(y(5),0),
+    put_variable(y(6),1),
+    call(length/2),
+    put_value(y(1),0),
+    put_nil(1),
+    put_variable(y(7),2),
+    call(variable_set/3),
+    put_value(y(7),0),
+    put_variable(y(8),1),
+    call(length/2),
+    put_value(y(6),0),
+    put_value(y(8),1),
+    call((==)/2),
+    put_value(y(7),0),
+    put_value(y(5),1),
+    put_value(y(1),2),
+    put_variable(y(9),3),
+    call(list_cas_substitute/4),
+    put_value(y(0),0),
+    put_value(y(9),1),
+    call((==)/2),
+    cut(y(4)),
+    put_value(y(7),0),
+    put_value(y(5),1),
+    put_value(y(3),2),
+    put_variable(y(10),3),
+    call(list_cas_substitute/4),
+    put_unsafe_value(y(5),0),
+    put_value(y(2),1),
+    put_unsafe_value(y(10),2),
+    deallocate,
+    execute(mutual_exclusive_clauses5/3)]).
+
+
+predicate(mutual_exclusive_clauses5/3,134,static,private,user,2).
+
+
+clause(:-(mutual_exclusive_clauses5('.'(A,B),C,D),','(get_comparison_literal(C,A,E),','(mutual_exclusive_clause_number(D,A,E),!))),[
+    allocate(4),
+    get_list(0),
+    unify_variable(y(0)),
+    unify_void(1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    put_value(x(1),0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call(get_comparison_literal/3),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_value(y(3),2),
+    call(mutual_exclusive_clause_number/3),
+    cut(y(2)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(mutual_exclusive_clauses5('.'(A,B),C,D),mutual_exclusive_clauses5(B,C,D)),[
+    get_list(0),
+    unify_void(1),
+    unify_variable(x(0)),
+    execute(mutual_exclusive_clauses5/3)]).
+
+
+predicate(variable_set/3,141,static,private,user,2).
+
+
+clause(variable_set([],A,A),[
+    get_nil(0),
+    get_value(x(2),1),
+    proceed]).
+
+
+clause(:-(variable_set('.'(A,B),C,D),','(variable_set1(A,C,E),variable_set(B,E,D))),[
+    allocate(3),
+    get_variable(y(1),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_variable(y(2),2),
+    call(variable_set1/3),
+    put_value(y(0),0),
+    put_unsafe_value(y(2),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(variable_set/3)]).
+
+
+predicate(variable_set1/3,146,static,private,user,3).
+
+
+clause(:-(variable_set1(A,B,C),','(var(A),','(!,;(->(member_cas(B,A),=(C,B)),=(C,'.'(A,B)))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(var/1),
+    cut(y(3)),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    put_value(y(2),2),
+    deallocate,
+    execute('$variable_set1/3_$aux1'/3)]).
+
+
+clause(:-(variable_set1(A,B,B),','(atomic(A),!)),[
+    allocate(1),
+    get_value(x(2),1),
+    get_variable(y(0),3),
+    call(atomic/1),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(variable_set1(A,B,C),','(functor(A,D,E),variable_set1(E,A,B,C))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_void(1),
+    put_variable(y(3),2),
+    call(functor/3),
+    put_unsafe_value(y(3),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    deallocate,
+    execute(variable_set1/4)]).
+
+
+predicate('$variable_set1/3_$aux1'/3,146,static,private,user,2).
+
+
+clause(:-('$variable_set1/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(member_cas(A,B),','('$cut'(D),=(C,A))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    put_value(y(0),0),
+    call(member_cas/2),
+    cut(y(2)),
+    put_value(y(1),0),
+    get_value(y(0),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$variable_set1/3_$aux1'(A,B,C),=(C,'.'(B,A))),[
+    get_list(2),
+    unify_local_value(x(1)),
+    unify_local_value(x(0)),
+    proceed]).
+
+
+predicate(variable_set1/4,157,static,private,user,2).
+
+
+clause(variable_set1(0,A,B,B),[
+    get_integer(0,0),
+    get_value(x(3),2),
+    proceed]).
+
+
+clause(:-(variable_set1(A,B,C,D),','(>(A,0),','(arg(A,B,E),','(variable_set1(E,C,F),','(is(G,-(A,1)),variable_set1(G,B,F,D)))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((>)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(4),2),
+    call(arg/3),
+    put_value(y(4),0),
+    put_value(y(2),1),
+    put_variable(y(5),2),
+    call(variable_set1/3),
+    put_variable(y(6),0),
+    put_structure((-)/2,1),
+    unify_local_value(y(0)),
+    unify_integer(1),
+    call((is)/2),
+    put_unsafe_value(y(6),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(5),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(variable_set1/4)]).
+
+
+predicate(list_cas_substitute/4,165,static,private,user,2).
+
+
+clause(list_cas_substitute([],[],A,A),[
+    get_nil(0),
+    get_nil(1),
+    get_value(x(3),2),
+    proceed]).
+
+
+clause(:-(list_cas_substitute('.'(A,B),'.'(C,D),E,F),','(substitute(E,A,C,G),list_cas_substitute(B,D,G,F))),[
+    allocate(4),
+    get_variable(y(2),3),
+    get_variable(x(4),2),
+    get_list(0),
+    unify_variable(x(3)),
+    unify_variable(y(0)),
+    get_list(1),
+    unify_variable(x(2)),
+    unify_variable(y(1)),
+    put_value(x(4),0),
+    put_value(x(3),1),
+    put_variable(y(3),3),
+    call(substitute/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(3),2),
+    put_value(y(2),3),
+    deallocate,
+    execute(list_cas_substitute/4)]).
+
+
+predicate(get_comparison_literal/3,170,static,private,user,1).
+
+
+clause(:-(get_comparison_literal(A,B,C),','(clause_type(A,2),','(=(A,:-(D,E)),get_comparison_literal1(E,B,C)))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_integer(2,1),
+    call(clause_type/2),
+    put_value(y(0),0),
+    get_structure((:-)/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(get_comparison_literal1/3)]).
+
+
+predicate(get_comparison_literal1/3,175,static,private,user,3).
+
+
+clause(:-(get_comparison_literal1(','(A,B),C,D),','(functor(A,E,F),','(comparison_op(/(E,F)),convert_op(A,C,D)))),[
+    allocate(5),
+    get_structure((',')/2,0),
+    unify_variable(y(0)),
+    unify_void(1),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    put_variable(y(4),2),
+    call(functor/3),
+    put_structure((/)/2,0),
+    unify_local_value(y(3)),
+    unify_local_value(y(4)),
+    call(comparison_op/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(convert_op/3)]).
+
+
+clause(:-(get_comparison_literal1(','(A,B),C,D),get_comparison_literal1(B,C,D)),[
+    get_structure((',')/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    execute(get_comparison_literal1/3)]).
+
+
+clause(:-(get_comparison_literal1(A,B,C),','(nonsequence(A),','(functor(A,D,E),','(comparison_op(/(D,E)),convert_op(A,B,C))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    call(nonsequence/1),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    put_variable(y(4),2),
+    call(functor/3),
+    put_structure((/)/2,0),
+    unify_local_value(y(3)),
+    unify_local_value(y(4)),
+    call(comparison_op/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(convert_op/3)]).
+
+
+predicate(mutual_exclusive_clause_number/3,188,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_clause_number(A,B,C),','(clause_type(A,2),','(=(A,:-(D,E)),mutual_exclusive_body_number(E,B,C)))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_integer(2,1),
+    call(clause_type/2),
+    put_value(y(0),0),
+    get_structure((:-)/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(mutual_exclusive_body_number/3)]).
+
+
+predicate(mutual_exclusive_body_number/3,207,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_body_number(A,B,C),;(->(=(A,','(D,E)),','(!,','(functor(D,F,G),','(mutual_allowable_op(/(F,G)),;(->(mutual_exclusive_literal_number(D,B,C),true),mutual_exclusive_body_number(E,B,C)))))),->(=(A,D),->(nonsequence(D),','(functor(D,F,G),','(mutual_allowable_op(/(F,G)),mutual_exclusive_literal_number(D,B,C))))))),[
+    get_variable(x(4),2),
+    get_variable(x(2),1),
+    put_value(x(3),1),
+    put_value(x(4),3),
+    execute('$mutual_exclusive_body_number/3_$aux1'/4)]).
+
+
+predicate('$mutual_exclusive_body_number/3_$aux1'/4,207,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_body_number/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(=(A,','(F,G)),','('$cut'(E),','('$cut'(B),','(functor(F,H,I),','(mutual_allowable_op(/(H,I)),;(','('$get_cut_level'(J),','(mutual_exclusive_literal_number(F,C,D),','('$cut'(J),true))),mutual_exclusive_body_number(G,C,D))))))))),[
+    allocate(6),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_structure((',')/2,0),
+    unify_variable(y(2)),
+    unify_variable(y(3)),
+    cut(x(4)),
+    cut(x(1)),
+    put_value(y(2),0),
+    put_variable(y(4),1),
+    put_variable(y(5),2),
+    call(functor/3),
+    put_structure((/)/2,0),
+    unify_local_value(y(4)),
+    unify_local_value(y(5)),
+    call(mutual_allowable_op/1),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(3),3),
+    deallocate,
+    execute('$mutual_exclusive_body_number/3_$aux2'/4)]).
+
+
+clause(:-('$mutual_exclusive_body_number/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(=(A,F),','('$cut'(E),;(','('$get_cut_level'(G),','(nonsequence(F),','('$cut'(G),','(functor(F,H,I),','(mutual_allowable_op(/(H,I)),mutual_exclusive_literal_number(F,C,D)))))),fail))))),[
+    cut(x(4)),
+    put_value(x(2),1),
+    put_value(x(3),2),
+    execute('$mutual_exclusive_body_number/3_$aux3'/3)]).
+
+
+predicate('$mutual_exclusive_body_number/3_$aux3'/3,207,static,private,user,1).
+
+
+clause(:-('$mutual_exclusive_body_number/3_$aux3'(A,B,C),','('$get_cut_level'(D),','(nonsequence(A),','('$cut'(D),','(functor(A,E,F),','(mutual_allowable_op(/(E,F)),mutual_exclusive_literal_number(A,B,C))))))),[
+    allocate(6),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(nonsequence/1),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_variable(y(4),1),
+    put_variable(y(5),2),
+    call(functor/3),
+    put_structure((/)/2,0),
+    unify_local_value(y(4)),
+    unify_local_value(y(5)),
+    call(mutual_allowable_op/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute(mutual_exclusive_literal_number/3)]).
+
+
+predicate('$mutual_exclusive_body_number/3_$aux2'/4,207,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_body_number/3_$aux2'(A,B,C,D),','('$get_cut_level'(E),','(mutual_exclusive_literal_number(A,B,C),','('$cut'(E),true)))),[
+    allocate(1),
+    get_variable(y(0),4),
+    call(mutual_exclusive_literal_number/3),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$mutual_exclusive_body_number/3_$aux2'(A,B,C,D),mutual_exclusive_body_number(D,B,C)),[
+    put_value(x(3),0),
+    execute(mutual_exclusive_body_number/3)]).
+
+
+predicate(mutual_exclusive_literal_number/3,228,static,private,user,1).
+
+
+clause(:-(mutual_exclusive_literal_number(A,B,C),','(functor(A,D,E),','(functor(C,F,G),->(','(comparison_op(/(D,E)),convert_op(A,B,H)),','(functor(H,I,J),','(comparable_op(/(I,J),/(F,G),K),;(->(>(K,0),mutual_exclusive_number(H,C)),mutual_exclusive_number(C,H)))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_value(y(0),0),
+    put_variable(y(3),1),
+    put_variable(y(4),2),
+    call(functor/3),
+    put_value(y(2),0),
+    put_variable(y(5),1),
+    put_variable(y(6),2),
+    call(functor/3),
+    put_unsafe_value(y(3),0),
+    put_unsafe_value(y(4),1),
+    put_value(y(0),2),
+    put_value(y(1),3),
+    put_unsafe_value(y(5),4),
+    put_unsafe_value(y(6),5),
+    put_value(y(2),6),
+    deallocate,
+    execute('$mutual_exclusive_literal_number/3_$aux1'/7)]).
+
+
+predicate('$mutual_exclusive_literal_number/3_$aux1'/7,228,static,private,user,1).
+
+
+clause(:-('$mutual_exclusive_literal_number/3_$aux1'(A,B,C,D,E,F,G),','('$get_cut_level'(H),','(','(comparison_op(/(A,B)),convert_op(C,D,I)),','('$cut'(H),','(functor(I,J,K),','(comparable_op(/(J,K),/(E,F),L),;(','('$get_cut_level'(M),','(>(L,0),','('$cut'(M),mutual_exclusive_number(I,G)))),mutual_exclusive_number(G,I)))))))),[
+    allocate(10),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),6),
+    get_variable(x(2),0),
+    get_variable(y(5),7),
+    put_structure((/)/2,0),
+    unify_local_value(x(2)),
+    unify_local_value(x(1)),
+    call(comparison_op/1),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(6),2),
+    call(convert_op/3),
+    cut(y(5)),
+    put_value(y(6),0),
+    put_variable(y(7),1),
+    put_variable(y(8),2),
+    call(functor/3),
+    put_structure((/)/2,0),
+    unify_local_value(y(7)),
+    unify_local_value(y(8)),
+    put_structure((/)/2,1),
+    unify_local_value(y(2)),
+    unify_local_value(y(3)),
+    put_variable(y(9),2),
+    call(comparable_op/3),
+    put_unsafe_value(y(9),0),
+    put_unsafe_value(y(6),1),
+    put_value(y(4),2),
+    deallocate,
+    execute('$mutual_exclusive_literal_number/3_$aux2'/3)]).
+
+
+predicate('$mutual_exclusive_literal_number/3_$aux2'/3,228,static,private,user,2).
+
+
+clause(:-('$mutual_exclusive_literal_number/3_$aux2'(A,B,C),','('$get_cut_level'(D),','(>(A,0),','('$cut'(D),mutual_exclusive_number(B,C))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    put_integer(0,1),
+    call((>)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(mutual_exclusive_number/2)]).
+
+
+clause(:-('$mutual_exclusive_literal_number/3_$aux2'(A,B,C),mutual_exclusive_number(C,B)),[
+    put_value(x(2),0),
+    execute(mutual_exclusive_number/2)]).
+
+
+predicate(convert_op/3,238,static,private,user,6).
+
+
+clause(:-(convert_op(==(A,B),C,=:=(A,B)),','(==(A,C),!)),[
+    allocate(1),
+    get_structure((==)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(4)),
+    get_structure((=:=)/2,2),
+    unify_value(x(0)),
+    unify_value(x(4)),
+    get_variable(y(0),3),
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(convert_op(==(A,B),C,=:=(B,A)),','(==(B,C),!)),[
+    allocate(1),
+    get_structure((==)/2,0),
+    unify_variable(x(4)),
+    unify_variable(x(0)),
+    get_structure((=:=)/2,2),
+    unify_value(x(0)),
+    unify_value(x(4)),
+    get_variable(y(0),3),
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(convert_op(\==(A,B),C,=\=(A,B)),','(==(A,C),!)),[
+    allocate(1),
+    get_structure((\==)/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(4)),
+    get_structure((=\=)/2,2),
+    unify_value(x(0)),
+    unify_value(x(4)),
+    get_variable(y(0),3),
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(convert_op(\==(A,B),C,=\=(B,A)),','(==(B,C),!)),[
+    allocate(1),
+    get_structure((\==)/2,0),
+    unify_variable(x(4)),
+    unify_variable(x(0)),
+    get_structure((=\=)/2,2),
+    unify_value(x(0)),
+    unify_value(x(4)),
+    get_variable(y(0),3),
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(convert_op(A,B,A),','(arg(1,A,C),','(==(C,B),!))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_value(x(2),0),
+    get_variable(y(1),3),
+    put_value(x(2),1),
+    put_integer(1,0),
+    put_variable(y(2),2),
+    call(arg/3),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    call((==)/2),
+    cut(y(1)),
+    deallocate,
+    proceed]).
+
+
+clause(:-(convert_op(A,B,C),','(arg(2,A,D),','(==(D,B),','(functor(A,E,F),','(functor(C,E,F),','(arg(1,C,D),','(arg(1,A,G),arg(2,C,G)))))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    put_integer(2,0),
+    put_value(y(0),1),
+    put_variable(y(3),2),
+    call(arg/3),
+    put_value(y(3),0),
+    put_value(y(1),1),
+    call((==)/2),
+    put_value(y(0),0),
+    put_variable(y(4),1),
+    put_variable(y(5),2),
+    call(functor/3),
+    put_value(y(2),0),
+    put_value(y(4),1),
+    put_value(y(5),2),
+    call(functor/3),
+    put_integer(1,0),
+    put_value(y(2),1),
+    put_value(y(3),2),
+    call(arg/3),
+    put_integer(1,0),
+    put_value(y(0),1),
+    put_variable(y(6),2),
+    call(arg/3),
+    put_integer(2,0),
+    put_value(y(2),1),
+    put_unsafe_value(y(6),2),
+    deallocate,
+    execute(arg/3)]).
+
+
+predicate(mutual_allowable_op/1,254,static,private,user,11).
+
+
+clause(:-(mutual_allowable_op(A),comparison_op(A)),[
+    execute(comparison_op/1)]).
+
+
+clause(mutual_allowable_op(/(is,2)),[
+    get_structure((/)/2,0),
+    unify_atom(is),
+    unify_integer(2),
+    proceed]).
+
+
+clause(mutual_allowable_op(/(functor,3)),[
+    get_structure((/)/2,0),
+    unify_atom(functor),
+    unify_integer(3),
+    proceed]).
+
+
+clause(mutual_allowable_op(/(arg,3)),[
+    get_structure((/)/2,0),
+    unify_atom(arg),
+    unify_integer(3),
+    proceed]).
+
+
+clause(mutual_allowable_op(/(atomic,1)),[
+    get_structure((/)/2,0),
+    unify_atom(atomic),
+    unify_integer(1),
+    proceed]).
+
+
+clause(mutual_allowable_op(/(atom,1)),[
+    get_structure((/)/2,0),
+    unify_atom(atom),
+    unify_integer(1),
+    proceed]).
+
+
+clause(mutual_allowable_op(/(number,1)),[
+    get_structure((/)/2,0),
+    unify_atom(number),
+    unify_integer(1),
+    proceed]).
+
+
+clause(mutual_allowable_op(/(integer,1)),[
+    get_structure((/)/2,0),
+    unify_atom(integer),
+    unify_integer(1),
+    proceed]).
+
+
+clause(mutual_allowable_op(/(float,1)),[
+    get_structure((/)/2,0),
+    unify_atom(float),
+    unify_integer(1),
+    proceed]).
+
+
+clause(mutual_allowable_op(/(true,0)),[
+    get_structure((/)/2,0),
+    unify_atom(true),
+    unify_integer(0),
+    proceed]).
+
+
+clause(mutual_allowable_op(/(!,0)),[
+    get_structure((/)/2,0),
+    unify_atom(!),
+    unify_integer(0),
+    proceed]).
+
+
+predicate(comparison_op/1,267,static,private,user,3).
+
+
+clause(:-(comparison_op(A),arithmetic_op(A)),[
+    execute(arithmetic_op/1)]).
+
+
+clause(comparison_op(/(==,2)),[
+    get_structure((/)/2,0),
+    unify_atom(==),
+    unify_integer(2),
+    proceed]).
+
+
+clause(comparison_op(/(\==,2)),[
+    get_structure((/)/2,0),
+    unify_atom(\==),
+    unify_integer(2),
+    proceed]).
+
+
+predicate(comparable_op/3,272,static,private,user,20).
+
+
+clause(comparable_op(/(>,2),/(=:=,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(>),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=:=,2),/(>,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(>),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+clause(comparable_op(/(>=,2),/(=:=,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(>=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=:=,2),/(>=,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(>=),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+clause(comparable_op(/(<,2),/(=:=,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(<),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=:=,2),/(<,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(<),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=<,2),/(=:=,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(=<),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=:=,2),/(=<,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=<),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=\=,2),/(=:=,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(=\=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=:=,2),/(=\=,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=\=),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=:=,2),/(=:=,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=:=,2),/(=:=,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=:=),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+clause(comparable_op(/(>,2),/(<,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(>),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(<),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(<,2),/(>,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(<),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(>),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+clause(comparable_op(/(>=,2),/(<,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(>=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(<),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(<,2),/(>=,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(<),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(>=),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+clause(comparable_op(/(>,2),/(=<,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(>),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=<),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=<,2),/(>,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(=<),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(>),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+clause(comparable_op(/(>=,2),/(=<,2),1),[
+    get_structure((/)/2,0),
+    unify_atom(>=),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(=<),
+    unify_integer(2),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(comparable_op(/(=<,2),/(>=,2),-1),[
+    get_structure((/)/2,0),
+    unify_atom(=<),
+    unify_integer(2),
+    get_structure((/)/2,1),
+    unify_atom(>=),
+    unify_integer(2),
+    get_integer(-1,2),
+    proceed]).
+
+
+predicate(mutual_exclusive_number/2,293,static,private,user,18).
+
+
+clause(:-(mutual_exclusive_number(>(A,B),=:=(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,>=(B,D)))))),[
+    allocate(3),
+    get_structure((>)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((>=)/2)]).
+
+
+clause(:-(mutual_exclusive_number(>=(A,B),=:=(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,>(B,D)))))),[
+    allocate(3),
+    get_structure((>=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((>)/2)]).
+
+
+clause(:-(mutual_exclusive_number(<(A,B),=:=(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,=<(B,D)))))),[
+    allocate(3),
+    get_structure((<)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((=<)/2)]).
+
+
+clause(:-(mutual_exclusive_number(=<(A,B),=:=(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,<(B,D)))))),[
+    allocate(3),
+    get_structure((=<)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((<)/2)]).
+
+
+clause(:-(mutual_exclusive_number(=\=(A,B),=:=(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,=:=(B,D)))))),[
+    allocate(3),
+    get_structure((=\=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((=:=)/2)]).
+
+
+clause(:-(mutual_exclusive_number(=:=(A,B),=:=(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,=\=(B,D)))))),[
+    allocate(3),
+    get_structure((=:=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((=\=)/2)]).
+
+
+clause(:-(mutual_exclusive_number(>(A,B),<(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,>=(B,D)))))),[
+    allocate(3),
+    get_structure((>)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((<)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((>=)/2)]).
+
+
+clause(:-(mutual_exclusive_number(>=(A,B),<(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,>=(B,D)))))),[
+    allocate(3),
+    get_structure((>=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((<)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((>=)/2)]).
+
+
+clause(:-(mutual_exclusive_number(>(A,B),=<(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,>=(B,D)))))),[
+    allocate(3),
+    get_structure((>)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=<)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((>=)/2)]).
+
+
+clause(:-(mutual_exclusive_number(>=(A,B),=<(C,D)),','(==(A,C),','(number(B),','(number(D),','(!,>(B,D)))))),[
+    allocate(3),
+    get_structure((>=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=<)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(number/1),
+    put_value(y(1),0),
+    call(number/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((>)/2)]).
+
+
+clause(:-(mutual_exclusive_number(=\=(A,B),=:=(C,D)),','(==(A,C),','(atom(B),','(atom(D),','(!,==(B,D)))))),[
+    allocate(3),
+    get_structure((=\=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(atom/1),
+    put_value(y(1),0),
+    call(atom/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+clause(:-(mutual_exclusive_number(=:=(A,B),=:=(C,D)),','(==(A,C),','(atom(B),','(atom(D),','(!,\==(B,D)))))),[
+    allocate(3),
+    get_structure((=:=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(atom/1),
+    put_value(y(1),0),
+    call(atom/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((\==)/2)]).
+
+
+clause(:-(mutual_exclusive_number(>(A,B),=:=(C,D)),','(==(A,C),','(var(B),','(var(D),','(!,==(B,D)))))),[
+    allocate(3),
+    get_structure((>)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(1),0),
+    call(var/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+clause(:-(mutual_exclusive_number(<(A,B),=:=(C,D)),','(==(A,C),','(var(B),','(var(D),','(!,==(B,D)))))),[
+    allocate(3),
+    get_structure((<)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(1),0),
+    call(var/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+clause(:-(mutual_exclusive_number(=\=(A,B),=:=(C,D)),','(==(A,C),','(var(B),','(var(D),','(!,==(B,D)))))),[
+    allocate(3),
+    get_structure((=\=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=:=)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(1),0),
+    call(var/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+clause(:-(mutual_exclusive_number(>(A,B),<(C,D)),','(==(A,C),','(var(B),','(var(D),','(!,==(B,D)))))),[
+    allocate(3),
+    get_structure((>)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((<)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(1),0),
+    call(var/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+clause(:-(mutual_exclusive_number(>=(A,B),<(C,D)),','(==(A,C),','(var(B),','(var(D),','(!,==(B,D)))))),[
+    allocate(3),
+    get_structure((>=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((<)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(1),0),
+    call(var/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+clause(:-(mutual_exclusive_number(>(A,B),=<(C,D)),','(==(A,C),','(var(B),','(var(D),','(!,==(B,D)))))),[
+    allocate(3),
+    get_structure((>)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((=<)/2,1),
+    unify_variable(x(1)),
+    unify_variable(y(1)),
+    get_variable(y(2),2),
+    call((==)/2),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(1),0),
+    call(var/1),
+    cut(y(2)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    deallocate,
+    execute((==)/2)]).
+
+
+predicate(cut_clause/1,405,static,private,user,1).
+
+
+clause(:-(cut_clause(A),','(clause_type(A,2),','(=(A,:-(B,C)),cut_body(C)))),[
+    allocate(1),
+    get_variable(y(0),0),
+    put_value(y(0),0),
+    put_integer(2,1),
+    call(clause_type/2),
+    put_value(y(0),0),
+    get_structure((:-)/2,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    deallocate,
+    execute(cut_body/1)]).
+
+
+predicate(cut_body/1,410,static,private,user,2).
+
+
+clause(:-(cut_body(','(A,B)),;(->(==(A,!),true),cut_body(B))),[
+    get_structure((',')/2,0),
+    unify_variable(x(0)),
+    unify_variable(x(1)),
+    execute('$cut_body/1_$aux1'/2)]).
+
+
+clause(cut_body(!),[
+    get_atom(!,0),
+    proceed]).
+
+
+predicate('$cut_body/1_$aux1'/2,410,static,private,user,2).
+
+
+clause(:-('$cut_body/1_$aux1'(A,B),','('$get_cut_level'(C),','(==(A,!),','('$cut'(C),true)))),[
+    allocate(1),
+    get_variable(y(0),2),
+    put_atom(!,1),
+    call((==)/2),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$cut_body/1_$aux1'(A,B),cut_body(B)),[
+    put_value(x(1),0),
+    execute(cut_body/1)]).
+
+
+predicate(non_unifiable/2,418,static,private,user,2).
+
+
+clause(:-(non_unifiable(A,A),','(!,fail)),[
+    get_value(x(1),0),
+    cut(x(2)),
+    fail]).
+
+
+clause(non_unifiable(A,B),[
+    proceed]).
+
+
+predicate(clause_head/2,424,static,private,user,1).
+
+
+clause(:-(clause_head(A,B),','(clause_type(A,C),;(->(==(C,2),=(A,:-(B,D))),=(A,B)))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    put_variable(y(2),1),
+    call(clause_type/2),
+    put_unsafe_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute('$clause_head/2_$aux1'/3)]).
+
+
+predicate('$clause_head/2_$aux1'/3,424,static,private,user,2).
+
+
+clause(:-('$clause_head/2_$aux1'(A,B,C),','('$get_cut_level'(D),','(==(A,2),','('$cut'(D),=(B,:-(C,E)))))),[
+    allocate(3),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    put_integer(2,1),
+    call((==)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_structure((:-)/2,0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$clause_head/2_$aux1'(A,B,C),=(B,C)),[
+    get_value(x(2),1),
+    proceed]).
+
+
+predicate(input_term/4,433,static,private,user,3).
+
+
+clause(input_term([],A,B,[]),[
+    get_nil(0),
+    get_nil(3),
+    proceed]).
+
+
+clause(:-(input_term('.'(+,A),B,C,'.'(D,E)),','(arg(C,B,D),','(is(F,+(C,1)),input_term(A,B,F,E)))),[
+    allocate(5),
+    get_list(0),
+    unify_atom(+),
+    unify_variable(y(0)),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(3),
+    unify_variable(x(2)),
+    unify_variable(y(3)),
+    put_value(y(2),0),
+    put_value(y(1),1),
+    call(arg/3),
+    put_variable(y(4),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(2)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(4),2),
+    put_value(y(3),3),
+    deallocate,
+    execute(input_term/4)]).
+
+
+clause(:-(input_term('.'(-,A),B,C,D),','(is(E,+(C,1)),input_term(A,B,E,D))),[
+    allocate(4),
+    get_list(0),
+    unify_atom(-),
+    unify_variable(y(0)),
+    get_variable(y(1),1),
+    get_variable(y(2),3),
+    put_structure((+)/2,1),
+    unify_local_value(x(2)),
+    unify_integer(1),
+    put_variable(y(3),0),
+    call((is)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(3),2),
+    put_value(y(2),3),
+    deallocate,
+    execute(input_term/4)]).
+
+
+predicate(set_inclusion/2,445,static,private,user,2).
+
+
+clause(set_inclusion([],A),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(set_inclusion('.'(A,B),C),->(member_cas(C,A),set_inclusion(B,C))),[
+    get_variable(x(3),1),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(x(2)),
+    put_value(x(3),0),
+    execute('$set_inclusion/2_$aux1'/3)]).
+
+
+predicate('$set_inclusion/2_$aux1'/3,446,static,private,user,1).
+
+
+clause(:-('$set_inclusion/2_$aux1'(A,B,C),','('$get_cut_level'(D),','(member_cas(A,B),','('$cut'(D),set_inclusion(C,A))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    put_value(y(0),0),
+    call(member_cas/2),
+    cut(y(2)),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(set_inclusion/2)]).

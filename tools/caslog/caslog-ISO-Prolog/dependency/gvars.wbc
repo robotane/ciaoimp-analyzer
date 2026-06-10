@@ -1,0 +1,481 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/dependency/gvars.pl
+% date    : 2 6 2003
+% time    : 10:15:31
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/dependency/gvars.pl').
+
+
+predicate(insert_gvars_entry/3,34,static,private,user,1).
+
+
+clause(:-(insert_gvars_entry(A,B,C),;(->(var(A),','(=(C,gv(B,D,E,F,G,H,I)),=(A,'.'(C,J)))),->(nonvar(A),','(=(A,'.'(K,L)),','(=(K,gv(M,N,O,P,Q,R,S)),;(->(==(B,M),=(C,K)),insert_gvars_entry(L,B,C))))))),[
+    get_variable(x(3),2),
+    get_variable(x(2),1),
+    put_value(x(3),1),
+    execute('$insert_gvars_entry/3_$aux1'/3)]).
+
+
+predicate('$insert_gvars_entry/3_$aux1'/3,34,static,private,user,2).
+
+
+clause(:-('$insert_gvars_entry/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(var(A),','('$cut'(D),','(=(B,gv(C,E,F,G,H,I,J)),=(A,'.'(B,K))))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(var/1),
+    cut(y(3)),
+    put_value(y(1),0),
+    get_structure(gv/7,0),
+    unify_local_value(y(2)),
+    unify_void(6),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$insert_gvars_entry/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(nonvar(A),','('$cut'(D),','(=(A,'.'(E,F)),','(=(E,gv(G,H,I,J,K,L,M)),;(','('$get_cut_level'(N),','(==(C,G),','('$cut'(N),=(B,E)))),insert_gvars_entry(F,C,B)))))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    call(nonvar/1),
+    cut(y(3)),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(3)),
+    unify_variable(x(4)),
+    get_structure(gv/7,3),
+    unify_variable(x(1)),
+    unify_void(6),
+    put_value(y(2),0),
+    put_value(y(1),2),
+    deallocate,
+    execute('$insert_gvars_entry/3_$aux2'/5)]).
+
+
+predicate('$insert_gvars_entry/3_$aux2'/5,34,static,private,user,2).
+
+
+clause(:-('$insert_gvars_entry/3_$aux2'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,B),','('$cut'(F),=(C,D))))),[
+    allocate(3),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),5),
+    call((==)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$insert_gvars_entry/3_$aux2'(A,B,C,D,E),insert_gvars_entry(E,A,C)),[
+    get_variable(x(1),0),
+    put_value(x(4),0),
+    execute(insert_gvars_entry/3)]).
+
+
+predicate(insert_gvars_field/4,53,static,private,user,6).
+
+
+clause(:-(insert_gvars_field(A,B,def,C),','(insert_gvars_entry(A,B,gv(B,D,E,F,G,H,I)),insert_gvars_pos(D,C))),[
+    allocate(2),
+    get_atom(def,2),
+    get_variable(y(0),3),
+    put_structure(gv/7,2),
+    unify_local_value(x(1)),
+    unify_variable(y(1)),
+    unify_void(5),
+    call(insert_gvars_entry/3),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(insert_gvars_pos/2)]).
+
+
+clause(:-(insert_gvars_field(A,B,use,C),','(insert_gvars_entry(A,B,gv(B,D,E,F,G,H,I)),insert_gvars_pos(E,C))),[
+    allocate(2),
+    get_atom(use,2),
+    get_variable(y(0),3),
+    put_structure(gv/7,2),
+    unify_local_value(x(1)),
+    unify_void(1),
+    unify_variable(y(1)),
+    unify_void(4),
+    call(insert_gvars_entry/3),
+    put_value(y(1),0),
+    put_value(y(0),1),
+    deallocate,
+    execute(insert_gvars_pos/2)]).
+
+
+clause(:-(insert_gvars_field(A,B,relation,C),insert_gvars_entry(A,B,gv(B,D,E,C,F,G,H))),[
+    get_atom(relation,2),
+    put_structure(gv/7,2),
+    unify_local_value(x(1)),
+    unify_void(2),
+    unify_local_value(x(3)),
+    unify_void(3),
+    execute(insert_gvars_entry/3)]).
+
+
+clause(:-(insert_gvars_field(A,B,det,C),insert_gvars_entry(A,B,gv(B,D,E,F,C,G,H))),[
+    get_atom(det,2),
+    put_structure(gv/7,2),
+    unify_local_value(x(1)),
+    unify_void(3),
+    unify_local_value(x(3)),
+    unify_void(2),
+    execute(insert_gvars_entry/3)]).
+
+
+clause(:-(insert_gvars_field(A,B,redge,C),insert_gvars_entry(A,B,gv(B,D,E,F,G,C,H))),[
+    get_atom(redge,2),
+    put_structure(gv/7,2),
+    unify_local_value(x(1)),
+    unify_void(4),
+    unify_local_value(x(3)),
+    unify_void(1),
+    execute(insert_gvars_entry/3)]).
+
+
+clause(:-(insert_gvars_field(A,B,sedge,C),insert_gvars_entry(A,B,gv(B,D,E,F,G,H,C))),[
+    get_atom(sedge,2),
+    put_structure(gv/7,2),
+    unify_local_value(x(1)),
+    unify_void(5),
+    unify_local_value(x(3)),
+    execute(insert_gvars_entry/3)]).
+
+
+predicate(insert_gvars_pos/2,94,static,private,user,3).
+
+
+clause(:-(insert_gvars_pos(A,B),','(var(A),=(A,'.'(B,C)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(var/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_gvars_pos(A,B),','(nonvar(A),=(A,'.'(B,C)))),[
+    allocate(2),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_void(1),
+    deallocate,
+    proceed]).
+
+
+clause(:-(insert_gvars_pos(A,B),','(nonvar(A),','(=(A,'.'(C,D)),','(\==(C,B),insert_gvars_pos(D,B))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(2),0),
+    put_value(y(1),1),
+    deallocate,
+    execute(insert_gvars_pos/2)]).
+
+
+predicate(find_gvars_entry/3,128,static,private,user,1).
+
+
+clause(:-(find_gvars_entry(A,B,C),;(->(var(A),!),->(nonvar(A),','(=(A,'.'(D,E)),','(=(D,gv(F,G,H,I,J,K,L)),;(->(==(B,F),=(C,D)),->(\==(B,F),find_gvars_entry(E,B,C)))))))),[
+    get_variable(x(4),2),
+    get_variable(x(2),1),
+    put_value(x(3),1),
+    put_value(x(4),3),
+    execute('$find_gvars_entry/3_$aux1'/4)]).
+
+
+predicate('$find_gvars_entry/3_$aux1'/4,128,static,private,user,2).
+
+
+clause(:-('$find_gvars_entry/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(var(A),','('$cut'(E),'$cut'(B))))),[
+    allocate(2),
+    get_variable(y(0),1),
+    get_variable(y(1),4),
+    call(var/1),
+    cut(y(1)),
+    cut(y(0)),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$find_gvars_entry/3_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(nonvar(A),','('$cut'(E),','(=(A,'.'(F,G)),','(=(F,gv(H,I,J,K,L,M,N)),;(','('$get_cut_level'(O),','(==(C,H),','('$cut'(O),=(D,F)))),;(','('$get_cut_level'(P),','(\==(C,H),','('$cut'(P),find_gvars_entry(G,C,D)))),fail)))))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_value(y(0),0),
+    call(nonvar/1),
+    cut(y(3)),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(3)),
+    unify_variable(x(4)),
+    get_structure(gv/7,3),
+    unify_variable(x(1)),
+    unify_void(6),
+    put_value(y(1),0),
+    put_value(y(2),2),
+    deallocate,
+    execute('$find_gvars_entry/3_$aux2'/5)]).
+
+
+predicate('$find_gvars_entry/3_$aux2'/5,128,static,private,user,2).
+
+
+clause(:-('$find_gvars_entry/3_$aux2'(A,B,C,D,E),','('$get_cut_level'(F),','(==(A,B),','('$cut'(F),=(C,D))))),[
+    allocate(3),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),5),
+    call((==)/2),
+    cut(y(2)),
+    put_value(y(0),0),
+    get_value(y(1),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$find_gvars_entry/3_$aux2'(A,B,C,D,E),','('$get_cut_level'(F),','(\==(A,B),','('$cut'(F),find_gvars_entry(E,A,C))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    put_value(y(0),0),
+    call((\==)/2),
+    cut(y(3)),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    deallocate,
+    execute(find_gvars_entry/3)]).
+
+
+predicate(find_gvars_field/4,159,static,private,user,1).
+
+
+clause(:-(find_gvars_field(A,B,C,D),;(->(==(C,def),find_gvars_entry(A,B,gv(B,D,E,F,G,H,I))),;(->(==(C,use),find_gvars_entry(A,B,gv(B,J,D,K,L,M,N))),;(->(==(C,relation),find_gvars_entry(A,B,gv(B,O,P,D,Q,R,S))),;(->(==(C,det),find_gvars_entry(A,B,gv(B,T,U,V,D,W,X))),;(->(==(C,redge),find_gvars_entry(A,B,gv(B,Y,Z,A1,B1,D,C1))),->(==(C,sedge),find_gvars_entry(A,B,gv(B,D1,E1,F1,G1,H1,D))))))))),[
+    get_variable(x(4),2),
+    get_variable(x(2),1),
+    get_variable(x(1),0),
+    put_value(x(4),0),
+    execute('$find_gvars_field/4_$aux1'/4)]).
+
+
+predicate('$find_gvars_field/4_$aux1'/4,159,static,private,user,6).
+
+
+clause(:-('$find_gvars_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,def),','('$cut'(E),find_gvars_entry(B,C,gv(C,D,F,G,H,I,J)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(def,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(gv/7,2),
+    unify_local_value(y(1)),
+    unify_local_value(y(2)),
+    unify_void(5),
+    deallocate,
+    execute(find_gvars_entry/3)]).
+
+
+clause(:-('$find_gvars_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,use),','('$cut'(E),find_gvars_entry(B,C,gv(C,F,D,G,H,I,J)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(use,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(gv/7,2),
+    unify_local_value(y(1)),
+    unify_void(1),
+    unify_local_value(y(2)),
+    unify_void(4),
+    deallocate,
+    execute(find_gvars_entry/3)]).
+
+
+clause(:-('$find_gvars_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,relation),','('$cut'(E),find_gvars_entry(B,C,gv(C,F,G,D,H,I,J)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(relation,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(gv/7,2),
+    unify_local_value(y(1)),
+    unify_void(2),
+    unify_local_value(y(2)),
+    unify_void(3),
+    deallocate,
+    execute(find_gvars_entry/3)]).
+
+
+clause(:-('$find_gvars_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,det),','('$cut'(E),find_gvars_entry(B,C,gv(C,F,G,H,D,I,J)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(det,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(gv/7,2),
+    unify_local_value(y(1)),
+    unify_void(3),
+    unify_local_value(y(2)),
+    unify_void(2),
+    deallocate,
+    execute(find_gvars_entry/3)]).
+
+
+clause(:-('$find_gvars_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,redge),','('$cut'(E),find_gvars_entry(B,C,gv(C,F,G,H,I,D,J)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(redge,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(gv/7,2),
+    unify_local_value(y(1)),
+    unify_void(4),
+    unify_local_value(y(2)),
+    unify_void(1),
+    deallocate,
+    execute(find_gvars_entry/3)]).
+
+
+clause(:-('$find_gvars_field/4_$aux1'(A,B,C,D),','('$get_cut_level'(E),','(==(A,sedge),','('$cut'(E),find_gvars_entry(B,C,gv(C,F,G,H,I,J,D)))))),[
+    allocate(4),
+    get_variable(y(0),1),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    put_atom(sedge,1),
+    call((==)/2),
+    cut(y(3)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_structure(gv/7,2),
+    unify_local_value(y(1)),
+    unify_void(5),
+    unify_local_value(y(2)),
+    deallocate,
+    execute(find_gvars_entry/3)]).
+
+
+predicate(close_gvars_list_cas/1,192,static,private,user,2).
+
+
+clause(:-(close_gvars_list_cas(A),var(A)),[
+    execute(var/1)]).
+
+
+clause(:-(close_gvars_list_cas(A),','(nonvar(A),','(=(A,'.'(gv(B,C,D,E,F,G,H),I)),','(close_list_cas(C),','(close_list_cas(D),close_gvars_list_cas(I)))))),[
+    allocate(3),
+    get_variable(y(0),0),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure(gv/7,0),
+    unify_void(1),
+    unify_variable(x(0)),
+    unify_variable(y(1)),
+    unify_void(4),
+    call(close_list_cas/1),
+    put_value(y(1),0),
+    call(close_list_cas/1),
+    put_value(y(2),0),
+    deallocate,
+    execute(close_gvars_list_cas/1)]).
+
+
+predicate(print_gvars_list_cas/1,204,static,private,user,1).
+
+
+clause(:-(print_gvars_list_cas(A),','(tell(gvars_list_cas),','(p_gvars_list_cas(A),told))),[
+    allocate(1),
+    get_variable(y(0),0),
+    put_atom(gvars_list_cas,0),
+    call(tell/1),
+    put_value(y(0),0),
+    call(p_gvars_list_cas/1),
+    deallocate,
+    execute(told/0)]).
+
+
+predicate(p_gvars_list_cas/1,209,static,private,user,2).
+
+
+clause(p_gvars_list_cas([]),[
+    get_nil(0),
+    proceed]).
+
+
+clause(:-(p_gvars_list_cas('.'(A,B)),','(write(A),','(nl,p_gvars_list_cas(B)))),[
+    allocate(1),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    call(write/1),
+    call(nl/0),
+    put_value(y(0),0),
+    deallocate,
+    execute(p_gvars_list_cas/1)]).

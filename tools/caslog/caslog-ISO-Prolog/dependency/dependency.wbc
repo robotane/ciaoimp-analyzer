@@ -1,0 +1,209 @@
+% compiler: GNU Prolog 1.2.16 (Sep 19 2002)
+% file    : source/dependency/dependency.pl
+% date    : 2 6 2003
+% time    : 10:15:30
+
+
+file_name('/Users/fred/Desktop/UR/Ter/caslog-03-02-06/source/dependency/dependency.pl').
+
+
+predicate(dependency_analysis/7,11,static,private,user,2).
+
+
+clause(dependency_analysis([],A,B,[],[],[],1),[
+    get_nil(0),
+    get_nil(3),
+    get_nil(4),
+    get_nil(5),
+    get_integer(1,6),
+    proceed]).
+
+
+clause(:-(dependency_analysis('.'(A,B),C,D,'.'(E,F),'.'(G,H),'.'(I,J),K),','(dependency_predicate(A,C,D,E,G,I,L),','(dependency_analysis(B,C,D,F,H,J,M),is(K,*(L,M))))),[
+    allocate(9),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(6),6),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_list(3),
+    unify_variable(x(3)),
+    unify_variable(y(3)),
+    get_list(4),
+    unify_variable(x(4)),
+    unify_variable(y(4)),
+    get_list(5),
+    unify_variable(x(5)),
+    unify_variable(y(5)),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_variable(y(7),6),
+    call(dependency_predicate/7),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_variable(y(8),6),
+    call(dependency_analysis/7),
+    put_value(y(6),0),
+    put_structure((*)/2,1),
+    unify_local_value(y(7)),
+    unify_local_value(y(8)),
+    deallocate,
+    execute((is)/2)]).
+
+
+predicate(dependency_predicate/7,21,static,private,user,1).
+
+
+clause(:-(dependency_predicate(A,B,C,D,E,F,G),','(find_symbol_field_clause(C,A,clause,H),','(find_symbol_field(C,A,mode,I),','(mutual_exclusive_classes(H,I,J),','(nl,','(nl,','(write(*********************************************************),','(nl,','(write('                         '),','(write(A),','(write('                           '),','(nl,','(write(*********************************************************),','(nl,','(nl,','(write('* Mutually exclusive classes of clauses for predicate '),','(write(A),','(write(' :'),','(nl,','(nl,','(write(J),','(nl,','(insert_symbol_field_mutex(C,A,mutex,J),dependency_clauses(H,B,C,D,E,F,G)))))))))))))))))))))))),[
+    allocate(10),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_atom(clause,2),
+    put_variable(y(7),3),
+    call(find_symbol_field_clause/4),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_atom(mode,2),
+    put_variable(y(8),3),
+    call(find_symbol_field/4),
+    put_value(y(7),0),
+    put_value(y(8),1),
+    put_variable(y(9),2),
+    call(mutual_exclusive_classes/3),
+    call(nl/0),
+    call(nl/0),
+    put_atom(*********************************************************,0),
+    call(write/1),
+    call(nl/0),
+    put_atom('                         ',0),
+    call(write/1),
+    put_value(y(0),0),
+    call(write/1),
+    put_atom('                           ',0),
+    call(write/1),
+    call(nl/0),
+    put_atom(*********************************************************,0),
+    call(write/1),
+    call(nl/0),
+    call(nl/0),
+    put_atom('* Mutually exclusive classes of clauses for predicate ',0),
+    call(write/1),
+    put_value(y(0),0),
+    call(write/1),
+    put_atom(' :',0),
+    call(write/1),
+    call(nl/0),
+    call(nl/0),
+    put_value(y(9),0),
+    call(write/1),
+    call(nl/0),
+    put_value(y(2),0),
+    put_value(y(0),1),
+    put_atom(mutex,2),
+    put_value(y(9),3),
+    call(insert_symbol_field_mutex/4),
+    put_unsafe_value(y(7),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    put_value(y(6),6),
+    deallocate,
+    execute(dependency_clauses/7)]).
+
+
+predicate(dependency_clauses/7,42,static,private,user,2).
+
+
+clause(:-(dependency_clauses(A,B,C,[],[],[],1),var(A)),[
+    get_nil(3),
+    get_nil(4),
+    get_nil(5),
+    get_integer(1,6),
+    execute(var/1)]).
+
+
+clause(:-(dependency_clauses(A,B,C,'.'(D,E),'.'(F,G),'.'(H,I),J),','(nonvar(A),','(=(A,'.'(K,L)),','(dependency_clause(K,B,C,D,F,H,M),','(dependency_clauses(L,B,C,E,G,I,N),is(J,*(M,N))))))),[
+    allocate(13),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(3),
+    unify_variable(y(3)),
+    unify_variable(y(4)),
+    get_list(4),
+    unify_variable(y(5)),
+    unify_variable(y(6)),
+    get_list(5),
+    unify_variable(y(7)),
+    unify_variable(y(8)),
+    get_variable(y(9),6),
+    put_value(y(0),0),
+    call(nonvar/1),
+    put_value(y(0),0),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(10)),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(5),4),
+    put_value(y(7),5),
+    put_variable(y(11),6),
+    call(dependency_clause/7),
+    put_value(y(10),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(4),3),
+    put_value(y(6),4),
+    put_value(y(8),5),
+    put_variable(y(12),6),
+    call(dependency_clauses/7),
+    put_value(y(9),0),
+    put_structure((*)/2,1),
+    unify_local_value(y(11)),
+    unify_local_value(y(12)),
+    deallocate,
+    execute((is)/2)]).
+
+
+predicate(dependency_clause/7,54,static,private,user,1).
+
+
+clause(:-(dependency_clause(A,B,C,D,E,F,G),','(clause_type(A,H),','(argument_dependency_graph(H,A,B,C,D,F,G),literal_dependency_graph(D,E)))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    put_value(y(0),0),
+    put_variable(y(7),1),
+    call(clause_type/2),
+    put_value(y(7),0),
+    put_value(y(0),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(3),4),
+    put_value(y(5),5),
+    put_value(y(6),6),
+    call(argument_dependency_graph/7),
+    put_value(y(3),0),
+    put_value(y(4),1),
+    deallocate,
+    execute(literal_dependency_graph/2)]).

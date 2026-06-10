@@ -1,0 +1,355 @@
+% compiler: GNU Prolog 1.5.0
+% file    : source/color/gcp.pl
+
+
+file_name('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/tools/caslog/source/color/gcp.pl').
+
+
+predicate(gcp/4,11,static,private,monofile,global,2).
+
+
+clause(gcp(_,_,[],0),[
+    get_nil(2),
+    get_integer(0,3),
+    proceed]).
+
+
+clause(:-(gcp(A,B,C,D),','(\==(C,[]),','(rename_variables_gcp(A,1,E,C,F),','(build_constraint_graph(E,F,G),','(csl_poly(G,H,_,_),evaluate_poly(H,B,D)))))),[
+    allocate(8),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(2),0),
+    put_nil(1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_integer(1,1),
+    put_variable(y(4),2),
+    put_value(y(2),3),
+    put_variable(y(5),4),
+    call((rename_variables_gcp)/5),
+    put_value(y(4),0),
+    put_value(y(5),1),
+    put_variable(y(6),2),
+    call((build_constraint_graph)/3),
+    put_value(y(6),0),
+    put_variable(y(7),1),
+    put_void(2),
+    put_void(3),
+    call((csl_poly)/4),
+    put_unsafe_value(y(7),0),
+    put_value(y(1),1),
+    put_value(y(3),2),
+    deallocate,
+    execute((evaluate_poly)/3)]).
+
+
+predicate(rename_variables_gcp/5,22,static,private,monofile,global,2).
+
+
+clause(rename_variables_gcp([],_,[],A,A),[
+    get_nil(0),
+    get_nil(2),
+    get_value(x(4),3),
+    proceed]).
+
+
+clause(:-(rename_variables_gcp('.'(A,B),C,'.'(C,D),E,F),','(substitute(E,A,C,G),','(is(H,+(C,1)),rename_variables_gcp(B,H,D,G,F)))),[
+    allocate(6),
+    get_variable(y(1),1),
+    get_list(2),
+    unify_local_value(y(1)),
+    unify_variable(y(2)),
+    get_variable(y(3),4),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    put_value(x(3),0),
+    put_value(y(1),2),
+    put_variable(y(4),3),
+    call((substitute)/4),
+    put_variable(y(5),0),
+    put_structure((+)/2,1),
+    unify_local_value(y(1)),
+    unify_integer(1),
+    call((is)/2),
+    put_value(y(0),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(2),2),
+    put_unsafe_value(y(4),3),
+    put_value(y(3),4),
+    deallocate,
+    execute((rename_variables_gcp)/5)]).
+
+
+predicate(build_constraint_graph/3,31,static,private,monofile,global,2).
+
+
+clause(build_constraint_graph([],_,[]),[
+    get_nil(0),
+    get_nil(2),
+    proceed]).
+
+
+clause(:-(build_constraint_graph('.'(A,B),C,'.'(node(A,D,E),F)),','(build_constraint_edges(C,A,D,E),build_constraint_graph(B,C,F))),[
+    allocate(3),
+    get_variable(y(1),1),
+    get_list(0),
+    unify_variable(x(1)),
+    unify_variable(y(0)),
+    get_list(2),
+    unify_variable(x(0)),
+    unify_variable(y(2)),
+    get_structure((node)/3,0),
+    unify_value(x(1)),
+    unify_variable(x(2)),
+    unify_variable(x(3)),
+    put_value(y(1),0),
+    call((build_constraint_edges)/4),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    deallocate,
+    execute((build_constraint_graph)/3)]).
+
+
+predicate(build_constraint_edges/4,39,static,private,monofile,global,1).
+
+
+clause(:-(build_constraint_edges(A,B,C,D),build_constraint_edges(A,B,0,C,[],D)),[
+    get_variable(x(5),3),
+    put_value(x(2),3),
+    put_integer(0,2),
+    put_nil(4),
+    execute((build_constraint_edges)/6)]).
+
+
+predicate(build_constraint_edges/6,42,static,private,monofile,global,2).
+
+
+clause(build_constraint_edges([],_,A,A,B,B),[
+    get_nil(0),
+    get_value(x(5),4),
+    get_value(x(3),2),
+    proceed]).
+
+
+clause(:-(build_constraint_edges('.'(A,B),C,D,E,F,G),','(;(->(list_cas(A),build_constraint_edges(A,C,D,H,F,I)),build_constraint_edge(A,C,D,H,F,I)),build_constraint_edges(B,C,H,E,I,G))),[
+    allocate(6),
+    get_variable(y(1),1),
+    get_variable(y(2),3),
+    get_variable(y(3),5),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    put_variable(y(4),3),
+    put_variable(y(5),5),
+    call(('$build_constraint_edges/6_$aux1')/6),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_unsafe_value(y(4),2),
+    put_value(y(2),3),
+    put_unsafe_value(y(5),4),
+    put_value(y(3),5),
+    deallocate,
+    execute((build_constraint_edges)/6)]).
+
+
+predicate('$build_constraint_edges/6_$aux1'/6,43,static,private,monofile,local,2).
+
+
+clause(:-('$build_constraint_edges/6_$aux1'(A,B,C,D,E,F),','('$get_cut_level'(G),','(list_cas(A),','('$cut'(G),build_constraint_edges(A,B,C,D,E,F))))),[
+    allocate(7),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    get_variable(y(4),4),
+    get_variable(y(5),5),
+    get_variable(y(6),6),
+    put_value(y(0),0),
+    call((list_cas)/1),
+    cut(y(6)),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_value(y(2),2),
+    put_value(y(3),3),
+    put_value(y(4),4),
+    put_value(y(5),5),
+    deallocate,
+    execute((build_constraint_edges)/6)]).
+
+
+clause(:-('$build_constraint_edges/6_$aux1'(A,B,C,D,E,F),build_constraint_edge(A,B,C,D,E,F)),[
+    execute((build_constraint_edge)/6)]).
+
+
+predicate(build_constraint_edge/6,49,static,private,monofile,global,1).
+
+
+clause(:-(build_constraint_edge(A,B,C,D,E,F),;(->(constraint_edge(A,B,G),;(->(member_cas(E,G),','(=(D,C),=(F,E))),','(is(D,+(C,1)),=(F,'.'(G,E))))),','(=(D,C),=(F,E)))),[
+    get_variable(x(6),4),
+    get_variable(x(4),2),
+    put_value(x(6),2),
+    execute(('$build_constraint_edge/6_$aux1')/6)]).
+
+
+predicate('$build_constraint_edge/6_$aux1'/6,49,static,private,monofile,local,2).
+
+
+clause(:-('$build_constraint_edge/6_$aux1'(A,B,C,D,E,F),','('$get_cut_level'(G),','(constraint_edge(A,B,H),','('$cut'(G),;(','('$get_cut_level'(I),','(member_cas(C,H),','('$cut'(I),','(=(D,E),=(F,C))))),','(is(D,+(E,1)),=(F,'.'(H,C)))))))),[
+    allocate(6),
+    get_variable(y(0),2),
+    get_variable(y(1),3),
+    get_variable(y(2),4),
+    get_variable(y(3),5),
+    get_variable(y(4),6),
+    put_variable(y(5),2),
+    call((constraint_edge)/3),
+    cut(y(4)),
+    put_value(y(0),0),
+    put_unsafe_value(y(5),1),
+    put_value(y(1),2),
+    put_value(y(2),3),
+    put_value(y(3),4),
+    deallocate,
+    execute(('$build_constraint_edge/6_$aux2')/5)]).
+
+
+clause(:-('$build_constraint_edge/6_$aux1'(_,_,A,B,C,D),','(=(B,C),=(D,A))),[
+    get_value(x(4),3),
+    get_value(x(2),5),
+    proceed]).
+
+
+predicate('$build_constraint_edge/6_$aux2'/5,49,static,private,monofile,local,2).
+
+
+clause(:-('$build_constraint_edge/6_$aux2'(A,B,C,D,E),','('$get_cut_level'(F),','(member_cas(A,B),','('$cut'(F),','(=(C,D),=(E,A)))))),[
+    allocate(5),
+    get_variable(y(0),0),
+    get_variable(y(1),2),
+    get_variable(y(2),3),
+    get_variable(y(3),4),
+    get_variable(y(4),5),
+    put_value(y(0),0),
+    call((member_cas)/2),
+    cut(y(4)),
+    put_value(y(1),0),
+    get_value(y(2),0),
+    put_value(y(3),0),
+    get_value(y(0),0),
+    deallocate,
+    proceed]).
+
+
+clause(:-('$build_constraint_edge/6_$aux2'(A,B,C,D,E),','(is(C,+(D,1)),=(E,'.'(B,A)))),[
+    allocate(3),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),4),
+    put_structure((+)/2,1),
+    unify_local_value(x(3)),
+    unify_integer(1),
+    put_value(x(2),0),
+    call((is)/2),
+    put_value(y(2),0),
+    get_list(0),
+    unify_local_value(y(1)),
+    unify_local_value(y(0)),
+    deallocate,
+    proceed]).
+
+
+predicate(constraint_edge/3,63,static,private,monofile,global,3).
+
+
+clause(:-(constraint_edge(=\=(A,B),C,B),==(A,C)),[
+    get_structure((=\=)/2,0),
+    unify_variable(x(0)),
+    unify_local_value(x(2)),
+    execute((==)/2)]).
+
+
+clause(:-(constraint_edge(=\=(A,B),C,A),==(B,C)),[
+    get_structure((=\=)/2,0),
+    unify_local_value(x(2)),
+    unify_variable(x(0)),
+    execute((==)/2)]).
+
+
+clause(:-(constraint_edge(=\=(A,B),C,_),','(\==(A,C),','(\==(B,C),fail))),[
+    allocate(2),
+    get_variable(y(1),1),
+    get_structure((=\=)/2,0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    put_value(y(1),1),
+    call((\==)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    call((\==)/2),
+    fail]).
+
+
+predicate(evaluate_poly/3,75,static,private,monofile,global,2).
+
+
+clause(evaluate_poly([],_,1),[
+    get_nil(0),
+    get_integer(1,2),
+    proceed]).
+
+
+clause(:-(evaluate_poly('.'(A,B),C,D),','(=(A,-(k,E)),','(is(F,-(C,E)),','(evaluate_poly(B,C,G),;(->(>(F,0),is(D,*(F,G))),=(D,0)))))),[
+    allocate(5),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_list(0),
+    unify_variable(x(0)),
+    unify_variable(y(0)),
+    get_structure((-)/2,0),
+    unify_atom(k),
+    unify_variable(x(0)),
+    put_structure((-)/2,1),
+    unify_local_value(y(1)),
+    unify_value(x(0)),
+    put_variable(y(3),0),
+    call((is)/2),
+    put_value(y(0),0),
+    put_value(y(1),1),
+    put_variable(y(4),2),
+    call((evaluate_poly)/3),
+    put_unsafe_value(y(3),0),
+    put_value(y(2),1),
+    put_unsafe_value(y(4),2),
+    deallocate,
+    execute(('$evaluate_poly/3_$aux1')/3)]).
+
+
+predicate('$evaluate_poly/3_$aux1'/3,76,static,private,monofile,local,2).
+
+
+clause(:-('$evaluate_poly/3_$aux1'(A,B,C),','('$get_cut_level'(D),','(>(A,0),','('$cut'(D),is(B,*(A,C)))))),[
+    allocate(4),
+    get_variable(y(0),0),
+    get_variable(y(1),1),
+    get_variable(y(2),2),
+    get_variable(y(3),3),
+    put_value(y(0),0),
+    put_integer(0,1),
+    call((>)/2),
+    cut(y(3)),
+    put_value(y(1),0),
+    put_structure((*)/2,1),
+    unify_local_value(y(0)),
+    unify_local_value(y(2)),
+    deallocate,
+    execute((is)/2)]).
+
+
+clause(:-('$evaluate_poly/3_$aux1'(_,A,_),=(A,0)),[
+    get_integer(0,1),
+    proceed]).
