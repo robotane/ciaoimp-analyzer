@@ -38,3 +38,14 @@ entstate(state(Shares, Offers, Next)) :- shares(Shares), offers(Offers), nnegint
     (nnegint(OfferId), atm(Caller), nnegint(Amount), entstate(S1), var(S2),
      balances(B1), var(B2)).
 :- entry goal(R) : var(R).
+
+% No entry for loop_aux_4, the body of accept/7 with the offers as an argument
+% of their own: it stays inf (its aux_cond_5 builds the output cell with the
+% tail left free: "unbound input variable"), so accept/7 stays inf.
+% Inner entry: aux_cond_5 is the step of loop_aux_4 for one offer: the two
+% transfers (balances) and the two get_share (shares), the offers apart.
+:- entry aux_cond_5(Id, OfferId, Active, Amount, Price, Caller, B1, Seller,
+                    Shares, N, Shares2, Offers2, Rest, B2, Offer) :
+    (nnegint(Id), nnegint(OfferId), nnegint(Active), nnegint(Amount),
+     nnegint(Price), atm(Caller), balances(B1), atm(Seller), shares(Shares),
+     nnegint(N), var(Shares2), var(Offers2), var(Rest), var(B2), offer(Offer)).

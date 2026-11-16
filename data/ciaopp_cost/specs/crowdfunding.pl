@@ -1,6 +1,6 @@
 % CiaoPP cost spec of crowdfunding (entries and types as in interreg-imdea,
 % october2026/crowdfunding.pl, against build/executable/crowdfunding.pl).
-% The IMDEA version moves the loops of check_goal_reached/6 into a helper
+% The IMDEA version moves the body of check_goal_reached/6 into a helper
 % with the campaigns as argument; here the clauses are unchanged, so the
 % bounds that depend on the campaigns are inf (a list inside the state).
 
@@ -36,3 +36,9 @@ funder(funder(Who, Amount)) :- atm(Who), int(Amount).
     (nnegint(CampaignId), var(Reached), crowdstate(S1), var(S2),
      balances(B1), var(B2)).
 :- entry goal(R) : var(R).
+
+% No inner entry for check_goal_reached/6: loop_aux_4 (the body, with the
+% campaigns as an argument of their own) stays inf. aux_cond_4 and aux_cond_5
+% build the output cell with its tail left free and share a variable between
+% two arguments ("unbound input variable"), so the analysis gives loop_aux_4
+% trivial bounds; the IMDEA version rewrites those clauses.

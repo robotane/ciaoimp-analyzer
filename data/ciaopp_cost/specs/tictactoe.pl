@@ -25,3 +25,14 @@ gamestate(state(P1, P2, Turn, Winner, Board)) :-
 :- entry play(Pos, Caller, S1, S2, B1, B2) :
     (int(Pos), atm(Caller), gamestate(S1), var(S2), balances(B1), var(B2)).
 :- entry goal(R) : var(R).
+
+% Inner entries (play/6 keeps its bound: the board is inside the state).
+% play/6: aux_cond_1 is its body after the first get_board, with the board as
+% an argument of its own (it calls check_winner on the board, 9 scans).
+:- entry aux_cond_1(Winner, Cell, Pos, Turn, Caller, P1, Board, B1, P2, S1,
+                    B2, S2) :
+    (nnegint(Winner), nnegint(Cell), int(Pos), nnegint(Turn), atm(Caller),
+     atm(P1), cells(Board), balances(B1), atm(P2), gamestate(S1), var(B2),
+     var(S2)).
+% play/6: check_winner/2 alone, 9 get_board over the list of cells.
+:- entry check_winner(Board, Winner) : (cells(Board), var(Winner)).

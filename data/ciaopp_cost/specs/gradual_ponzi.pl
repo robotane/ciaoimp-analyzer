@@ -18,3 +18,9 @@ gradstate(state(Investors)) :- investors(Investors).
 :- entry invest(Caller, Value, S1, S2, B1, B2) :
     (atm(Caller), int(Value), gradstate(S1), var(S2), balances(B1), var(B2)).
 :- entry goal(R) : var(R).
+
+% Inner entry: aux_cond_1 is the body of invest/6 with the investors as an
+% argument of their own (as aux_cond_1 of simple_pyramid).
+:- entry aux_cond_1(Value, Caller, B1, Investors, B2, S2, S1) :
+    (int(Value), atm(Caller), balances(B1), investors(Investors), var(B2),
+     var(S2), gradstate(S1)).

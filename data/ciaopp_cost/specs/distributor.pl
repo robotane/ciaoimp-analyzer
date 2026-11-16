@@ -20,3 +20,10 @@ diststate(state(Owner, Payees)) :- atm(Owner), payees(Payees).
 :- entry distribute(Caller, Amount, S1, S2, B1, B2) :
     (atm(Caller), int(Amount), diststate(S1), var(S2), balances(B1), var(B2)).
 :- entry goal(R) : var(R).
+
+% Inner entry: aux_cond_1 is the body of distribute/6 (one transfer from the
+% caller, then one per payee) with the payees as an argument of their own;
+% Len is length(Payees).
+:- entry aux_cond_1(Len, Caller, Amount, B1, Payees, B2) :
+    (nnegint(Len), atm(Caller), int(Amount), balances(B1), payees(Payees),
+     var(B2)).

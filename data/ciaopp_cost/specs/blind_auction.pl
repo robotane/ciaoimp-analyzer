@@ -34,3 +34,15 @@ blindstate(state(Bene, BEnd, REnd, HBidder, HBid, Bids)) :-
 :- entry auction_end(Now, S1, S2, B1, B2) :
     (nnegint(Now), blindstate(S1), var(S2), balances(B1), var(B2)).
 :- entry goal(R) : var(R).
+
+% Inner entry (the operations above keep their bound).
+% reveal/9 stays inf: its loop_aux_3 scans Bids with an output list used as
+% input (unbound input variable), so aux_cond_2 and loop_aux_3 are inf too
+% (gas 0 but inf). aux_cond_3 is what runs after the scan: the transfers of
+% reveal/9, with the balances as an argument of their own.
+:- entry aux_cond_3(Count, Hash1, Hash2, Fake, Amount, Value, HBid, HBidder,
+                    B1, Caller, S2, Bene, BEnd, REnd, Rest, B2, S1) :
+    (nnegint(Count), atm(Hash1), atm(Hash2), nnegint(Fake), nnegint(Amount),
+     nnegint(Value), nnegint(HBid), atm(HBidder), balances(B1), atm(Caller),
+     var(S2), atm(Bene), nnegint(BEnd), nnegint(REnd), bids(Rest), var(B2),
+     blindstate(S1)).

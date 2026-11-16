@@ -41,3 +41,16 @@ names([X|T]) :- atm(X), names(T).
     (int(Proposal), atm(Caller), ballotstate(S1), var(S2)).
 :- entry winner(W, S) : (var(W), ballotstate(S)).
 :- entry goal(R) : var(R).
+
+% Inner entry (the operations above keep their bound: the papers and
+% proposals are inside the state).
+% vote/4: aux_disj_11 is its body after get_paper, with the proposals and the
+% papers as arguments of their own; only get_paper costs, so it is 0.
+:- entry aux_disj_11(Proposal, Caller, S1, S2, Chair, Props, Papers, Paper) :
+    (int(Proposal), atm(Caller), ballotstate(S1), var(S2), atm(Chair),
+     proposals(Props), papers(Papers), paper(Paper)).
+% Tried without a finite bound (entries removed): aux_disj_8 (give_right/4,
+% papers as an argument), aux_disj_1 (delegate/4, find_final_delegate has no
+% bound on the length of a delegation chain) and best_proposal/4 (winner/2,
+% clauses 2 and 3 are not mutually exclusive for the analysis, and the
+% recursion in both gives inf).

@@ -23,3 +23,19 @@ sharkstate(state(Name, Symbol, Owners, Bals, Apprs, Ops)) :-
 :- entry transferFrom(From, To, TokenId, Caller, S1, S2) :
     (atm(From), atm(To), nnegint(TokenId), atm(Caller), sharkstate(S1), var(S2)).
 :- entry goal(R) : var(R).
+
+% Inner entries (the operations above keep their bound: the tables sit
+% inside the state).
+% mint/4: aux_cond_1 exposes the table of NFT balances (get_nft_bal).
+:- entry aux_cond_1(Owner, TokenId, To, Owners, Bals, S2, Name, Symbol, Apprs,
+                    Ops, S1) :
+    (atm(Owner), nnegint(TokenId), atm(To), nft_owners(Owners),
+     nft_balances(Bals), var(S2), atm(Name), atm(Symbol),
+     nft_approvals(Apprs), nft_operators(Ops), sharkstate(S1)).
+% transferFrom/6: aux_cond_3 exposes the approvals (get_appr), the operators
+% (get_op_appr) and, through aux_cond_4, the NFT balances.
+:- entry aux_cond_3(Owner, From, TokenId, Apprs, Caller, Ops, Bals, To, Owners,
+                    S2, Name, Symbol, S1) :
+    (atm(Owner), atm(From), nnegint(TokenId), nft_approvals(Apprs),
+     atm(Caller), nft_operators(Ops), nft_balances(Bals), atm(To),
+     nft_owners(Owners), var(S2), atm(Name), atm(Symbol), sharkstate(S1)).

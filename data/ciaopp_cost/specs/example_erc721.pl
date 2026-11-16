@@ -17,3 +17,17 @@ nftstate(state(Name, Symbol, Owners, Bals)) :-
 :- entry transferFrom(From, To, TokenId, Caller, S1, S2) :
     (atm(From), atm(To), nnegint(TokenId), atm(Caller), nftstate(S1), var(S2)).
 :- entry goal(R) : var(R).
+
+% Inner entries (the operations above keep their bound: the tables are
+% inside the state).
+% mint/4: aux_cond_1 exposes the table of balances (get_nft_bal).
+:- entry aux_cond_1(Owner, TokenId, To, Owners, Bals, S2, Name, Symbol, S1) :
+    (atm(Owner), nnegint(TokenId), atm(To), nft_owners(Owners),
+     nft_balances(Bals), var(S2), atm(Name), atm(Symbol), nftstate(S1)).
+% transferFrom/6: aux_cond_2 exposes the table of balances (Owner = From =
+% Caller).
+:- entry aux_cond_2(Owner, From, Caller, Bals, To, TokenId, Owners, S2, Name,
+                    Symbol, S1) :
+    (atm(Owner), atm(From), atm(Caller), nft_balances(Bals), atm(To),
+     nnegint(TokenId), nft_owners(Owners), var(S2), atm(Name), atm(Symbol),
+     nftstate(S1)).
