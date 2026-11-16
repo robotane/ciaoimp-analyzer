@@ -1,6 +1,6 @@
 % CiaoPP cost spec of tictactoe (build/executable/tictactoe.pl). Besides the
-% balance primitives, get_board/3 reads the board: one gas per cell scanned
-% (its loop does not stop at the first match), as get_bal/3.
+% balance primitives, get_board/3 (blockchain.pl) reads the board; its cost,
+% one gas per cell scanned, is in gas_model.pl.
 
 :- module(_, [init/7, play/6, goal/1],
           [assertions, nativeprops, regtypes, resdefs, .(gas_model)]).
@@ -15,8 +15,6 @@ cells([cell(P, Pl)|T]) :- nnegint(P), nnegint(Pl), cells(T).
 gamestate(state(P1, P2, Turn, Winner, Board)) :-
     atm(P1), atm(P2), nnegint(Turn), nnegint(Winner), cells(Board).
 
-:- trust pred get_board(Pos, Board, Cell)
-   + ( not_fails, is_det, cost(lb, gas, length(Board)), cost(ub, gas, length(Board)) ).
 
 :- entry init(P1, P2, Bet, S0, S, B1, B2) :
     (atm(P1), atm(P2), nnegint(Bet), var(S0), var(S), balances(B1), var(B2)).

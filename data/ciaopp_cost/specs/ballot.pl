@@ -1,8 +1,8 @@
 % CiaoPP cost spec of ballot (build/executable/ballot.pl). The contract has
 % no balances: the data are the table of papers (voters) and the list of
-% proposals. Cost model, as for the other lists: one gas per paper scanned by
-% get_paper/3 (a full scan); set_paper/4 and the rest are free (set_paper/4
-% is analyzed from its clauses, which cost 0).
+% proposals. get_paper/3 is a primitive of
+% blockchain.pl, its cost (one gas per paper) is in gas_model.pl; set_paper/4
+% and the rest are free (set_paper/4 is analyzed from its clauses).
 
 :- module(_, [init/3, give_right/4, delegate/4, vote/4, winner/2, goal/1],
           [assertions, nativeprops, regtypes, resdefs, .(gas_model)]).
@@ -28,10 +28,6 @@ ballotstate(state(Chair, Props, Papers)) :- atm(Chair), proposals(Props), papers
 :- regtype names/1.
 names([]).
 names([X|T]) :- atm(X), names(T).
-
-% get_paper/3 always scans the whole table.
-:- trust pred get_paper(Voter, Papers, Paper)
-   + ( not_fails, is_det, cost(lb, gas, length(Papers)), cost(ub, gas, length(Papers)) ).
 
 :- entry init(Names, Chair, S) : (names(Names), atm(Chair), var(S)).
 :- entry give_right(Voter, Caller, S1, S2) :

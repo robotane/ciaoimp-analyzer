@@ -7,7 +7,8 @@
 % Layout as in ciaopp_cost/examples/resources_blockchain (michelson_preds.pl
 % for the primitives, the package carthage.pl for the cost model).
 
-:- module(blockchain, [get_bal/3, set_bal/4, transfer/5, get_tok_bal/3, get_allow/4, get_owner/3, get_nft_bal/3, get_appr/3, get_op_appr/4], []).
+:- module(blockchain, [get_bal/3, set_bal/4, transfer/5, get_tok_bal/3, get_allow/4, get_owner/3, get_nft_bal/3, get_appr/3, get_op_appr/4,
+                       get_paper/3, get_share/3, get_board/3], []).
 
 % Coins. get_bal(Addr, B, Bal): Bal is the amount of the last
 % bal(Addr, _) of B, or 0.
@@ -116,3 +117,41 @@ get_op_appr_loop([op(A, B, C)|D], E, F, G, H) :-
 get_op_appr_cond(A, A, B, B, 0, C, C) :-
     !.
 get_op_appr_cond(_, _, _, _, A, A, _).
+% Contract state tables (one unit of gas per entry scanned, like the
+% primitives above).
+
+% get_paper(Voter, Papers, Paper): the first paper(Voter, _, _, _, _), or 0
+% (ballot).
+get_paper(A, B, C) :-
+    get_paper_loop(B, A, 0, C).
+get_paper_loop([], _, A, A).
+get_paper_loop([paper(A, B, C, D, E)|F], G, H, I) :-
+    get_paper_cond(A, G, J, B, C, D, E, H),
+    get_paper_loop(F, G, J, I).
+get_paper_cond(A, A, paper(A, B, C, D, E), B, C, D, E, _) :-
+    !.
+get_paper_cond(_, _, A, _, _, _, _, A).
+
+% get_share(Addr, Shares, N): shares of the first sh(Addr, _), or 0
+% (shared_entity, simple_shared_entity).
+get_share(A, B, C) :-
+    get_share_loop(B, A, 0, C).
+get_share_loop([], _, A, A).
+get_share_loop([sh(A, B)|C], D, E, F) :-
+    get_share_cond(D, A, E, G, B),
+    get_share_loop(C, D, G, F).
+get_share_cond(A, A, 0, B, B) :-
+    !.
+get_share_cond(_, _, A, A, _).
+
+% get_board(Pos, Board, Cell): content of the first cell(Pos, _), or 0
+% (tictactoe).
+get_board(A, B, C) :-
+    get_board_loop(B, A, 0, C).
+get_board_loop([], _, A, A).
+get_board_loop([cell(A, B)|C], D, E, F) :-
+    get_board_cond(A, D, E, G, B),
+    get_board_loop(C, D, G, F).
+get_board_cond(A, A, 0, B, B) :-
+    !.
+get_board_cond(_, _, A, A, _).

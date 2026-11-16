@@ -24,10 +24,7 @@ offer(offer(Id, Seller, Price, N, Active)) :-
 :- regtype entstate/1.
 entstate(state(Shares, Offers, Next)) :- shares(Shares), offers(Offers), nnegint(Next).
 
-% get_share/3 reads one entry per element of the share table (its loop does
-% not stop at the first match): cost length(Shares), as get_bal/3.
-:- trust pred get_share(Addr, Shares, N)
-   + ( not_fails, is_det, cost(lb, gas, length(Shares)), cost(ub, gas, length(Shares)) ).
+% get_share/3: primitive of blockchain.pl, cost in gas_model.pl.
 
 :- entry init(Shares, S0, S) : (shares(Shares), var(S0), var(S)).
 % inf upper bound of the operations that scan the offers: the offer list is

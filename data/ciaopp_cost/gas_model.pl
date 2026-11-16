@@ -122,3 +122,20 @@ nft_operator(op(A, B, C)) :- atm(A), atm(B), gnd(C).
 
 :- trust pred get_op_appr(Owner, Operator, OP, Flag)
    + ( not_fails, is_det, cost(lb, gas, length(OP)), cost(ub, gas, length(OP)) ).
+
+% A paper of ballot, or 0 when the voter has none.
+:- regtype paper_or_none/1.
+paper_or_none(0).
+paper_or_none(paper(A, B, C, D, E)) :- gnd(A), gnd(B), gnd(C), gnd(D), gnd(E).
+
+% Contract state tables: every scan of a table of the state costs one unit
+% per entry, like the coin and token primitives.
+:- trust pred get_paper(Voter, Papers, Paper)
+   => ( paper_or_none(Paper), size(ub, Paper, size(Papers)) )
+   + ( not_fails, is_det, cost(lb, gas, length(Papers)), cost(ub, gas, length(Papers)) ).
+
+:- trust pred get_share(Addr, Shares, N)
+   + ( not_fails, is_det, cost(lb, gas, length(Shares)), cost(ub, gas, length(Shares)) ).
+
+:- trust pred get_board(Pos, Board, Cell)
+   + ( not_fails, is_det, cost(lb, gas, length(Board)), cost(ub, gas, length(Board)) ).
