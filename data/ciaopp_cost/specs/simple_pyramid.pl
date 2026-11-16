@@ -21,3 +21,10 @@ pyrstate(state(Investors, Prev)) :- investors(Investors), nnegint(Prev).
 :- entry invest(Caller, Amount, S1, S2, B1, B2) :
     (atm(Caller), nnegint(Amount), pyrstate(S1), var(S2), balances(B1), var(B2)).
 :- entry goal(R) : var(R).
+
+% Inner entry (as in interreg-imdea): aux_cond_1/8 is the body of invest/6
+% with the investors as an argument of its own, so its bound is finite in
+% length(Investors).
+:- entry aux_cond_1(Amount, Threshold, Caller, B1, Investors, B2, S2, S1) :
+    ( nnegint(Amount), nnegint(Threshold), atm(Caller), balances(B1),
+      investors(Investors), var(B2), var(S2), pyrstate(S1) ).
