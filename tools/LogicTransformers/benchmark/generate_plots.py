@@ -41,17 +41,20 @@ MARKERS = {"vm": "o", "pc": "s", "ciao": "D", "caslog": "^"}
 LINESTYLES = {"vm": "-", "pc": "-", "ciao": "-", "caslog": "--"}
 
 plt.rcParams.update({
-    "font.family":     "serif",
-    "font.size":       9,
-    "axes.titlesize":  9,
-    "axes.labelsize":  8,
-    "legend.fontsize": 7,
-    "xtick.labelsize": 7,
-    "ytick.labelsize": 7,
-    "figure.dpi":      150,
-    "axes.grid":       True,
-    "grid.alpha":      0.3,
-    "grid.linestyle":  ":",
+    "font.family":          "serif",
+    "font.size":            12,
+    "axes.titlesize":       12,
+    "axes.labelsize":       11,
+    "legend.fontsize":      12,
+    "legend.title_fontsize":12,
+    "legend.handlelength":  2.2,
+    "legend.handleheight":  1.5,
+    "xtick.labelsize":      12,
+    "ytick.labelsize":      12,
+    "figure.dpi":           150,
+    "axes.grid":            True,
+    "grid.alpha":           0.3,
+    "grid.linestyle":       ":",
 })
 
 # ── Chargement des données ────────────────────────────────────────────────────
@@ -90,7 +93,7 @@ def fig_complexity_distribution():
         wedgeprops={"edgecolor": "white", "linewidth": 1.2},
     )
     for at in autotexts:
-        at.set_fontsize(9)
+        at.set_fontsize(12)
     ax.set_title("Répartition par classe CasLog\n(prédicats uniques)", pad=8)
 
     # Barre — par contrat
@@ -139,11 +142,11 @@ def fig_r2_heatmap():
         im = ax.imshow(vals, cmap="RdYlGn", vmin=0, vmax=1, aspect="auto")
         ax.set_xticks([])
         ax.set_yticks(range(n))
-        ax.set_yticklabels(sub.index, fontsize=7)
+        ax.set_yticklabels(sub.index, fontsize=10)
         for i, v in enumerate(sub["r2"].values):
             color = "black" if 0.3 < v < 0.85 else "white"
             ax.text(0, i, f"{v:.2f}", ha="center", va="center",
-                    fontsize=7.5, color=color, fontweight="bold")
+                    fontsize=10, color=color, fontweight="bold")
         fig.colorbar(im, ax=ax, label="R²", fraction=0.08, pad=0.04)
         ax.set_title(f"R² — {backend_name}\n(prédicats non O(1))", pad=6)
         fig.tight_layout(pad=1.2)
@@ -174,15 +177,15 @@ def fig_r2_heatmap_combined():
     fig, ax = plt.subplots(figsize=(5.5, max(5, n * 0.38)))
     im = ax.imshow(data, cmap="RdYlGn", vmin=0, vmax=1, aspect="auto")
     ax.set_xticks([0, 1, 2])
-    ax.set_xticklabels(["LogicTransformers", "Prolog Cafe", "Ciao / CiaoPP"], fontsize=8)
+    ax.set_xticklabels(["LogicTransformers", "Prolog Cafe", "Ciao / CiaoPP"], fontsize=10)
     ax.set_yticks(range(n))
-    ax.set_yticklabels(labels, fontsize=7)
+    ax.set_yticklabels(labels, fontsize=10)
     for i in range(n):
         for j, v in enumerate(data[i]):
             if not np.isnan(v):
                 color = "black" if 0.3 < v < 0.85 else "white"
                 ax.text(j, i, f"{v:.2f}", ha="center", va="center",
-                        fontsize=7, color=color, fontweight="bold")
+                        fontsize=10, color=color, fontweight="bold")
     fig.colorbar(im, ax=ax, label="R²", fraction=0.05, pad=0.04)
     ax.set_title("Coefficient R² par prédicat et par backend\n(prédicats non O(1))", pad=8)
     fig.tight_layout(pad=1.2)
@@ -300,16 +303,16 @@ def _normalize(series):
         return s
     return s / m
 
-def _plot_one_curve(ax, sub, title, *, title_size=6.7, label_size=6.5,
-                    tick_size=6, line_width=1.0, marker_size=2.7,
-                    ylabel="Norm."):
+def _plot_one_curve(ax, sub, title, *, title_size=12, label_size=12,
+                    tick_size=12, line_width=1.35, marker_size=3.8,
+                    ylabel="Norm.", title_weight="normal"):
     """Trace vm / pc / ciao / caslog normalisés sur un axe."""
     ns = sub["n"].values.astype(float)
     for key, col, label in [
-        ("vm",     "vm_ms",       "LT"),
-        ("pc",     "pc_ms",       "PC"),
-        ("ciao",   "ciao_ms",     "Ciao"),
-        ("caslog", "caslog_value","CasLog"),
+        ("vm",     "vm_ms",        "LogicTransformers"),
+        ("pc",     "pc_ms",        "Prolog Cafe"),
+        ("ciao",   "ciao_ms",      "Ciao / CiaoPP"),
+        ("caslog", "caslog_value", "CasLog bound"),
     ]:
         if col not in sub.columns:
             continue
@@ -319,7 +322,7 @@ def _plot_one_curve(ax, sub, title, *, title_size=6.7, label_size=6.5,
                 color=COLORS[key], marker=MARKERS[key],
                 linestyle=LINESTYLES[key],
                 linewidth=line_width, markersize=marker_size, label=label)
-    ax.set_title(title, fontsize=title_size, pad=3)
+    ax.set_title(title, fontsize=title_size, fontweight=title_weight, pad=4)
     ax.set_ylim(-0.05, 1.15)
     ax.set_xlabel("N", fontsize=label_size, labelpad=1)
     ax.set_ylabel(ylabel, fontsize=label_size, labelpad=1)
@@ -330,10 +333,10 @@ def _plot_one_curve(ax, sub, title, *, title_size=6.7, label_size=6.5,
 
 def _presentation_handles():
     return [
-        plt.Line2D([0], [0], color=COLORS["vm"], marker=MARKERS["vm"], linestyle="-", label="LogicTransformers"),
-        plt.Line2D([0], [0], color=COLORS["pc"], marker=MARKERS["pc"], linestyle="-", label="Prolog Cafe"),
-        plt.Line2D([0], [0], color=COLORS["ciao"], marker=MARKERS["ciao"], linestyle="-", label="Ciao / CiaoPP"),
-        plt.Line2D([0], [0], color=COLORS["caslog"], marker=MARKERS["caslog"], linestyle="--", label="CasLog bound"),
+        plt.Line2D([0], [0], color=COLORS["vm"],     marker=MARKERS["vm"],     linestyle="-",  linewidth=2.2, markersize=8, label="LogicTransformers"),
+        plt.Line2D([0], [0], color=COLORS["pc"],     marker=MARKERS["pc"],     linestyle="-",  linewidth=2.2, markersize=8, label="Prolog Cafe"),
+        plt.Line2D([0], [0], color=COLORS["ciao"],   marker=MARKERS["ciao"],   linestyle="-",  linewidth=2.2, markersize=8, label="Ciao / CiaoPP"),
+        plt.Line2D([0], [0], color=COLORS["caslog"], marker=MARKERS["caslog"], linestyle="--", linewidth=2.2, markersize=8, label="CasLog bound"),
     ]
 
 
@@ -367,25 +370,28 @@ def fig_presentation_selected_curves():
         title = f"{contract.replace('_', ' ')} · {predicate}"
         _plot_one_curve(
             ax, sub, title,
-            title_size=10,
-            label_size=8.5,
-            tick_size=7.5,
+            title_size=14,
+            label_size=12,
+            tick_size=12,
             line_width=1.5,
             marker_size=4.0,
-            ylabel="normalised"
+            ylabel="normalised",
+            title_weight="bold",
         )
 
     fig.legend(
         handles=_presentation_handles(),
         loc="lower center",
-        ncol=4,
-        fontsize=9,
+        ncol=2,
+        fontsize=12,
         framealpha=0.95,
-        bbox_to_anchor=(0.5, 0.005),
-        handlelength=2.0,
-        columnspacing=1.4,
+        bbox_to_anchor=(0.5, 0.0),
+        handlelength=2.4,
+        handleheight=1.5,
+        columnspacing=2.0,
+        borderpad=0.6,
     )
-    fig.subplots_adjust(left=0.07, right=0.99, top=0.98, bottom=0.11, hspace=0.42, wspace=0.22)
+    fig.subplots_adjust(left=0.07, right=0.99, top=0.97, bottom=0.20, hspace=0.54, wspace=0.24)
 
     pdf_path = os.path.join(PRESENTATION_OUT_DIR, "fig_presentation_selected_curves.pdf")
     png_path = os.path.join(PRESENTATION_OUT_DIR, "fig_presentation_selected_curves.png")
@@ -420,25 +426,28 @@ def fig_presentation_validation_curves():
         title = f"{contract.replace('_', ' ')} · {predicate}"
         _plot_one_curve(
             ax, sub, title,
-            title_size=10,
-            label_size=8.5,
-            tick_size=7.5,
+            title_size=14,
+            label_size=12,
+            tick_size=12,
             line_width=1.5,
             marker_size=4.0,
-            ylabel="normalised"
+            ylabel="normalised",
+            title_weight="bold",
         )
 
     fig.legend(
         handles=_presentation_handles(),
         loc="lower center",
         ncol=2,
-        fontsize=8,
+        fontsize=12,
         framealpha=0.95,
-        bbox_to_anchor=(0.5, 0.005),
-        handlelength=1.8,
-        columnspacing=1.0,
+        bbox_to_anchor=(0.5, 0.0),
+        handlelength=2.4,
+        handleheight=1.5,
+        columnspacing=2.0,
+        borderpad=0.6,
     )
-    fig.subplots_adjust(left=0.14, right=0.99, top=0.98, bottom=0.16, hspace=0.42)
+    fig.subplots_adjust(left=0.15, right=0.99, top=0.96, bottom=0.23, hspace=0.56)
 
     pdf_path = os.path.join(PRESENTATION_OUT_DIR, "fig_presentation_validation_curves.pdf")
     png_path = os.path.join(PRESENTATION_OUT_DIR, "fig_presentation_validation_curves.png")
@@ -478,19 +487,19 @@ def _render_grid(entries, out_filename, is_anomaly=False):
     if not entries:
         return None
 
-    ncols = 3
+    ncols = 2
     n_plots = len(entries)
     nrows = (n_plots + ncols - 1) // ncols
 
-    fig = plt.figure(figsize=(ncols * 5.0, nrows * 3.2 + 0.7))
-    gs  = gridspec.GridSpec(nrows, ncols, figure=fig, hspace=0.55, wspace=0.28)
+    fig = plt.figure(figsize=(6.8, nrows * 2.65 + 0.65))
+    gs  = gridspec.GridSpec(nrows, ncols, figure=fig, hspace=0.58, wspace=0.30)
 
     for idx, ((contract, predicate), sub, _min_r2) in enumerate(entries):
         r, c = idx // ncols, idx % ncols
         ax = fig.add_subplot(gs[r, c])
         _plot_one_curve(ax, sub.sort_values("n"), "")
         r2_str = f"  [R²={_min_r2:.3f}]" if pd.notna(_min_r2) else ""
-        ax.set_title(f"{contract} · {predicate}{r2_str}", fontsize=8, pad=3)
+        ax.set_title(f"{contract} · {predicate}{r2_str}", fontsize=10.5, pad=3)
         if is_anomaly:
             for spine in ax.spines.values():
                 spine.set_edgecolor("#d62728")
@@ -500,29 +509,35 @@ def _render_grid(entries, out_filename, is_anomaly=False):
         fig.add_subplot(gs[idx // ncols, idx % ncols]).set_visible(False)
 
     handles = [
-        plt.Line2D([0], [0], color=COLORS["vm"],     marker=MARKERS["vm"],     linestyle="-",  label="LogicTransformers"),
-        plt.Line2D([0], [0], color=COLORS["pc"],     marker=MARKERS["pc"],     linestyle="-",  label="Prolog Cafe"),
-        plt.Line2D([0], [0], color=COLORS["ciao"],   marker=MARKERS["ciao"],   linestyle="-",  label="Ciao / CiaoPP"),
-        plt.Line2D([0], [0], color=COLORS["caslog"], marker=MARKERS["caslog"], linestyle="--", label="CasLog (borne)"),
+        plt.Line2D([0], [0], color=COLORS["vm"],     marker=MARKERS["vm"],     linestyle="-",  linewidth=2.0, markersize=7, label="LogicTransformers"),
+        plt.Line2D([0], [0], color=COLORS["pc"],     marker=MARKERS["pc"],     linestyle="-",  linewidth=2.0, markersize=7, label="Prolog Cafe"),
+        plt.Line2D([0], [0], color=COLORS["ciao"],   marker=MARKERS["ciao"],   linestyle="-",  linewidth=2.0, markersize=7, label="Ciao / CiaoPP"),
+        plt.Line2D([0], [0], color=COLORS["caslog"], marker=MARKERS["caslog"], linestyle="--", linewidth=2.0, markersize=7, label="CasLog bound"),
     ]
     fig.legend(handles=handles, loc="lower center", ncol=4,
-               fontsize=8, framealpha=0.9, bbox_to_anchor=(0.5, 0.002),
-               borderaxespad=0.2, handlelength=1.8, columnspacing=1.4)
+               fontsize=12, framealpha=0.9, bbox_to_anchor=(0.5, 0.012),
+               borderaxespad=0.2, handlelength=2.2, columnspacing=1.8)
 
-    fig.subplots_adjust(left=0.06, right=0.995, top=0.99, bottom=0.05)
+    bottom = 0.20 if nrows <= 2 else 0.12
+    fig.subplots_adjust(left=0.08, right=0.99, top=0.985, bottom=bottom)
     path = os.path.join(OUT_DIR, out_filename)
     fig.savefig(path, bbox_inches="tight", pad_inches=0.04)
     plt.close(fig)
     return path
 
 
+def _chunks(items, size):
+    for start in range(0, len(items), size):
+        yield items[start:start + size]
+
+
 def fig_grid_all():
-    """Génère trois PDF distincts : deux moitiés de courbes alignées + anomalies.
+    """Génère des PDF de grilles lisibles pour l'annexe.
 
     Critère : min des R² backends (LogicTransformers, Prolog Cafe, Ciao)
     >= R2_ALIGNED_THRESHOLD => alignée, sinon anomalie.
-    Les courbes alignées sont réparties en deux figures (part1, part2) pour
-    que chaque page reste lisible. Les anomalies ont un cadre rouge.
+    Les courbes alignées sont réparties par blocs de six, avec deux colonnes,
+    pour éviter que LaTeX réduise trop les textes.
     """
     import shutil
     scores = _compute_alignment_scores()
@@ -540,19 +555,18 @@ def fig_grid_all():
     aligned.sort(key=lambda x: -x[2] if pd.notna(x[2]) else 0)
     anomalies.sort(key=lambda x: (x[2] if pd.notna(x[2]) else -1))
 
-    # Diviser les alignées en deux moitiés égales
-    mid = (len(aligned) + 1) // 2
-    part1, part2 = aligned[:mid], aligned[mid:]
-
-    p1 = _render_grid(part1, "fig_grid_aligned_curves_1.pdf")
-    p2 = _render_grid(part2, "fig_grid_aligned_curves_2.pdf")
+    parts = list(_chunks(aligned, 6))
+    paths = [
+        _render_grid(part, f"fig_grid_aligned_curves_{idx}.pdf")
+        for idx, part in enumerate(parts, start=1)
+    ]
     p3 = _render_grid(anomalies, "fig_grid_anomalies_curves.pdf", is_anomaly=True)
 
-    if p1:
-        shutil.copy(p1, os.path.join(OUT_DIR, "fig_grid_aligned_curves.pdf"))
-        print(f"  ✓ {p1}  ({len(part1)} courbes)")
-    if p2:
-        print(f"  ✓ {p2}  ({len(part2)} courbes)")
+    if paths and paths[0]:
+        shutil.copy(paths[0], os.path.join(OUT_DIR, "fig_grid_aligned_curves.pdf"))
+    for idx, (path, part) in enumerate(zip(paths, parts), start=1):
+        if path:
+            print(f"  ✓ {path}  ({len(part)} courbes, partie {idx}/{len(parts)})")
     if p3:
         print(f"  ✓ {p3}  ({len(anomalies)} anomalies — cadre rouge)")
     else:
@@ -564,6 +578,11 @@ def fig_grid_all():
     legacy = os.path.join(OUT_DIR, "fig_grid_all_curves.pdf")
     if os.path.exists(legacy):
         os.remove(legacy)
+
+    for idx in range(len(parts) + 1, 10):
+        stale = os.path.join(OUT_DIR, f"fig_grid_aligned_curves_{idx}.pdf")
+        if os.path.exists(stale):
+            os.remove(stale)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -579,7 +598,7 @@ def fig_individual_curves():
         fig, ax = plt.subplots(figsize=(4.0, 2.8))
         title = f"{contract} — {predicate}"
         _plot_one_curve(ax, sub, title)
-        ax.legend(framealpha=0.8, fontsize=7)
+        ax.legend(framealpha=0.9, fontsize=12, handlelength=2.2)
 
         # Nom de fichier : contract_predicate (slash → _)
         fname = f"{contract}_{predicate.replace('/', '_').replace(' ', '')}.pdf"
@@ -616,11 +635,11 @@ def fig_r2_bars():
 
     ax.axvline(0.95, color="gray", linestyle="--", linewidth=0.9, alpha=0.7, label="R²=0,95")
     ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize=7)
+    ax.set_yticklabels(labels, fontsize=10)
     ax.set_xlabel("R²")
     ax.set_xlim(0, 1.08)
     ax.set_title("Coefficient R² par prédicat (prédicats non O(1))", pad=8)
-    ax.legend(framealpha=0.8, fontsize=8)
+    ax.legend(framealpha=0.8, fontsize=10)
     fig.tight_layout(pad=1.2)
     path = os.path.join(OUT_DIR, "fig_r2_bars.pdf")
     fig.savefig(path, bbox_inches="tight")

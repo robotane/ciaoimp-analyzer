@@ -64,14 +64,14 @@ contribute(Caller, Amount, CampaignId, !S, !B) :-
 check_goal_reached(CampaignId, Reached, !S, !B) :-
     state(Campaigns) = S,
     NewCampaigns := [],
-    Reached := 0,
+    R := 0,
     for (C in list(Campaigns)) {
         C = campaign(Id, Ben, Goal, CurrentAmt, Funders),
         if (Id == CampaignId) {
             if (CurrentAmt >= Goal) {
                 transfer(this, Ben, CurrentAmt, !B),
                 NewCampaigns := [campaign(Id, Ben, Goal, 0, Funders) | NewCampaigns],
-                Reached := 1
+                R := 1
             } else {
                 NewCampaigns := [C | NewCampaigns]
             }
@@ -79,7 +79,8 @@ check_goal_reached(CampaignId, Reached, !S, !B) :-
             NewCampaigns := [C | NewCampaigns]
         }
     },
-    S := state(NewCampaigns).
+    S := state(NewCampaigns),
+    Reached = R.
 
 % --- Test ---
 % Scenario : bene cree une campagne (objectif=300).

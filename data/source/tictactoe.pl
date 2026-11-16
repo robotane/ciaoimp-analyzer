@@ -36,7 +36,7 @@ transfer(From, To, Amount, !B) :-
 
 % --- Helpers ---
 
-get_board(Idx, Board, Res) :-
+get_board(Idx, Board) := Res :-
     Res := 0,
     for (Entry in list(Board)) {
         Entry = cell(I, V),

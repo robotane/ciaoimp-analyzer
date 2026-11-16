@@ -6,7 +6,7 @@
 
 % --- Helpers ---
 
-get_tok_bal(Addr, TB, Bal) :-
+get_tok_bal(Addr, TB) := Bal :-
     Bal := 0,
     for (Entry in list(TB)) {
         Entry = tb(A, Amt),

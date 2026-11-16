@@ -6,28 +6,28 @@
 
 % --- Helpers ---
 
-get_owner(Id, TO, Owner) :-
+get_owner(Id, TO) := Owner :-
     Owner := 'null',
     for (Entry in list(TO)) {
         Entry = t_o(I, O),
         if (I == Id, Owner == 'null') { Owner := O }
     }.
 
-get_nft_bal(Addr, NB, Bal) :-
+get_nft_bal(Addr, NB) := Bal :-
     Bal := 0,
     for (Entry in list(NB)) {
         Entry = n_b(A, Amt),
         if (A == Addr, Bal == 0) { Bal := Amt }
     }.
 
-get_appr(Id, App, Spender) :-
+get_appr(Id, App) := Spender :-
     Spender := 'null',
     for (Entry in list(App)) {
         Entry = app(I, S),
         if (I == Id, Spender == 'null') { Spender := S }
     }.
 
-get_op_appr(Owner, Operator, Op, Approved) :-
+get_op_appr(Owner, Operator, Op) := Approved :-
     Approved := 0,
     for (Entry in list(Op)) {
         Entry = op(O, OpAddr, V),

@@ -14,6 +14,14 @@ from .normalize import (
 from .parser import split_clause
 
 
+class _OutputReassigned(Exception):
+    """A defaulted output variable is assigned again after being written."""
+
+    def __init__(self, var: str):
+        super().__init__(var)
+        self.var = var
+
+
 class Transformer:
     """Transforms one clause at a time. Collects helper predicates in self.helpers."""
 
@@ -34,7 +42,7 @@ class Transformer:
         state_vars = self._state_vars(body)
         body = self._expand_loops(body, head_vars)
         state_vars |= self._state_vars(body)
-        body, _ = self._ssa_pass(body, state_vars, defaults)
+        body = self._ssa_with_reassigned_outputs(body, state_vars, defaults)
 
         leftover = [(iv, ov) for iv, ov in defaults.items() if ov is not None]
         if leftover:
@@ -45,6 +53,34 @@ class Transformer:
         body = flatten_conj(body)
         body = self._cleanup(body)
         return f"{head} :-\n    {body}."
+
+    def _ssa_with_reassigned_outputs(self, body: str, state_vars: set[str],
+                                     defaults: dict) -> str:
+        """Run the SSA pass, versioning outputs that are assigned in sequence.
+
+        A defaulted variable (``Out = In`` in the head) is normally written
+        straight into its output.  When a later assignment follows, e.g. two
+        successive ``if`` blocks both updating ``!S``, the variable is instead
+        versioned like any other and its last version is bound to the output.
+        """
+        initial = dict(defaults)
+        versioned: dict[str, str] = {}
+        while True:
+            trial = {v: o for v, o in initial.items() if v not in versioned}
+            try:
+                out, current = self._ssa_pass(body, state_vars, trial,
+                                              inputs=set(versioned))
+            except _OutputReassigned as e:
+                versioned[e.var] = initial[e.var]
+                continue
+            defaults.clear()
+            defaults.update(trial)
+            if versioned:
+                if '->' in out or ';' in out:
+                    out = f"({out})"
+                for v, o in versioned.items():
+                    out += f", ({o} = {current.get(v, v)})"
+            return out
 
     # --- Head helpers ---
 
@@ -581,7 +617,8 @@ class Transformer:
     # --- SSA pass ---
 
     def _ssa_pass(self, body: str, state_vars: set[str], defaults: dict,
-                  initial_current: dict | None = None) -> tuple[str, dict]:
+                  initial_current: dict | None = None,
+                  inputs: set[str] | None = None) -> tuple[str, dict]:
         versions: dict[str, int] = {}
         current = dict(initial_current) if initial_current else {}
         bound: set[str] = set()
@@ -589,6 +626,10 @@ class Transformer:
             if val != v:
                 bound.add(v)
                 versions[v] = 0
+        for v in inputs or ():
+            bound.add(v)
+            current.setdefault(v, v)
+            versions.setdefault(v, 0)
         branch_stack: list[dict] = []
         paren_depth = 0
 
@@ -629,6 +670,9 @@ class Transformer:
                             if v in defaults and defaults[v] is not None:
                                 out.append(f"({defaults[v]} = {val})")
                                 defaults[v] = None
+                            elif v in defaults:
+                                # Output already written by an earlier assignment.
+                                raise _OutputReassigned(v)
                             elif v in bound:
                                 nv = fresh(v)
                                 out.append(f"({nv} = {val})")

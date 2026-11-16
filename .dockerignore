@@ -1,0 +1,12 @@
+.git
+build
+results
+site
+.venv
+**/__pycache__
+*.itf
+*.po
+*.asr
+*.ast
+tools/LogicTransformers/benchmark/work
+tools/LogicTransformers/benchmark/tmp

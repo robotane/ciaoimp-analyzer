@@ -6,6 +6,7 @@ import re
 import sys
 from pathlib import Path
 
+from .disj_outputs import thread_disj_outputs
 from .normalize import normalize_syntax, flatten_conj, rewrite_ops
 from .parser import parse_sentences, is_noise
 from .transformer import Transformer
@@ -18,7 +19,7 @@ def process_file(input_path: str, output_path: str) -> None:
     sentences = [s for s in parse_sentences(text) if not is_noise(s)]
     text = normalize_syntax("\n\n".join(sentences))
 
-    sentences = parse_sentences(text)
+    sentences = thread_disj_outputs(parse_sentences(text))
     xf = Transformer()
     outputs = []
     for sent in sentences:

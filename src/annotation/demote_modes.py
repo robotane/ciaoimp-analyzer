@@ -17,12 +17,11 @@ from pathlib import Path
 
 _HERE = Path(__file__).resolve()
 _PIPELINE_ROOT = _HERE.parents[2]
-_STAGE_ROOT = _HERE.parents[5]      # stage/
 
 ANN_DIR = _PIPELINE_ROOT / "build" / "annotated"
 CASLOG = Path(os.environ.get(
     "CASLOG",
-    str(_STAGE_ROOT / "tools" / "caslog" / "caslog.gprolog"),
+    str(_PIPELINE_ROOT / "tools" / "caslog" / "caslog.gprolog"),
 ))
 
 INFIX_OPS = {"=:=", "=\\=", "\\==", "==", ">=", "=<", "is", ">", "<", "="}

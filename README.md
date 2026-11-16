@@ -54,6 +54,26 @@ Pour lancer le pipeline complet sur tous les contrats :
 python3 pipeline.py
 ```
 
+## Docker
+
+L'image contient toutes les dépendances (CiaoPP, SWI-Prolog, GNU Prolog,
+JDK 21, Python 3) : rien d'autre à installer que Docker.
+
+```bash
+docker build -t ciaoimp-analyzer .
+
+# Pipeline complet ; build/ et results/ sont écrits sur l'hôte
+docker run --rm -v "$PWD/results:/app/results" -v "$PWD/build:/app/build" ciaoimp-analyzer
+
+# Mêmes options qu'en local, par exemple CasLog seul sur un contrat
+docker run --rm -v "$PWD/results:/app/results" -v "$PWD/build:/app/build" \
+    ciaoimp-analyzer python3 pipeline.py run --no-tnf --no-prolog-cafe simple_ponzi.pl
+```
+
+Le code et les contrats sont copiés dans l'image : après une modification de
+`src/` ou de `data/source/`, relancer `docker build` (quelques secondes, les
+couches Ciao restent en cache).
+
 ## Documentation
 
 La source de vérité documentaire est dans `docs/`, avec la configuration

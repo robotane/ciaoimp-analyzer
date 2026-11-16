@@ -44,6 +44,6 @@ Result: [2705,1505,290,0]
 Result: [1200,1000,800,0]
 
 === tictactoe ===
-Result: [900,900,200]
+Result: [1100,900,0]
 
 Prolog Cafe : 16 OK, 0 ERREURS

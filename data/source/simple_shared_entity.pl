@@ -35,7 +35,7 @@ transfer(From, To, Amount, !B) :-
 
 % --- Helpers ---
 
-get_share(A, Shares, V) :-
+get_share(A, Shares) := V :-
     V := 0,
     for (Entry in list(Shares)) {
         Entry = sh(A1, V1),

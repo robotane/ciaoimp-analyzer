@@ -6,14 +6,14 @@
 
 % --- Helpers tokens ---
 
-get_tok_bal(Addr, TB, Bal) :-
+get_tok_bal(Addr, TB) := Bal :-
     Bal := 0,
     for (Entry in list(TB)) {
         Entry = tb(A, Amt),
         if (A == Addr, Bal == 0) { Bal := Amt }
     }.
 
-get_allow(Owner, Spender, AL, Amt) :-
+get_allow(Owner, Spender, AL) := Amt :-
     Amt := 0,
     for (Entry in list(AL)) {
         Entry = al(O, Sp, V),
