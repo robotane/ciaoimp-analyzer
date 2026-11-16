@@ -111,9 +111,9 @@ def assemble(spec: Path, executable: Path, model_dir: Path, out: Path) -> list[s
     body, removed = strip_primitives(executable.read_text(encoding="utf-8"),
                                      primitives_of(blockchain))
     parts = [
-        f"% Generated from specs/{spec.name} and build/executable/{executable.name}.\n",
+        f"% Generated from {spec.parent.name}/{spec.name} and {executable.parent.parent.name}/{executable.parent.name}/{executable.name}.\n",
         spec_text,
-        f"\n% --- clauses of build/executable/{executable.name}, without the primitives\n"
+        f"\n% --- clauses of {executable.parent.parent.name}/{executable.parent.name}/{executable.name}, without the primitives\n"
         f"% imported from blockchain.pl: {', '.join(removed) or 'none'} ---\n\n",
         body,
     ]
@@ -250,8 +250,9 @@ def run_one(name: str, spec: Path, executable: Path, model_dir: Path,
     return res
 
 
-def format_results(results: list[CostResult], missing: list[str]) -> str:
-    lines = ["CiaoPP resource analysis (ciaopp_cost): gas bounds of the entries",
+def format_results(results: list[CostResult], missing: list[str],
+                   source: str = "build/executable") -> str:
+    lines = [f"CiaoPP resource analysis (ciaopp_cost): gas bounds of the entries, input {source}",
              f"Analyses: {', '.join(ANALYSES)}", ""]
     for r in results:
         status = "OK" if r.ok else "FAILED"
@@ -265,5 +266,5 @@ def format_results(results: list[CostResult], missing: list[str]) -> str:
             lines.append(f"  {e}")
         lines.append("")
     if missing:
-        lines.append("No spec yet (data/ciaopp_cost/specs/): " + ", ".join(missing))
+        lines.append("No spec yet: " + ", ".join(missing))
     return "\n".join(lines) + "\n"

@@ -379,30 +379,31 @@ class PipelineRunner:
         print(self.paths.prolog_cafe_results.read_text(encoding="utf-8"))
         return 0 if fail == 0 else 1
 
-    def run_ciaopp_cost_results(self, names: list[str]) -> int:
+    def run_ciaopp_cost_results(self, names: list[str], normalized: bool = False) -> int:
         """Gas bounds with CiaoPP's resource analysis, for contracts with a spec."""
         if not self.options.run_ciaopp_cost:
             return 0
         from src import ciaopp_cost
 
-        print("=== CiaoPP cost analysis (gas bounds) ===")
+        input_dir, specs_dir, out_dir, results_file = self.paths.ciaopp_cost_variant(normalized)
+        label = "build/normalized" if normalized else "build/executable"
+        print(f"=== CiaoPP cost analysis (gas bounds, {label}) ===")
         results, missing = [], []
         for name in names:
-            spec = self.paths.ciaopp_cost_specs_dir / f"{name}.pl"
-            executable = self.paths.executable_dir / f"{name}.pl"
-            if not spec.is_file() or not executable.is_file():
+            spec = specs_dir / f"{name}.pl"
+            source = input_dir / f"{name}.pl"
+            if not spec.is_file() or not source.is_file():
                 missing.append(name)
                 continue
-            res = ciaopp_cost.run_one(name, spec, executable,
+            res = ciaopp_cost.run_one(name, spec, source,
                                       self.paths.ciaopp_cost_model_dir,
-                                      self.paths.ciaopp_cost_dir, self.ciaosh)
+                                      out_dir, self.ciaosh)
             status = "OK" if res.ok and not res.errors else ("ERRORS" if res.ok else "FAILED")
             print(f"  {name}: {status} ({res.seconds:.1f} s, {res.peak_mb} MB, {len(res.bounds)} bound(s))")
             results.append(res)
         if missing:
             print(f"  no spec yet: {', '.join(missing)}")
-        self.paths.ciaopp_cost_results.write_text(
-            ciaopp_cost.format_results(results, missing), encoding="utf-8")
+        results_file.write_text(ciaopp_cost.format_results(results, missing, label), encoding="utf-8")
         print()
         return 0 if all(r.ok for r in results) else 1
 

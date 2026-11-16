@@ -42,6 +42,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     # Subcommand: run-cost
     cost_parser = subparsers.add_parser("run-cost", help="Run only the CiaoPP cost analysis on build/executable")
     cost_parser.add_argument("inputs", nargs="*", help="Contract names (default: every contract with a spec)")
+    cost_parser.add_argument("--normalized", action="store_true",
+                             help="Analyze build/normalized (the CasLog input) with data/ciaopp_cost/specs_normalized")
     
     # Subcommand: run-tnf
     tnf_parser = subparsers.add_parser("run-tnf", help="Run only the TNF stage on normalized files")
@@ -140,26 +142,27 @@ def run_tnf_stage(root: Path, inputs: list[str]) -> int:
     return runner.run_tnf_results(names)
 
 
-def run_cost_stage(root: Path, inputs: list[str]) -> int:
-    """Run only the CiaoPP cost stage on contracts already in build/executable."""
+def run_cost_stage(root: Path, inputs: list[str], normalized: bool = False) -> int:
+    """Run only the CiaoPP cost stage (build/executable, or build/normalized)."""
     from src.pipeline.paths import PipelinePaths
     from src.pipeline.runner import PipelineOptions, PipelineRunner
 
     paths = PipelinePaths(root)
     paths.ensure_dirs()
+    specs_dir = paths.ciaopp_cost_variant(normalized)[1]
     if inputs:
         names = [Path(arg).stem for arg in inputs]
     else:
-        names = sorted(p.stem for p in paths.ciaopp_cost_specs_dir.glob("*.pl"))
+        names = sorted(p.stem for p in specs_dir.glob("*.pl"))
     if not names:
-        print("No contract with a spec in data/ciaopp_cost/specs/.", file=sys.stderr)
+        print(f"No contract with a spec in {specs_dir.relative_to(root)}.", file=sys.stderr)
         return 1
     runner = PipelineRunner(paths, PipelineOptions(run_caslog=False, run_tnf=False,
                                                    run_prolog_cafe=False, run_ciaopp_cost=True))
     if not runner.ciaosh:
         print("ciaosh not found. Set CIAOSH or load the Ciao environment.", file=sys.stderr)
         return 1
-    return runner.run_ciaopp_cost_results(names)
+    return runner.run_ciaopp_cost_results(names, normalized)
 
 
 def main(argv: list[str]) -> int:
@@ -171,7 +174,7 @@ def main(argv: list[str]) -> int:
         return run_asm_interpreter(root, ns.asm_file)
         
     elif ns.subcommand == "run-cost":
-        return run_cost_stage(root, ns.inputs)
+        return run_cost_stage(root, ns.inputs, ns.normalized)
 
     elif ns.subcommand == "run-tnf":
         return run_tnf_stage(root, ns.inputs)

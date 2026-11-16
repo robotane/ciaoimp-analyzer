@@ -129,6 +129,20 @@ class PipelinePaths:
     def ciaopp_cost_results(self) -> Path:
         return self.results_dir / "ciaopp_cost_results.txt"
 
+    def ciaopp_cost_variant(self, normalized: bool) -> tuple[Path, Path, Path, Path]:
+        """(input dir, specs dir, output dir, results file) of a CiaoPP cost run.
+
+        Default: build/executable with data/ciaopp_cost/specs. ``normalized``:
+        build/normalized (the CasLog input, state fields as arguments) with
+        data/ciaopp_cost/specs_normalized.
+        """
+        if not normalized:
+            return (self.executable_dir, self.ciaopp_cost_specs_dir,
+                    self.ciaopp_cost_dir, self.ciaopp_cost_results)
+        return (self.normalized_dir, self.root / "data" / "ciaopp_cost" / "specs_normalized",
+                self.build_dir / "ciaopp_cost_normalized",
+                self.results_dir / "ciaopp_cost_normalized_results.txt")
+
     @property
     def plcafe_jar(self) -> Path:
         return self.root / "tools" / "prolog_cafe" / "plcafe.jar"
