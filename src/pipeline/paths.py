@@ -113,6 +113,22 @@ class PipelinePaths:
         return self.results_dir / "prolog_cafe_results.txt"
 
     @property
+    def ciaopp_cost_dir(self) -> Path:
+        return self.build_dir / "ciaopp_cost"
+
+    @property
+    def ciaopp_cost_specs_dir(self) -> Path:
+        return self.root / "data" / "ciaopp_cost" / "specs"
+
+    @property
+    def ciaopp_cost_preludes_dir(self) -> Path:
+        return self.root / "data" / "ciaopp_cost" / "preludes"
+
+    @property
+    def ciaopp_cost_results(self) -> Path:
+        return self.results_dir / "ciaopp_cost_results.txt"
+
+    @property
     def plcafe_jar(self) -> Path:
         return self.root / "tools" / "prolog_cafe" / "plcafe.jar"
 
@@ -147,6 +163,7 @@ class PipelinePaths:
             self.prolog_cafe_src_dir,
             self.prolog_cafe_am_dir,
             self.prolog_cafe_classes_dir,
+            self.ciaopp_cost_dir,
             self.logs_dir,
         ):
             directory.mkdir(parents=True, exist_ok=True)

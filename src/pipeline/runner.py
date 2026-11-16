@@ -43,6 +43,7 @@ class PipelineOptions:
     run_caslog: bool = True
     run_tnf: bool = True
     run_prolog_cafe: bool = True
+    run_ciaopp_cost: bool = True
 
 
 class PipelineRunner:
@@ -61,6 +62,7 @@ class PipelineRunner:
         self.caslog = os.environ.get("CASLOG") or (
             str(paths.caslog_bin) if paths.caslog_bin.exists() else find_executable("caslog.gprolog")
         )
+        self.ciaosh = find_executable("ciaosh", "CIAOSH")
         self.env = os.environ.copy()
         self.env["PYTHONPATH"] = str(paths.root)
         if self.caslog:
@@ -119,6 +121,10 @@ class PipelineRunner:
             if not self.paths.plcafe_jar.exists():
                 print(f"Prolog Cafe JAR not found at {self.paths.plcafe_jar}", file=sys.stderr)
                 return 1
+        if self.options.run_ciaopp_cost and not self.ciaosh:
+            print("ciaosh not found (needed by the CiaoPP cost stage). Set CIAOSH or "
+                  "load the Ciao environment, or pass --no-ciaopp-cost.", file=sys.stderr)
+            return 1
         return 0
 
     def print_header(self, inputs: list[Path]) -> None:
@@ -137,6 +143,10 @@ class PipelineRunner:
             print(f"Prolog Cafe: {self.paths.plcafe_jar}")
         else:
             print("Prolog Cafe: skipped (--no-prolog-cafe)")
+        if self.options.run_ciaopp_cost:
+            print(f"CiaoPP cost: {self.ciaosh}")
+        else:
+            print("CiaoPP cost: skipped (--no-ciaopp-cost)")
         print()
 
     def process_file(self, src: Path) -> bool:
@@ -369,6 +379,33 @@ class PipelineRunner:
         print(self.paths.prolog_cafe_results.read_text(encoding="utf-8"))
         return 0 if fail == 0 else 1
 
+    def run_ciaopp_cost_results(self, names: list[str]) -> int:
+        """Gas bounds with CiaoPP's resource analysis, for contracts with a spec."""
+        if not self.options.run_ciaopp_cost:
+            return 0
+        from src import ciaopp_cost
+
+        print("=== CiaoPP cost analysis (gas bounds) ===")
+        results, missing = [], []
+        for name in names:
+            spec = self.paths.ciaopp_cost_specs_dir / f"{name}.pl"
+            executable = self.paths.executable_dir / f"{name}.pl"
+            if not spec.is_file() or not executable.is_file():
+                missing.append(name)
+                continue
+            res = ciaopp_cost.run_one(name, spec, executable,
+                                      self.paths.ciaopp_cost_preludes_dir,
+                                      self.paths.ciaopp_cost_dir, self.ciaosh)
+            status = "OK" if res.ok and not res.errors else ("ERRORS" if res.ok else "FAILED")
+            print(f"  {name}: {status} ({res.seconds:.1f} s, {len(res.bounds)} bound(s))")
+            results.append(res)
+        if missing:
+            print(f"  no spec yet: {', '.join(missing)}")
+        self.paths.ciaopp_cost_results.write_text(
+            ciaopp_cost.format_results(results, missing), encoding="utf-8")
+        print()
+        return 0 if all(r.ok for r in results) else 1
+
     def run(self, args: list[str]) -> int:
         """Execute the selected pipeline and return a process-style exit code."""
         self.paths.ensure_dirs()
@@ -405,6 +442,7 @@ class PipelineRunner:
         self.run_caslog_results(success)
         tnf_status = self.run_tnf_results(success)
         prolog_cafe_status = self.run_prolog_cafe_results(success)
+        cost_status = self.run_ciaopp_cost_results(success)
 
         print("=== Generated Files ===")
         print(f"Stage diffs:              {self.paths.stage_diffs.relative_to(self.paths.root)}")
@@ -420,7 +458,10 @@ class PipelineRunner:
         if self.options.run_prolog_cafe:
             print(f"Prolog Cafe classes:      {self.paths.prolog_cafe_classes_dir.relative_to(self.paths.root)}")
             print(f"Prolog Cafe results:      {self.paths.prolog_cafe_results.relative_to(self.paths.root)}")
+        if self.options.run_ciaopp_cost:
+            print(f"Contracts sent to CiaoPP: {self.paths.ciaopp_cost_dir.relative_to(self.paths.root)}")
+            print(f"CiaoPP cost results:      {self.paths.ciaopp_cost_results.relative_to(self.paths.root)}")
         print("Done.")
         if fail:
             return 1
-        return tnf_status or prolog_cafe_status
+        return tnf_status or prolog_cafe_status or cost_status

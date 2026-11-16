@@ -37,6 +37,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     run_parser.add_argument("--no-caslog", action="store_true", help="Skip CasLog annotation and execution")
     run_parser.add_argument("--no-tnf", action="store_true", help="Skip BNF/ASM compilation and Java VM execution")
     run_parser.add_argument("--no-prolog-cafe", action="store_true", help="Skip Prolog Cafe Java translation and execution")
+    run_parser.add_argument("--no-ciaopp-cost", action="store_true", help="Skip the CiaoPP resource analysis (gas bounds)")
+
+    # Subcommand: run-cost
+    cost_parser = subparsers.add_parser("run-cost", help="Run only the CiaoPP cost analysis on build/executable")
+    cost_parser.add_argument("inputs", nargs="*", help="Contract names (default: every contract with a spec)")
     
     # Subcommand: run-tnf
     tnf_parser = subparsers.add_parser("run-tnf", help="Run only the TNF stage on normalized files")
@@ -49,7 +54,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     # Inject default 'run' subcommand if no subcommand is provided
     if not argv:
         argv = ["run"]
-    elif argv[0] not in ("run", "run-tnf", "run-asm", "-h", "--help"):
+    elif argv[0] not in ("run", "run-tnf", "run-asm", "run-cost", "-h", "--help"):
         argv = ["run"] + argv
         
     return parser.parse_args(argv)
@@ -135,6 +140,28 @@ def run_tnf_stage(root: Path, inputs: list[str]) -> int:
     return runner.run_tnf_results(names)
 
 
+def run_cost_stage(root: Path, inputs: list[str]) -> int:
+    """Run only the CiaoPP cost stage on contracts already in build/executable."""
+    from src.pipeline.paths import PipelinePaths
+    from src.pipeline.runner import PipelineOptions, PipelineRunner
+
+    paths = PipelinePaths(root)
+    paths.ensure_dirs()
+    if inputs:
+        names = [Path(arg).stem for arg in inputs]
+    else:
+        names = sorted(p.stem for p in paths.ciaopp_cost_specs_dir.glob("*.pl"))
+    if not names:
+        print("No contract with a spec in data/ciaopp_cost/specs/.", file=sys.stderr)
+        return 1
+    runner = PipelineRunner(paths, PipelineOptions(run_caslog=False, run_tnf=False,
+                                                   run_prolog_cafe=False, run_ciaopp_cost=True))
+    if not runner.ciaosh:
+        print("ciaosh not found. Set CIAOSH or load the Ciao environment.", file=sys.stderr)
+        return 1
+    return runner.run_ciaopp_cost_results(names)
+
+
 def main(argv: list[str]) -> int:
     """Run the selected command and return exit code."""
     ns = parse_args(argv)
@@ -143,6 +170,9 @@ def main(argv: list[str]) -> int:
     if ns.subcommand == "run-asm":
         return run_asm_interpreter(root, ns.asm_file)
         
+    elif ns.subcommand == "run-cost":
+        return run_cost_stage(root, ns.inputs)
+
     elif ns.subcommand == "run-tnf":
         return run_tnf_stage(root, ns.inputs)
         
@@ -152,7 +182,8 @@ def main(argv: list[str]) -> int:
         options = PipelineOptions(
             run_caslog=not ns.no_caslog,
             run_tnf=not ns.no_tnf,
-            run_prolog_cafe=not ns.no_prolog_cafe
+            run_prolog_cafe=not ns.no_prolog_cafe,
+            run_ciaopp_cost=not ns.no_ciaopp_cost,
         )
         return PipelineRunner(PipelinePaths(root), options).run(ns.inputs)
 
