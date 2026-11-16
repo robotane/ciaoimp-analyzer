@@ -2,7 +2,7 @@
 % come unchanged from build/executable/simple_ponzi.pl.
 
 :- module(_, [init/2, invest/6, goal/1],
-          [assertions, nativeprops, regtypes, resdefs]).
+          [assertions, nativeprops, regtypes, resdefs, .(gas_model)]).
 
 % State: state(LastInvestor, LastAmount) (types as in interreg-imdea,
 % march2026/simple_ponzi.pl).

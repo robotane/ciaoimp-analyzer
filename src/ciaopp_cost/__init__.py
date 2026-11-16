@@ -2,16 +2,19 @@
 
 For each contract ``C`` that has a spec ``data/ciaopp_cost/specs/C.pl``:
 
-1. ``assemble``: ``build/ciaopp_cost/C.pl`` = spec (module, entries, regtypes)
-   + ``:- include(cost_model).`` + the clauses of ``build/executable/C.pl``
-   minus the blockchain primitives (and the generated loops only they use),
-   which ``data/ciaopp_cost/cost_model.pl`` defines once for all contracts
-   with their gas costs. ``cost_model.pl`` is copied next to ``C.pl``.
+1. ``assemble``: ``build/ciaopp_cost/C.pl`` = spec (module declaration
+   loading the package ``gas_model``, entries, regtypes) + the clauses of
+   ``build/executable/C.pl`` minus the blockchain primitives (and the
+   generated loops only they use). The primitives live once in
+   ``data/ciaopp_cost/blockchain.pl``; their gas costs, the resource and the
+   table types live once in the package ``data/ciaopp_cost/gas_model.pl``.
+   Both are copied next to ``C.pl``. Same layout as
+   ``ciaopp_cost/examples/resources_blockchain`` (carthage.pl).
 2. ``analyze``: ciaosh runs ``eterms, shfr, nf, det, resources`` and writes
    ``build/ciaopp_cost/C_co.pl`` (log in ``C.log``).
 3. ``extract_bounds``: the ``cost(lb|ub, gas, _)`` of the entry predicates.
 
-The cost model is changed in ``cost_model.pl`` only.
+The cost model is changed in ``gas_model.pl`` only.
 """
 from __future__ import annotations
 
@@ -22,7 +25,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ANALYSES = ("eterms", "shfr", "nf", "det", "resources")
-TRUST_RE = re.compile(r"^:-\s*trust\s+pred\s+([a-z]\w*)\(", re.M)
+EXPORTS_RE = re.compile(r"^:-\s*module\(\s*\w+\s*,\s*\[(.*?)\]", re.M | re.S)
 AUX_RE = re.compile(r"\b((?:loop_aux|aux_cond|aux_disj)_\d+)\(")
 ENTRY_RE = re.compile(r"^:-\s*entry\s+([a-z]\w*)\(", re.M)
 
@@ -90,22 +93,30 @@ def strip_primitives(text: str, primitives: set[str]) -> tuple[str, list[str]]:
     return "\n".join(kept) + "\n", sorted(removed)
 
 
-def assemble(spec: Path, executable: Path, cost_model: Path, out: Path) -> list[str]:
+def primitives_of(blockchain: Path) -> set[str]:
+    """Names exported by blockchain.pl."""
+    m = EXPORTS_RE.search(blockchain.read_text(encoding="utf-8"))
+    return {x.strip().split("/")[0] for x in m.group(1).split(",")} if m else set()
+
+
+def assemble(spec: Path, executable: Path, model_dir: Path, out: Path) -> list[str]:
     """Write the analyzable module; return its entry predicate names."""
     spec_text = spec.read_text(encoding="utf-8")
-    model_text = cost_model.read_text(encoding="utf-8")
-    primitives = set(TRUST_RE.findall(model_text))
-    body, removed = strip_primitives(executable.read_text(encoding="utf-8"), primitives)
+    if "gas_model" not in spec_text:
+        raise ValueError(f"{spec}: the module declaration must load .(gas_model)")
+    blockchain = model_dir / "blockchain.pl"
+    body, removed = strip_primitives(executable.read_text(encoding="utf-8"),
+                                     primitives_of(blockchain))
     parts = [
-        f"% Generated from specs/{spec.name}, cost_model.pl and build/executable/{executable.name}.\n",
+        f"% Generated from specs/{spec.name} and build/executable/{executable.name}.\n",
         spec_text,
-        "\n:- include(cost_model).\n",
         f"\n% --- clauses of build/executable/{executable.name}, without the primitives\n"
-        f"% defined in cost_model.pl: {', '.join(removed) or 'none'} ---\n\n",
+        f"% imported from blockchain.pl: {', '.join(removed) or 'none'} ---\n\n",
         body,
     ]
     out.parent.mkdir(parents=True, exist_ok=True)
-    (out.parent / "cost_model.pl").write_text(model_text, encoding="utf-8")
+    for f in ("gas_model.pl", "blockchain.pl"):
+        (out.parent / f).write_text((model_dir / f).read_text(encoding="utf-8"), encoding="utf-8")
     out.write_text("".join(parts), encoding="utf-8")
     return sorted(set(ENTRY_RE.findall(spec_text)))
 
@@ -182,10 +193,10 @@ def errors_of(log: str) -> list[str]:
     return [l.strip() for l in log.splitlines() if "ERROR" in l]
 
 
-def run_one(name: str, spec: Path, executable: Path, cost_model: Path,
+def run_one(name: str, spec: Path, executable: Path, model_dir: Path,
             out_dir: Path, ciaosh: str) -> CostResult:
     module = out_dir / f"{name}.pl"
-    entries = assemble(spec, executable, cost_model, module)
+    entries = assemble(spec, executable, model_dir, module)
     co, seconds, log = analyze(ciaosh, module)
     res = CostResult(name, ok=co.exists(), seconds=seconds, errors=errors_of(log))
     if res.ok:

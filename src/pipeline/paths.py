@@ -121,8 +121,9 @@ class PipelinePaths:
         return self.root / "data" / "ciaopp_cost" / "specs"
 
     @property
-    def ciaopp_cost_model(self) -> Path:
-        return self.root / "data" / "ciaopp_cost" / "cost_model.pl"
+    def ciaopp_cost_model_dir(self) -> Path:
+        """gas_model.pl (cost model package) and blockchain.pl (primitives)."""
+        return self.root / "data" / "ciaopp_cost"
 
     @property
     def ciaopp_cost_results(self) -> Path:
