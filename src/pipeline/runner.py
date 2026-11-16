@@ -397,7 +397,7 @@ class PipelineRunner:
                                       self.paths.ciaopp_cost_model_dir,
                                       self.paths.ciaopp_cost_dir, self.ciaosh)
             status = "OK" if res.ok and not res.errors else ("ERRORS" if res.ok else "FAILED")
-            print(f"  {name}: {status} ({res.seconds:.1f} s, {len(res.bounds)} bound(s))")
+            print(f"  {name}: {status} ({res.seconds:.1f} s, {res.peak_mb} MB, {len(res.bounds)} bound(s))")
             results.append(res)
         if missing:
             print(f"  no spec yet: {', '.join(missing)}")

@@ -18,7 +18,9 @@ The cost model is changed in ``gas_model.pl`` only.
 """
 from __future__ import annotations
 
+import os
 import re
+import resource
 import subprocess
 import time
 from dataclasses import dataclass, field
@@ -43,6 +45,7 @@ class CostResult:
     name: str
     ok: bool
     seconds: float = 0.0
+    peak_mb: int = 0
     bounds: list[Bound] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
@@ -121,8 +124,21 @@ def assemble(spec: Path, executable: Path, model_dir: Path, out: Path) -> list[s
     return sorted(set(ENTRY_RE.findall(spec_text)))
 
 
-def analyze(ciaosh: str, module: Path, timeout: int = 600) -> tuple[Path, float, str]:
-    """Run the analyses in ciaosh; return (output file, seconds, log)."""
+def _max_mb() -> int:
+    """Memory cap of one analysis (MB), CIAOPP_COST_MAX_MB, default 3000."""
+    try:
+        return int(os.environ.get("CIAOPP_COST_MAX_MB", "3000"))
+    except ValueError:
+        return 3000
+
+
+def analyze(ciaosh: str, module: Path, timeout: int = 600) -> tuple[Path, float, str, int]:
+    """Run the analyses in ciaosh; return (output file, seconds, log, peak MB).
+
+    ciaosh runs with an address-space cap (CIAOPP_COST_MAX_MB) and a timeout,
+    so that an analysis that blows up stops alone instead of filling the RAM
+    and the swap (systemd-oomd then kills the whole terminal).
+    """
     co = module.with_name(module.stem + "_co.pl")
     co.unlink(missing_ok=True)
     goals = ", ".join(f"analyze({a})" for a in ANALYSES)
@@ -133,13 +149,42 @@ def analyze(ciaosh: str, module: Path, timeout: int = 600) -> tuple[Path, float,
         f"output('{co.name}').\n"
         "halt.\n"
     )
+    cap = _max_mb() * 1024 * 1024
+
+    def limit() -> None:
+        resource.setrlimit(resource.RLIMIT_AS, (cap, cap))
+
+    log_path = module.with_suffix(".log")
     start = time.monotonic()
-    res = subprocess.run([ciaosh, "-f"], input=script, cwd=str(module.parent),
-                         capture_output=True, text=True, timeout=timeout, check=False)
+    peak_kb, note = 0, ""
+    with log_path.open("w", encoding="utf-8") as log_f:
+        proc = subprocess.Popen([ciaosh, "-f"], stdin=subprocess.PIPE, stdout=log_f,
+                                stderr=subprocess.STDOUT, text=True, cwd=str(module.parent),
+                                preexec_fn=limit)
+        proc.stdin.write(script)
+        proc.stdin.close()
+        while True:
+            pid, status, usage = os.wait4(proc.pid, os.WNOHANG)
+            if pid:
+                proc.returncode = os.waitstatus_to_exitcode(status)
+                peak_kb = usage.ru_maxrss
+                break
+            if time.monotonic() - start > timeout:
+                proc.kill()
+                _, status, usage = os.wait4(proc.pid, 0)
+                proc.returncode = os.waitstatus_to_exitcode(status)
+                peak_kb = usage.ru_maxrss
+                note = f"\nERROR: analysis killed after {timeout} s (timeout)\n"
+                break
+            time.sleep(0.2)
     seconds = time.monotonic() - start
-    log = res.stdout + res.stderr
-    module.with_suffix(".log").write_text(log, encoding="utf-8")
-    return co, seconds, log
+    log = log_path.read_text(encoding="utf-8", errors="replace") + note
+    if proc.returncode and not co.exists() and not note:
+        note = (f"\nERROR: ciaosh exited with code {proc.returncode} "
+                f"(memory cap {_max_mb()} MB reached?)\n")
+        log += note
+    log_path.write_text(log, encoding="utf-8")
+    return co, seconds, log, peak_kb // 1024
 
 
 def _assertions(text: str) -> list[str]:
@@ -197,8 +242,9 @@ def run_one(name: str, spec: Path, executable: Path, model_dir: Path,
             out_dir: Path, ciaosh: str) -> CostResult:
     module = out_dir / f"{name}.pl"
     entries = assemble(spec, executable, model_dir, module)
-    co, seconds, log = analyze(ciaosh, module)
-    res = CostResult(name, ok=co.exists(), seconds=seconds, errors=errors_of(log))
+    co, seconds, log, peak_mb = analyze(ciaosh, module)
+    res = CostResult(name, ok=co.exists(), seconds=seconds, peak_mb=peak_mb,
+                     errors=errors_of(log))
     if res.ok:
         res.bounds = extract_bounds(co, entries)
     return res
@@ -209,7 +255,7 @@ def format_results(results: list[CostResult], missing: list[str]) -> str:
              f"Analyses: {', '.join(ANALYSES)}", ""]
     for r in results:
         status = "OK" if r.ok else "FAILED"
-        lines.append(f"=== {r.name} ({status}, {r.seconds:.1f} s) ===")
+        lines.append(f"=== {r.name} ({status}, {r.seconds:.1f} s, {r.peak_mb} MB) ===")
         for b in r.bounds:
             lines.append(f"  {b.pred:<22} lb = {b.lb or '?'}")
             lines.append(f"  {'':<22} ub = {b.ub or '?'}")
