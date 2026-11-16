@@ -394,7 +394,7 @@ class PipelineRunner:
                 missing.append(name)
                 continue
             res = ciaopp_cost.run_one(name, spec, executable,
-                                      self.paths.ciaopp_cost_preludes_dir,
+                                      self.paths.ciaopp_cost_model,
                                       self.paths.ciaopp_cost_dir, self.ciaosh)
             status = "OK" if res.ok and not res.errors else ("ERRORS" if res.ok else "FAILED")
             print(f"  {name}: {status} ({res.seconds:.1f} s, {len(res.bounds)} bound(s))")

@@ -3,14 +3,15 @@
 For each contract ``C`` that has a spec ``data/ciaopp_cost/specs/C.pl``:
 
 1. ``assemble``: ``build/ciaopp_cost/C.pl`` = spec (module, entries, regtypes)
-   + the cost-model prelude named in the spec + the clauses of
-   ``build/executable/C.pl``, unchanged.
+   + ``:- include(cost_model).`` + the clauses of ``build/executable/C.pl``
+   minus the blockchain primitives (and the generated loops only they use),
+   which ``data/ciaopp_cost/cost_model.pl`` defines once for all contracts
+   with their gas costs. ``cost_model.pl`` is copied next to ``C.pl``.
 2. ``analyze``: ciaosh runs ``eterms, shfr, nf, det, resources`` and writes
    ``build/ciaopp_cost/C_co.pl`` (log in ``C.log``).
 3. ``extract_bounds``: the ``cost(lb|ub, gas, _)`` of the entry predicates.
 
-A spec names its prelude with a line ``%! prelude: NAME``, which includes
-``data/ciaopp_cost/preludes/NAME.pl``.
+The cost model is changed in ``cost_model.pl`` only.
 """
 from __future__ import annotations
 
@@ -21,7 +22,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ANALYSES = ("eterms", "shfr", "nf", "det", "resources")
-PRELUDE_RE = re.compile(r"^%!\s*prelude:\s*(\w+)\s*$", re.M)
+TRUST_RE = re.compile(r"^:-\s*trust\s+pred\s+([a-z]\w*)\(", re.M)
+AUX_RE = re.compile(r"\b((?:loop_aux|aux_cond|aux_disj)_\d+)\(")
 ENTRY_RE = re.compile(r"^:-\s*entry\s+([a-z]\w*)\(", re.M)
 
 
@@ -42,18 +44,68 @@ class CostResult:
     errors: list[str] = field(default_factory=list)
 
 
-def assemble(spec: Path, executable: Path, prelude_dir: Path, out: Path) -> list[str]:
+def _clauses(text: str) -> list[str]:
+    """Split pretty-printed Prolog (one clause ends with a line ending in '.')."""
+    out, cur = [], []
+    for line in text.splitlines():
+        if not line.strip() and not cur:
+            continue
+        cur.append(line)
+        if line.rstrip().endswith("."):
+            out.append("\n".join(cur))
+            cur = []
+    if cur:
+        out.append("\n".join(cur))
+    return out
+
+
+def _name(clause: str) -> str:
+    m = re.match(r"([a-z]\w*)", clause.lstrip())
+    return m.group(1) if m else ""
+
+
+def strip_primitives(text: str, primitives: set[str]) -> tuple[str, list[str]]:
+    """Remove the primitives and the generated helpers used only by them."""
+    clauses = _clauses(text)
+    calls: dict[str, set[str]] = {}
+    for c in clauses:
+        calls.setdefault(_name(c), set()).update(AUX_RE.findall(c))
+
+    def reach(roots: set[str]) -> set[str]:
+        seen, todo = set(), list(roots)
+        while todo:
+            p = todo.pop()
+            for q in calls.get(p, ()):
+                if q not in seen:
+                    seen.add(q)
+                    todo.append(q)
+        return seen
+
+    defined = set(calls)
+    from_prims = reach(primitives & defined)
+    kept_roots = defined - primitives - from_prims
+    still_used = reach(kept_roots)
+    removed = (primitives & defined) | (from_prims - still_used)
+    kept = [c for c in clauses if _name(c) not in removed]
+    return "\n".join(kept) + "\n", sorted(removed)
+
+
+def assemble(spec: Path, executable: Path, cost_model: Path, out: Path) -> list[str]:
     """Write the analyzable module; return its entry predicate names."""
     spec_text = spec.read_text(encoding="utf-8")
-    parts = [f"% Generated from {spec.name} and build/executable/{executable.name}.\n",
-             spec_text]
-    for name in PRELUDE_RE.findall(spec_text):
-        prelude = prelude_dir / f"{name}.pl"
-        parts.append(f"\n% --- prelude {name} ---\n")
-        parts.append(prelude.read_text(encoding="utf-8"))
-    parts.append(f"\n% --- clauses of build/executable/{executable.name} (unchanged) ---\n\n")
-    parts.append(executable.read_text(encoding="utf-8"))
+    model_text = cost_model.read_text(encoding="utf-8")
+    primitives = set(TRUST_RE.findall(model_text))
+    body, removed = strip_primitives(executable.read_text(encoding="utf-8"), primitives)
+    parts = [
+        f"% Generated from specs/{spec.name}, cost_model.pl and build/executable/{executable.name}.\n",
+        spec_text,
+        "\n:- include(cost_model).\n",
+        f"\n% --- clauses of build/executable/{executable.name}, without the primitives\n"
+        f"% defined in cost_model.pl: {', '.join(removed) or 'none'} ---\n\n",
+        body,
+    ]
     out.parent.mkdir(parents=True, exist_ok=True)
+    (out.parent / "cost_model.pl").write_text(model_text, encoding="utf-8")
     out.write_text("".join(parts), encoding="utf-8")
     return sorted(set(ENTRY_RE.findall(spec_text)))
 
@@ -130,10 +182,10 @@ def errors_of(log: str) -> list[str]:
     return [l.strip() for l in log.splitlines() if "ERROR" in l]
 
 
-def run_one(name: str, spec: Path, executable: Path, prelude_dir: Path,
+def run_one(name: str, spec: Path, executable: Path, cost_model: Path,
             out_dir: Path, ciaosh: str) -> CostResult:
     module = out_dir / f"{name}.pl"
-    entries = assemble(spec, executable, prelude_dir, module)
+    entries = assemble(spec, executable, cost_model, module)
     co, seconds, log = analyze(ciaosh, module)
     res = CostResult(name, ok=co.exists(), seconds=seconds, errors=errors_of(log))
     if res.ok:

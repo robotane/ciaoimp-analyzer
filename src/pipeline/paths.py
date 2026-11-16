@@ -121,8 +121,8 @@ class PipelinePaths:
         return self.root / "data" / "ciaopp_cost" / "specs"
 
     @property
-    def ciaopp_cost_preludes_dir(self) -> Path:
-        return self.root / "data" / "ciaopp_cost" / "preludes"
+    def ciaopp_cost_model(self) -> Path:
+        return self.root / "data" / "ciaopp_cost" / "cost_model.pl"
 
     @property
     def ciaopp_cost_results(self) -> Path:

@@ -1,6 +1,5 @@
 % CiaoPP cost spec of simple_ponzi: module, entries and types. The clauses
 % come unchanged from build/executable/simple_ponzi.pl.
-%! prelude: balances
 
 :- module(_, [init/2, invest/6, goal/1],
           [assertions, nativeprops, regtypes, resdefs]).
