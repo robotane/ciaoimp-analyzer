@@ -97,9 +97,12 @@ def strip_primitives(text: str, primitives: set[str]) -> tuple[str, list[str]]:
 
 
 def primitives_of(blockchain: Path) -> set[str]:
-    """Names exported by blockchain.pl."""
+    """Names exported by blockchain.pl (error if none: nothing would be stripped)."""
     m = EXPORTS_RE.search(blockchain.read_text(encoding="utf-8"))
-    return {x.strip().split("/")[0] for x in m.group(1).split(",")} if m else set()
+    names = {x.strip().split("/")[0] for x in m.group(1).split(",") if x.strip()} if m else set()
+    if not names:
+        raise ValueError(f"{blockchain}: no exported primitive found in the module declaration")
+    return names
 
 
 def assemble(spec: Path, executable: Path, model_dir: Path, out: Path) -> list[str]:
@@ -229,9 +232,22 @@ def extract_bounds(co: Path, entries: list[str]) -> list[Bound]:
         call = re.search(r"\n\s*:\s*\((.*?)\)\s*\n\s*=>", a, re.S)
         call_s = " ".join(call.group(1).split()) if call else ""
         b = rows.setdefault((m.group(1), call_s), Bound(m.group(1), call_s))
-        b.lb = _cost(a, "lb") or b.lb
-        b.ub = _cost(a, "ub") or b.ub
+        for kind in ("lb", "ub"):
+            new = _cost(a, kind)
+            old = getattr(b, kind)
+            if new is not None and old is not None and new != old:
+                raise ValueError(f"{co}: two {kind} gas bounds for {m.group(1)} "
+                                 f"with the same call pattern: {old} / {new}")
+            if new is not None:
+                setattr(b, kind, new)
     return sorted(rows.values(), key=lambda b: entries.index(b.pred))
+
+
+def status_of(res: "CostResult") -> str:
+    """OK only when the output exists and the log has no ERROR line."""
+    if not res.ok:
+        return "FAILED"
+    return "ERRORS" if res.errors else "OK"
 
 
 def errors_of(log: str) -> list[str]:
@@ -255,7 +271,7 @@ def format_results(results: list[CostResult], missing: list[str],
     lines = [f"CiaoPP resource analysis (ciaopp_cost): gas bounds of the entries, input {source}",
              f"Analyses: {', '.join(ANALYSES)}", ""]
     for r in results:
-        status = "OK" if r.ok else "FAILED"
+        status = status_of(r)
         lines.append(f"=== {r.name} ({status}, {r.seconds:.1f} s, {r.peak_mb} MB) ===")
         for b in r.bounds:
             lines.append(f"  {b.pred:<22} lb = {b.lb or '?'}")
