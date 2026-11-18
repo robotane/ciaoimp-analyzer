@@ -6,3 +6,11 @@ Analyses: eterms, shfr, nf, det, resources
                          ub = 6330
                          call: atm(Caller), int(Value), atm(Last0), var(Last), int(Amt0), var(Amt), balances(B0), var(B)
 
+=== simple_shared_entity (OK, 7.6 s, 79 MB) ===
+  accept                 lb = 0
+                         ub = 4537*log(2,length(Of0)+1)+18148*log(2,length(Sh0)+2)+9074*log(2,length(Sh0)+1)+4537*(length(Of0)*log(2,length(Of0)+1))+9695*length(Of0)+112865
+                         call: int(Amount), offer(Offer), atm(Caller), map(Sh0), term(Sh), map(Of0), var(Of), balances(B0), var(B), term(Ok)
+  place                  lb = 0
+                         ub = 4537*log(2,length(Of0)+1)+9074*log(2,length(Sh)+1)+4537*(length(Of0)*log(2,length(Of0)+1))+10755*length(Of0)+46950
+                         call: int(Amount), offer(Offer), atm(Caller), map(Sh), map(Of0), var(Of), balances(B0), var(B)
+
