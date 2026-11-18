@@ -10,6 +10,8 @@
 :- module(_, [init/4, bid/9, reveal/15, auction_end/9, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- regtype opt/1.
 opt(null).
 opt(X) :- int(X).
@@ -27,7 +29,7 @@ opt(X) :- int(X).
 
 % BlindAuction(biddingTime, revealTime)
 init(BiddingTime, Now, BEnd, HBdr) :-
-    BEnd is Now + BiddingTime,                      % biddingEnd = now() + biddingTime
+    BEnd = Now + BiddingTime,                       % biddingEnd = now() + biddingTime
     HBdr = null.                                    % no highest bidder yet
 
 :- payable(bid).                             % @Payable: the amount sent is received first
@@ -35,20 +37,20 @@ init(BiddingTime, Now, BEnd, HBdr) :-
 % @FromContract bid(amount, hash)
 bid(Caller, Amount, Now, BEnd, Hash, !Bids, !B) :-
     Now =< BEnd,                                    % onlyBefore(biddingEnd)
-    map_get(Caller, Bids, none, L0),                % bids.computeIfAbsent(caller, ...): tree get
+    L0 = ~map_get(Caller, Bids, none),              % bids.computeIfAbsent(caller, ...): tree get
     if (L0 == none) {
         new_obj(list),                              % new StorageLinkedList (bidder not yet in the tree)
         L = []
     } else { L = L0 },
     new_obj(bid),                                   % new Bid(hash, amount)
-    list_add(bid(Hash, Amount), L, L1),             % .add(bid): one new list node
+    L1 = ~list_add(bid(Hash, Amount), L),           % .add(bid): one new list node
     map_put(Caller, L1, !Bids).                     % new key: tree put (an existing list is mutated in place in Java)
 
 % @FromContract reveal(revealed), revealed = RevealedBid(Value, Fake, Salt)
 reveal(Caller, Now, BEnd, REnd, Value, Fake, Salt, !Bids, !HBdr, !HBid, !B) :-
     Now >= BEnd,                                    % onlyAfter(biddingEnd)
     Now =< REnd,                                    % onlyBefore(revealEnd)
-    map_get(Caller, Bids, none, L),                 % this.bids.get(bidder)
+    L = ~map_get(Caller, Bids, none),               % this.bids.get(bidder)
     first_bid(L, BidHash, Deposit, Rest),           % require(bids != null && bids.size() > 0), bids.removeFirst()
     load(head_node),                                % bids.removeFirst(): the head node
     map_put(Caller, Rest, !Bids),                   % (Java mutates the list in place, no tree put)
@@ -60,7 +62,7 @@ reveal(Caller, Now, BEnd, REnd, Value, Fake, Salt, !Bids, !HBdr, !HBid, !B) :-
         Refund = 0
     } else if ((Fake =:= 0, Deposit >= Value, better(Value, HBid))) {
         place_bid(Caller, Value, !HBdr, !HBid, !B), % placeBid(bidder, revealed.value)
-        Refund is Deposit - Value
+        Refund = Deposit - Value
     } else { Refund = Deposit },
     transfer(this, Caller, Refund, !B).             % bidder.receive(refundFor(...)): always executed
 
