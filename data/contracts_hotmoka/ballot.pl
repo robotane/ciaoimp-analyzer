@@ -77,24 +77,27 @@ delegate(To, Caller, !Pa, !Pr) :-
     HV =:= 0,                                       % require(!paper.hasVoted())
     W > 0,                                          % require(paper.hasRightToVote())
     To \== Caller,                                  % require(delegate != payer)
-    new_obj(seen),                                  % seen = new StorageTreeSet<>()
+                                                    % seen = new StorageTreeSet<>(): temporary, its cost is in tmp_get/tmp_put
     map_get(To, Pa, none, From),                    % from = papers.get(delegate)
     paper_fields(From, _, _, Del, _),
     follow(Pa, Del, Pa, [], To, Fin),               % computeFinalDelegate: the walk, at most one hop per paper
     store(hasVoted),                                % Java: this.hasVoted = true
     store(delegate),                                % Java: this.delegate = delegate
-    set_paper(Caller, paper(W, 1, Fin, VP), !Pa),   % this.hasVoted = true; this.delegate = delegate
+    % The papers are rebuilt (set_paper, no cost) only after the costly goals: CiaoPP does not
+    % see that set_paper has a single solution and would multiply what follows by length(Pa).
+    % Reading the paper of Fin before rebuilding the paper of Caller is the same (Fin \== Caller).
     map_get(Fin, Pa, none, PF),                     % paperOfDelegate = papers.get(delegate)
     paper_fields(PF, WF, HVF, DF, VPF),
     ( HVF =:= 1 ->                                  % if (paperOfDelegate.hasVoted())
         load(voted_proposal),                       % votedProposal (a reference to a Proposal object)
-        set_proposal(VPF, W, !Pr),                  % votedProposal.voteCount += weight
-        store(voteCount)                            % Java: votedProposal.voteCount += weight
+        store(voteCount),                           % Java: votedProposal.voteCount += weight
+        set_proposal(VPF, W, !Pr)                   % votedProposal.voteCount += weight
     ;
         WF1 is WF + W,
         store(weight),                              % Java: paperOfDelegate.weight += weight
         set_paper(Fin, paper(WF1, HVF, DF, VPF), !Pa)   % paperOfDelegate.weight += weight
-    ).
+    ),
+    set_paper(Caller, paper(W, 1, Fin, VP), !Pa).   % this.hasVoted = true; this.delegate = delegate
 
 % computeFinalDelegate. Java: from = papers.get(delegate); while (from.delegate != null) {
 % delegate = from.delegate; require(delegate != payer); require(!seen.contains(delegate));
@@ -104,15 +107,15 @@ delegate(To, Caller, !Pa, !Pr) :-
 % Final = the final delegate (returned along the recursion; not measured: size_metric void).
 :- trust comp follow(Ps, Del, Pa, Seen, Last, Final)
    + (size_metric(Ps, length), size_metric(Del, void), size_metric(Pa, length), size_metric(Seen, length),
-      size_metric(Last, void), size_metric(Final, void)).
+      size_metric(Last, void), size_metric(Final, void), is_det).
 :- trust comp differ(A, B) + (size_metric(A, void), size_metric(B, void)).
 
 follow([], _, _, _, Last, Last).                    % never reached (a chain visits distinct papers)
 follow([_|Rest], Del, Pa, Seen, _, Final) :-
     differ(Del, null),                              % while (from.delegate != null)
-    map_get(Del, Seen, 0, InSeen),                  % seen.contains(delegate)
+    tmp_get(Del, Seen, 0, InSeen),                  % seen.contains(delegate)
     InSeen =:= 0,                                   % require(!seen.contains(delegate))
-    map_put(Del, 1, Seen, Seen1),                   % seen.add(delegate)
+    tmp_put(Del, 1, Seen, Seen1),                   % seen.add(delegate)
     map_get(Del, Pa, none, From),                   % from = papers.get(delegate)
     paper_fields(From, _, _, Del1, _),
     follow(Rest, Del1, Pa, Seen1, Del, Final).      % delegate = from.delegate

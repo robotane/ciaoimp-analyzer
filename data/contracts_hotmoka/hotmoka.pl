@@ -18,7 +18,7 @@
 % Maps are lists of kv(Key, Value); an absent key reads as the given default.
 
 :- module(hotmoka, [transfer/5, balance/3,
-                    map_get/4, map_put/4, map_remove/3,
+                    map_get/4, map_put/4, map_remove/3, tmp_get/4, tmp_put/4,
                     list_add/3, arr_get/3, arr_set/4,
                     load/1, new_obj/1, emit/1, store/1], []).
 
@@ -54,6 +54,10 @@ map_put(K, V, [kv(K1, V1)|T], M) :-
 map_remove(_, [], []).
 map_remove(K, [kv(K1, V1)|T], M) :-
     ( K == K1 -> M = T ; M = [kv(K1, V1)|M1], map_remove(K, T, M1) ).
+
+% Temporary maps (never stored): same meaning, other cost.
+tmp_get(K, M, D, V) :- map_get(K, M, D, V).
+tmp_put(K, V, M0, M) :- map_put(K, V, M0, M).
 
 % --- Linked lists: the new element goes at the end, as StorageLinkedList.add ---
 

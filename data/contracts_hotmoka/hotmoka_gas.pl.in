@@ -51,21 +51,34 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
 :- trust pred map_put(K, V, M0, M)
    => ( map(M), size(lb, M, length(M0)), size(ub, M, length(M0)+1) )
    + ( not_fails, is_det,
-       cost(lb, gas, @C_TREE0@+@C_TREE1@*log2(length(M0)+1)),
-       cost(ub, gas, @C_TREE0@+@C_TREE1@*log2(length(M0)+1)+@C_NEW@) ).
+       cost(lb, gas, @C_TREEW0@+@C_TREEW1@*log2(length(M0)+1)),
+       cost(ub, gas, @C_TREEW0@+@C_TREEW1@*log2(length(M0)+1)+@C_NEW@) ).
 
 :- trust pred map_remove(K, M0, M)
    => ( map(M), size(lb, M, 0), size(ub, M, length(M0)) )
    + ( not_fails, is_det,
-       cost(lb, gas, @C_TREE0@+@C_TREE1@*log2(length(M0)+1)),
-       cost(ub, gas, @C_TREE0@+@C_TREE1@*log2(length(M0)+1)) ).
+       cost(lb, gas, @C_TREEW0@+@C_TREEW1@*log2(length(M0)+1)),
+       cost(ub, gas, @C_TREEW0@+@C_TREEW1@*log2(length(M0)+1)) ).
+
+% Temporary tree map/set (created in the transaction, never stored), e.g. the
+% StorageTreeSet seen of Ballot.computeFinalDelegate.
+:- trust pred tmp_get(K, M, D, V)
+   + ( not_fails, is_det,
+       cost(lb, gas, @C_TMP0@+@C_TMP1@*log2(length(M)+1)),
+       cost(ub, gas, @C_TMP0@+@C_TMP1@*log2(length(M)+1)) ).
+
+:- trust pred tmp_put(K, V, M0, M)
+   => ( map(M), size(lb, M, length(M0)), size(ub, M, length(M0)+1) )
+   + ( not_fails, is_det,
+       cost(lb, gas, @C_TMP0@+@C_TMP1@*log2(length(M0)+1)),
+       cost(ub, gas, @C_TMP0@+@C_TMP1@*log2(length(M0)+1)) ).
 
 :- trust pred list_add(X, L0, L)
    => ( size(lb, L, length(L0)+1), size(ub, L, length(L0)+1) )
    + ( not_fails, is_det, cost(lb, gas, @C_NEW@), cost(ub, gas, @C_NEW@) ).
 
 :- trust pred arr_get(I, A, X)
-   + ( not_fails, is_det, cost(lb, gas, @C_ARR@), cost(ub, gas, @C_ARR@) ).
+   + ( not_fails, is_det, cost(lb, gas, @C_ARRR@), cost(ub, gas, @C_ARRR@) ).
 
 :- trust pred arr_set(I, V, A0, A)
    => ( size(lb, A, length(A0)), size(ub, A, length(A0)) )

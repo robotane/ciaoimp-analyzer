@@ -29,6 +29,7 @@ place(Amount, Offer, Caller, Sh, !Of, !B) :-
     Shares - OnSale >= N,
     clean_up(Of, none, !Of),                        % cleanUpOffers(null): scan of the offers
     map_put(Offer, 1, !Of),                         % offers.add(offer)
+    new_obj(snapshot),                              % Java: offers.snapshot() creates a view object
     store(snapshotOfOffers),                        % Java: snapshotOfOffers = offers.snapshot()
     emit(offer_placed).                             % event(new OfferPlaced(offer))
 
@@ -43,6 +44,7 @@ accept(Amount, Offer, Caller, !Sh, !Of, !B, Ok) :-
         remove_shares(Seller, N, !Sh),
         add_shares(Caller, N, !Sh),
         transfer(this, Seller, Cost, !B),           % offer.seller.receive(offer.cost)
+        new_obj(snapshot),                          % Java: shares.snapshot() creates a view object
         store(snapshotOfShares),                    % Java: snapshotOfShares = shares.snapshot()
         emit(offer_accepted),                       % event(new OfferAccepted(buyer, offer))
         Ok = 1
