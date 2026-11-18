@@ -13,21 +13,20 @@
 
 init(null, 0).
 
-% @Payable @FromContract invest(amount)
+:- payable(invest).                             % @Payable: the amount sent is received first
+
+% @FromContract invest(amount)
 invest(Caller, Value, !Last, !Amt, !B) :-
-    transfer(Caller, this, Value, !B),          % the amount sent with the call
     Value > Amt * 11 // 10,                     % require(amount > 110% of current)
     ( Last \== null ->
         transfer(this, Last, Value, !B)         % currentInvestor.receive(amount)
     ; true
     ),
-    store(currentInvestor),                     % Java: currentInvestor = caller()
-    Last := Caller,
-    store(currentInvestment),                   % Java: currentInvestment = amount
-    Amt := Value.
+    Last := Caller,                             % currentInvestor = caller()
+    Amt := Value.                               % currentInvestment = amount
 
 % --- Test: alice invests 100, then bob 120 ---
-% Expected: alice = 1020, bob = 880, this = 0.
+% Expected: alice = 1020, bob = 880, this = 100 (alice's amount stays: no previous investor).
 goal([A, Bo, T]) :-
     init(L0, A0),
     invest(alice, 100, L0, L1, A0, A1, [bal(alice, 1000), bal(bob, 1000), bal(this, 0)], B1),

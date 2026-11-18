@@ -13,6 +13,10 @@
 
 :- use_module(hotmoka).
 
+% Implicit costs (field writes, payable methods): see hotmoka_tr.pl.
+:- load_compilation_module(.(hotmoka_tr)).
+:- add_sentence_trans(hotmoka_tr:tr/3, 600).
+
 :- resource gas.
 :- head_cost(ub, gas, @C_STEP@).
 :- head_cost(lb, gas, @C_STEP@).
@@ -76,6 +80,10 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
 :- trust pred list_add(X, L0, L)
    => ( size(lb, L, length(L0)+1), size(ub, L, length(L0)+1) )
    + ( not_fails, is_det, cost(lb, gas, @C_NEW@), cost(ub, gas, @C_NEW@) ).
+
+:- trust pred list_size(L, N)
+   => ( size(lb, N, length(L)), size(ub, N, length(L)) )
+   + ( not_fails, is_det, cost(lb, gas, @C_FIELD@), cost(ub, gas, @C_FIELD@) ).
 
 :- trust pred arr_get(I, A, X)
    + ( not_fails, is_det, cost(lb, gas, @C_ARRR@), cost(ub, gas, @C_ARRR@) ).

@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "data" / "contracts_hotmoka"
 OUT = ROOT / "build" / "ciaopp_direct"
 RESULTS = ROOT / "results" / "ciaopp_direct_results.txt"
-LIBRARY = {"hotmoka.pl", "hotmoka_gas.pl"}
+LIBRARY = {"hotmoka.pl", "hotmoka_gas.pl", "hotmoka_tr.pl"}
 ENTRY_RE = re.compile(r"^:-\s*entry\s+([a-z]\w*)\(", re.M)
 
 

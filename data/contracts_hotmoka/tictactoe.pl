@@ -18,9 +18,10 @@ cells([C|T]) :- int(C), cells(T).
      atm(Circle0), var(Circle), int(Turn0), var(Turn), int(Over0), var(Over),
      cells(Board0), var(Board), balances(B0), var(B)).
 
-% @Payable @FromContract play(amount, x, y)
+:- payable(play).                             % @Payable: the amount sent is received first
+
+% @FromContract play(amount, x, y)
 play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :-
-    transfer(Caller, this, Amount, !B),             % the amount sent with the call
     Over =:= 0,                                     % require(!gameOver)
     X >= 1, X =< 3, Y >= 1, Y =< 3,                 % require(1 <= x && x <= 3 && 1 <= y && y <= 3)
     Idx is (Y - 1) * 3 + X - 1,
@@ -29,7 +30,6 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
     ( Turn =:= 1 ->                                 % if (turn == CROSS)
         ( Cross == null ->
             Amount >= 100,                          % require(amount >= MINIMUM_BET)
-            store(crossPlayer),                     % Java: crossPlayer = player
             Cross := Caller                         % crossPlayer = player
         ;
             Caller == Cross                         % require(player == crossPlayer)
@@ -40,7 +40,6 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
             balance(this, B, Bal),                  % balance()
             Prev is Bal - Amount,                   % previousBet
             Amount >= Prev,                         % require(amount >= previousBet)
-            store(circlePlayer),                    % Java: circlePlayer = player
             Circle := Caller                        % circlePlayer = player
         ;
             Caller == Circle                        % require(player == circlePlayer)
@@ -48,7 +47,6 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
     ),
     arr_set(Idx, Turn, !Board),                     % set(x, y, turn): board.set
     game_over(X, Y, Turn, Board, Over1),            % isGameOver(x, y)
-    store(gameOver),                                % Java: gameOver = true/false (in isGameOver)
     Over := Over1,                                  % gameOver = ...
     ( Over1 =:= 1 ->
         balance(this, B, Bal1),                     % balance()
@@ -63,7 +61,6 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
             transfer(this, Creator, Bal3, !B)       % creator.receive(balance())
         ;
             NT is 3 - Turn,
-            store(turn),                            % Java: turn = turn.nextTurn()
             Turn := NT                              % turn = turn.nextTurn()
         )
     ).

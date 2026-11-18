@@ -2,25 +2,27 @@
 % Shareholders sell shares through offers.
 % State: Sh = shares, tree map kv(Shareholder, Number);
 %        Of = offers, tree set kv(offer(Seller, Cost, Number, Ongoing), 1)
-%             (Ongoing = 1 while the offer is ongoing, 0 once expired).
+%             (Ongoing = 1 while the offer is ongoing, 0 once expired);
+%        SnapO = snapshotOfOffers, SnapS = snapshotOfShares (the last snapshots taken, or none).
 % B: coin balances, list of bal(Address, Amount).
 
-:- module(_, [place/8, accept/10, goal/1],
+:- module(_, [place/10, accept/12, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
 
 :- regtype offer/1.
 offer(offer(Seller, Cost, N, Ongoing)) :- atm(Seller), int(Cost), int(N), int(Ongoing).
 
-:- entry place(Amount, Offer, Caller, Sh, Of0, Of, B0, B) :
-    (int(Amount), offer(Offer), atm(Caller), map(Sh), map(Of0), var(Of),
-     balances(B0), var(B)).
-:- entry accept(Amount, Offer, Caller, Sh0, Sh, Of0, Of, B0, B, Ok) :
-    (int(Amount), offer(Offer), atm(Caller), map(Sh0), var(Sh), map(Of0), var(Of),
-     balances(B0), var(B), var(Ok)).
+:- entry place(Caller, Amount, Offer, Sh, Of0, Of, SnapO0, SnapO, B0, B) :
+    (atm(Caller), int(Amount), offer(Offer), map(Sh), map(Of0), var(Of),
+     atm(SnapO0), var(SnapO), balances(B0), var(B)).
+:- entry accept(Caller, Amount, Offer, Sh0, Sh, Of0, Of, SnapS0, SnapS, B0, B, Ok) :
+    (atm(Caller), int(Amount), offer(Offer), map(Sh0), var(Sh), map(Of0), var(Of),
+     atm(SnapS0), var(SnapS), balances(B0), var(B), var(Ok)).
 
-% @FromContract @Payable place(amount, offer)
-place(Amount, Offer, Caller, Sh, !Of, !B) :-
-    transfer(Caller, this, Amount, !B),             % the amount sent with the call
+:- payable(place).                             % @Payable: the amount sent is received first
+
+% @FromContract place(amount, offer)
+place(Caller, Amount, Offer, Sh, !Of, !SnapO, !B) :-
     Offer = offer(Seller, _, N, _),
     Seller == Caller,                               % require(offer.seller == seller)
     map_get(Seller, Sh, 0, Mine), Mine > 0,         % require(shares.containsKey(seller))
@@ -30,13 +32,14 @@ place(Amount, Offer, Caller, Sh, !Of, !B) :-
     clean_up(Of, none, !Of),                        % cleanUpOffers(null): scan of the offers
     map_put(Offer, 1, !Of),                         % offers.add(offer)
     new_obj(snapshot),                              % Java: offers.snapshot() creates a view object
-    store(snapshotOfOffers),                        % Java: snapshotOfOffers = offers.snapshot()
+    SnapO := snapshot,                              % snapshotOfOffers = offers.snapshot()
     emit(offer_placed).                             % event(new OfferPlaced(offer))
 
-% @FromContract @Payable accept(amount, offer)
+:- payable(accept).                             % @Payable: the amount sent is received first
+
+% @FromContract accept(amount, offer)
 % Ok = 1 when the offer is accepted (the Java call fails otherwise).
-accept(Amount, Offer, Caller, !Sh, !Of, !B, Ok) :-
-    transfer(Caller, this, Amount, !B),             % the amount sent with the call
+accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B, Ok) :-
     map_get(Offer, Of, 0, Known),                   % require(offers.contains(offer))
     Offer = offer(Seller, Cost, N, Ongoing),
     ( Known =:= 1, Ongoing =:= 1, Cost =< Amount ->
@@ -45,7 +48,7 @@ accept(Amount, Offer, Caller, !Sh, !Of, !B, Ok) :-
         add_shares(Caller, N, !Sh),
         transfer(this, Seller, Cost, !B),           % offer.seller.receive(offer.cost)
         new_obj(snapshot),                          % Java: shares.snapshot() creates a view object
-        store(snapshotOfShares),                    % Java: snapshotOfShares = shares.snapshot()
+        SnapS := snapshot,                          % snapshotOfShares = shares.snapshot()
         emit(offer_accepted),                       % event(new OfferAccepted(buyer, offer))
         Ok = 1
     ; Ok = 0
@@ -95,7 +98,7 @@ goal([Sh, A, C]) :-
     Sh0 = [kv(alice, 60), kv(bob, 40)],
     B0 = [bal(alice, 1000), bal(bob, 1000), bal(charlie, 1000), bal(this, 0)],
     O = offer(alice, 200, 10, 1),
-    place(0, O, alice, Sh0, [], Of1, B0, B1),
-    accept(200, O, charlie, Sh0, Sh, Of1, _, B1, B2, 1),
+    place(alice, 0, O, Sh0, [], Of1, none, _, B0, B1),
+    accept(charlie, 200, O, Sh0, Sh, Of1, _, none, _, B1, B2, 1),
     balance(alice, B2, A),
     balance(charlie, B2, C).

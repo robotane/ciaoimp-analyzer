@@ -19,7 +19,7 @@ mint(Caller, Owner, To, TokenId, !TO, !NB) :-
 transfer_from(Caller, From, To, TokenId, !TO, !NB, !Ap, OO, Op) :-
     transfer_from_(Caller, From, To, TokenId, !TO, !NB, !Ap, OO, Op).
 
-% store/1: none, the library only updates storage maps here (inferred from the standard ERC721 implementation).
+% No field write: the library only updates storage maps here (inferred from the standard ERC721 implementation).
 % ERC721 core (the Takamaka sources are not on disk: the work of the inherited methods follows
 % hotmoka-bench/costmodel/java_vs_prolog.md (lib)).
 % State: TO = tokenOwners, tree map kv(TokenId, Owner);

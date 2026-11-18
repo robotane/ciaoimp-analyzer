@@ -19,18 +19,17 @@ init(BiddingTime, Now, End, Bidder) :-
     End is Now + BiddingTime,                       % auctionEnd = now() + biddingTime
     Bidder = null.
 
-% @Payable @FromContract bid(amount)
+:- payable(bid).                             % @Payable: the amount sent is received first
+
+% @FromContract bid(amount)
 bid(Caller, Amount, Now, End, !HBid, !HBdr, !B) :-
-    transfer(Caller, this, Amount, !B),             % the amount sent with the call
     Now < End,                                      % require(now() < auctionEnd)
     Amount > HBid,                                  % require(amount > highestBid)
     ( HBdr \== null ->
         transfer(this, HBdr, HBid, !B)              % highestBidder.receive(highestBid)
     ; true
     ),
-    store(highestBidder),                           % Java: highestBidder = caller()
     HBdr := Caller,                                 % highestBidder = caller()
-    store(highestBid),                              % Java: highestBid = amount
     HBid := Amount,                                 % highestBid = amount
     emit(bid_increase).                             % event(new BidIncrease(highestBidder, amount))
 
@@ -41,7 +40,6 @@ auction_end(Bene, Now, End, HBid, !HBdr, !B, Winner) :-
     ( Winner \== null ->
         transfer(this, Bene, HBid, !B),             % beneficiary.receive(highestBid)
         emit(auction_end),                          % event(new AuctionEnd(winner, highestBid))
-        store(highestBidder),                       % Java: highestBidder = null
         HBdr := null                                % highestBidder = null
     ; true
     ).

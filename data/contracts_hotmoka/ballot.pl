@@ -8,11 +8,15 @@
 %        Pr = proposals, StorageLinkedList<Proposal>, list of proposal(Index, Name, VoteCount)
 %             (Index = position in the list: it only serves to stop the walk of
 %             proposals.get(i) without a numeric counter; it is not a field of Proposal).
-% Mutations in place of the Java objects (a paper, a proposal) are rebuilt by
-% set_paper/set_proposal: they cost only their resolution steps, no tree access.
+% Fields of the storage objects (a paper, a proposal) are written with set_field (see
+% hotmoka_tr.pl); the re-insertion of the object in the map/list (set_paper) costs only
+% its resolution steps, no tree access.
 
 :- module(_, [init/4, give_right/5, vote/6, delegate/6, winner/2, goal/1, goal_chain/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+
+:- class(paper(weight, hasVoted, delegate, votedProposal)).
+:- class(proposal(index, name, voteCount)).
 
 :- regtype props/1.
 props([]).
@@ -48,24 +52,27 @@ give_right(Caller, Chair, To, !Pa) :-
         new_obj(paper),                             % new VotingPaper() (not yet in the tree)
         map_put(To, paper(1, 0, null, -1), !Pa)     % computeIfAbsent puts the new key; giveRightToVote(): weight = 1
     ;
-        paper_fields(P0, W, HV, D, VP),
+        paper_fields(P0, W, HV, _, _),
         HV =:= 0,                                   % require(!paper.hasVoted())
         W =:= 0,                                    % require(!paper.hasRightToVote())
-        store(weight),                              % Java: this.weight = 1 (existing paper)
-        set_paper(To, paper(1, HV, D, VP), !Pa)     % paper.giveRightToVote(): weight = 1 (in place)
+        set_field(P0, weight, 1, P1),               % paper.giveRightToVote(): weight = 1 (in place)
+        set_paper(To, P1, !Pa)                      % (the paper is mutated in place in Java)
     ).
 
 % @FromContract voteFor(proposalIndex)
 vote(Caller, Index, !Pa, !Pr) :-
     map_get(Caller, Pa, none, P),                   % getVotingPaperFor(caller()): papers.get(caller)
-    paper_fields(P, W, HV, D, _),
+    paper_fields(P, W, HV, _, _),
     HV =:= 0,                                       % require(!paper.hasVoted())
     W > 0,                                          % require(paper.hasRightToVote())
-    add_votes(Index, W, !Pr),                       % proposals.get(index): walk; proposal.voteCount += weight
-    store(voteCount),                               % Java: proposal.voteCount += weight
-    store(hasVoted),                                % Java: hasVoted = true
-    store(votedProposal),                           % Java: votedProposal = proposal
-    set_paper(Caller, paper(W, 1, D, Index), !Pa).  % hasVoted = true; votedProposal = proposal
+    get_proposal(Index, Pr, Prop),                  % proposals.get(index): walk
+    Prop = proposal(_, _, Cnt),
+    Cnt1 is Cnt + W,
+    set_field(Prop, voteCount, Cnt1, Prop1),        % proposal.voteCount += weight
+    set_field(P, hasVoted, 1, P1),                  % hasVoted = true
+    set_field(P1, votedProposal, Index, P2),        % votedProposal = proposal
+    put_proposal(Index, Prop1, !Pr),                % (the proposal is mutated in place in Java)
+    set_paper(Caller, P2, !Pa).                     % (the paper is mutated in place in Java)
 
 % @FromContract delegate(to)
 delegate(To, Caller, !Pa, !Pr) :-
@@ -73,7 +80,7 @@ delegate(To, Caller, !Pa, !Pr) :-
     paper_fields(PTo, WTo0, _, _, _),
     WTo0 > 0,                                       % require(delegatedPaper.hasRightToVote())
     map_get(Caller, Pa, none, PC),                  % getVotingPaperFor(caller()): papers.get(caller)
-    paper_fields(PC, W, HV, _, VP),
+    paper_fields(PC, W, HV, _, _),
     HV =:= 0,                                       % require(!paper.hasVoted())
     W > 0,                                          % require(paper.hasRightToVote())
     To \== Caller,                                  % require(delegate != payer)
@@ -81,23 +88,22 @@ delegate(To, Caller, !Pa, !Pr) :-
     map_get(To, Pa, none, From),                    % from = papers.get(delegate)
     paper_fields(From, _, _, Del, _),
     follow(Pa, Del, Pa, [], To, Fin),               % computeFinalDelegate: the walk, at most one hop per paper
-    store(hasVoted),                                % Java: this.hasVoted = true
-    store(delegate),                                % Java: this.delegate = delegate
     % The papers are rebuilt (set_paper, no cost) only after the costly goals: CiaoPP does not
     % see that set_paper has a single solution and would multiply what follows by length(Pa).
     % Reading the paper of Fin before rebuilding the paper of Caller is the same (Fin \== Caller).
     map_get(Fin, Pa, none, PF),                     % paperOfDelegate = papers.get(delegate)
-    paper_fields(PF, WF, HVF, DF, VPF),
+    paper_fields(PF, WF, HVF, _, VPF),
     ( HVF =:= 1 ->                                  % if (paperOfDelegate.hasVoted())
         load(voted_proposal),                       % votedProposal (a reference to a Proposal object)
-        store(voteCount),                           % Java: votedProposal.voteCount += weight
         set_proposal(VPF, W, !Pr)                   % votedProposal.voteCount += weight
     ;
         WF1 is WF + W,
-        store(weight),                              % Java: paperOfDelegate.weight += weight
-        set_paper(Fin, paper(WF1, HVF, DF, VPF), !Pa)   % paperOfDelegate.weight += weight
+        set_field(PF, weight, WF1, PF1),            % paperOfDelegate.weight += weight
+        set_paper(Fin, PF1, !Pa)                    % (the paper is mutated in place in Java)
     ),
-    set_paper(Caller, paper(W, 1, Fin, VP), !Pa).   % this.hasVoted = true; this.delegate = delegate
+    set_field(PC, hasVoted, 1, PC1),                % this.hasVoted = true
+    set_field(PC1, delegate, Fin, PC2),             % this.delegate = delegate
+    set_paper(Caller, PC2, !Pa).                    % (the paper is mutated in place in Java)
 
 % computeFinalDelegate. Java: from = papers.get(delegate); while (from.delegate != null) {
 % delegate = from.delegate; require(delegate != payer); require(!seen.contains(delegate));
@@ -143,24 +149,33 @@ best([P|T], Name, Count) :-
     ; C =< C1 -> Name = N, Count = C
     ; Name = N1, Count = C1 ).
 
-% proposals.get(index) then proposal.voteCount += weight: the walk loads one node per step.
-add_votes(I0, W, [P|T], [proposal(I, N, C1)|T]) :-
-    P = proposal(I, N, C),
+% proposals.get(index): the walk loads one node per step; the Proposal is returned.
+get_proposal(I0, [P|_], P) :-
+    P = proposal(I, _, _),
     I =:= I0,
     load(P),                                        % the node
-    load(P),                                        % the Proposal
-    C1 is C + W.
-add_votes(I0, W, [P|T], [P|T1]) :-
+    load(P).                                        % the Proposal
+get_proposal(I0, [P|T], X) :-
     P = proposal(I, _, _),
     I =\= I0,
     load(P),                                        % the node
-    add_votes(I0, W, T, T1).
+    get_proposal(I0, T, X).
+
+% The functional update of the proposal I0 (no cost of its own besides the steps).
+put_proposal(I0, V, [P|T], [V|T]) :-
+    P = proposal(I, _, _),
+    I =:= I0.
+put_proposal(I0, V, [P|T], [P|T1]) :-
+    P = proposal(I, _, _),
+    I =\= I0,
+    put_proposal(I0, V, T, T1).
 
 % proposal.voteCount += weight on a Proposal already reached through a reference.
-set_proposal(I0, W, [P|T], [proposal(I, N, C1)|T]) :-
-    P = proposal(I, N, C),
+set_proposal(I0, W, [P|T], [P1|T]) :-
+    P = proposal(I, _, C),
     I =:= I0,
-    C1 is C + W.
+    C1 is C + W,
+    set_field(P, voteCount, C1, P1).
 set_proposal(I0, W, [P|T], [P|T1]) :-
     P = proposal(I, _, _),
     I =\= I0,

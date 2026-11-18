@@ -30,9 +30,10 @@ init(BiddingTime, Now, BEnd, HBdr) :-
     BEnd is Now + BiddingTime,                      % biddingEnd = now() + biddingTime
     HBdr = null.                                    % no highest bidder yet
 
-% @Payable @FromContract bid(amount, hash)
+:- payable(bid).                             % @Payable: the amount sent is received first
+
+% @FromContract bid(amount, hash)
 bid(Caller, Amount, Now, BEnd, Hash, !Bids, !B) :-
-    transfer(Caller, this, Amount, !B),             % the amount sent with the call
     Now =< BEnd,                                    % onlyBefore(biddingEnd)
     map_get(Caller, Bids, none, L0),                % bids.computeIfAbsent(caller, ...): tree get
     ( L0 == none ->
@@ -78,9 +79,7 @@ place_bid(Bidder, Value, !HBdr, !HBid, !B) :-
         transfer(this, HBdr, HBid, !B)              % highestBidder.receive(highestBid)
     ; true
     ),
-    store(highestBid),                              % Java: highestBid = value
     HBid := Value,                                  % highestBid = value
-    store(highestBidder),                           % Java: highestBidder = bidder
     HBdr := Bidder,                                 % highestBidder = bidder
     emit(bid_increase).                             % event(new BidIncrease(bidder, value))
 
@@ -91,7 +90,6 @@ auction_end(Bene, Now, REnd, HBid, !HBdr, !B, Winner) :-
     ( Winner \== null ->
         transfer(this, Bene, HBid, !B),             % beneficiary.receive(highestBid)
         emit(auction_end),                          % event(new AuctionEnd(winner, highestBid))
-        store(highestBidder),                       % Java: highestBidder = null
         HBdr := null                                % highestBidder = null
     ; true
     ).

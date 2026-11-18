@@ -9,6 +9,7 @@
 %                balance/3  (read the balance of an account)
 %   tree maps    map_get/4, map_put/4, map_remove/3 (StorageTreeMap, StorageTreeSet)
 %   linked lists list_add/3 (StorageLinkedList.add: one new node)
+%                list_size/2 (StorageLinkedList.size: reads its size field)
 %   arrays       arr_get/3, arr_set/4 (StorageTreeArray of fixed size)
 %   objects      load/1   (read a storage object while scanning a collection)
 %                new_obj/1 (create a storage object)
@@ -19,7 +20,7 @@
 
 :- module(hotmoka, [transfer/5, balance/3,
                     map_get/4, map_put/4, map_remove/3, tmp_get/4, tmp_put/4,
-                    list_add/3, arr_get/3, arr_set/4,
+                    list_add/3, list_size/2, arr_get/3, arr_set/4,
                     load/1, new_obj/1, emit/1, store/1], []).
 
 % --- Coins: list of bal(Address, Amount) ---
@@ -64,6 +65,9 @@ tmp_put(K, V, M0, M) :- map_put(K, V, M0, M).
 list_add(X, [], [X]).
 list_add(X, [Y|T], [Y|T1]) :-
     list_add(X, T, T1).
+
+list_size([], 0).
+list_size([_|T], N) :- list_size(T, N0), N is N0 + 1.
 
 % --- Arrays: list of cells, index from 0 ---
 
