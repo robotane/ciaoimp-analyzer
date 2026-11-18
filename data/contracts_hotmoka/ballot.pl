@@ -11,7 +11,7 @@
 % Mutations in place of the Java objects (a paper, a proposal) are rebuilt by
 % set_paper/set_proposal: they cost only their resolution steps, no tree access.
 
-:- module(_, [init/4, give_right/5, vote/6, delegate/6, winner/2, goal/1],
+:- module(_, [init/4, give_right/5, vote/6, delegate/6, winner/2, goal/1, goal_chain/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
 
 :- regtype props/1.
@@ -80,14 +80,11 @@ delegate(To, Caller, !Pa, !Pr) :-
     new_obj(seen),                                  % seen = new StorageTreeSet<>()
     map_get(To, Pa, none, From),                    % from = papers.get(delegate)
     paper_fields(From, _, _, Del, _),
-    follow(Pa, Del, Pa, []),                        % computeFinalDelegate: the walk, at most one hop per paper
-    % KNOWN DEVIATION: CiaoPP gives no finite bound when the final delegate is returned by the
-    % recursion, so the code below uses To (the first delegate) where Java uses the final one.
-    % The cost is the same; the state differs from Java only when the chain has more than one hop.
+    follow(Pa, Del, Pa, [], To, Fin),               % computeFinalDelegate: the walk, at most one hop per paper
     store(hasVoted),                                % Java: this.hasVoted = true
     store(delegate),                                % Java: this.delegate = delegate
-    set_paper(Caller, paper(W, 1, To, VP), !Pa),    % this.hasVoted = true; this.delegate = delegate
-    map_get(To, Pa, none, PF),                      % paperOfDelegate = papers.get(delegate)
+    set_paper(Caller, paper(W, 1, Fin, VP), !Pa),   % this.hasVoted = true; this.delegate = delegate
+    map_get(Fin, Pa, none, PF),                     % paperOfDelegate = papers.get(delegate)
     paper_fields(PF, WF, HVF, DF, VPF),
     ( HVF =:= 1 ->                                  % if (paperOfDelegate.hasVoted())
         load(voted_proposal),                       % votedProposal (a reference to a Proposal object)
@@ -96,7 +93,7 @@ delegate(To, Caller, !Pa, !Pr) :-
     ;
         WF1 is WF + W,
         store(weight),                              % Java: paperOfDelegate.weight += weight
-        set_paper(To, paper(WF1, HVF, DF, VPF), !Pa)    % paperOfDelegate.weight += weight
+        set_paper(Fin, paper(WF1, HVF, DF, VPF), !Pa)   % paperOfDelegate.weight += weight
     ).
 
 % computeFinalDelegate. Java: from = papers.get(delegate); while (from.delegate != null) {
@@ -104,20 +101,22 @@ delegate(To, Caller, !Pa, !Pr) :-
 % seen.add(delegate); from = papers.get(delegate); }
 % Del = from.delegate. A chain has at most one hop per paper: the recursion is over the list of papers.
 % The addresses carried along are not measured (size_metric void).
-:- trust comp follow(Ps, Del, Pa, Seen)
-   + (size_metric(Ps, length), size_metric(Del, void), size_metric(Pa, length), size_metric(Seen, length)).
+% Final = the final delegate (returned along the recursion; not measured: size_metric void).
+:- trust comp follow(Ps, Del, Pa, Seen, Last, Final)
+   + (size_metric(Ps, length), size_metric(Del, void), size_metric(Pa, length), size_metric(Seen, length),
+      size_metric(Last, void), size_metric(Final, void)).
 :- trust comp differ(A, B) + (size_metric(A, void), size_metric(B, void)).
 
-follow([], _, _, _).                                % never reached (a chain visits distinct papers)
-follow([_|Rest], Del, Pa, Seen) :-
+follow([], _, _, _, Last, Last).                    % never reached (a chain visits distinct papers)
+follow([_|Rest], Del, Pa, Seen, _, Final) :-
     differ(Del, null),                              % while (from.delegate != null)
     map_get(Del, Seen, 0, InSeen),                  % seen.contains(delegate)
     InSeen =:= 0,                                   % require(!seen.contains(delegate))
     map_put(Del, 1, Seen, Seen1),                   % seen.add(delegate)
     map_get(Del, Pa, none, From),                   % from = papers.get(delegate)
     paper_fields(From, _, _, Del1, _),
-    follow(Rest, Del1, Pa, Seen1).
-follow([_|_], null, _, _).                          % from.delegate == null: the walk ends
+    follow(Rest, Del1, Pa, Seen1, Del, Final).      % delegate = from.delegate
+follow([_|_], null, _, _, Last, Last).              % from.delegate == null: the walk ends
 
 differ(A, B) :- A \== B.
 
@@ -186,3 +185,17 @@ goal(W) :-
     vote(charlie, 1, Pa5, Pa6, Pr2, Pr3),
     vote(admin, 0, Pa6, _, Pr3, Pr4),
     winner(Pr4, W).
+
+% --- Test of a chain: bob delegates to alice (who has not voted), then dan delegates
+% to bob: the final delegate of dan is alice, who gets weight 3 and votes prop_b (1).
+% Expected votes: prop_a 0, prop_b 3, prop_c 0; winner (fewest, first one): prop_a. ---
+goal_chain([W, WA]) :-
+    init(admin, [prop_a, prop_b, prop_c], Pa0, Pr0),
+    give_right(admin, admin, alice, Pa0, Pa1),
+    give_right(admin, admin, bob, Pa1, Pa2),
+    give_right(admin, admin, dan, Pa2, Pa3),
+    delegate(alice, bob, Pa3, Pa4, Pr0, Pr1),
+    delegate(bob, dan, Pa4, Pa5, Pr1, Pr2),
+    map_get(alice, Pa5, none, paper(WA, _, _, _)),
+    vote(alice, 1, Pa5, _, Pr2, Pr3),
+    winner(Pr3, W).
