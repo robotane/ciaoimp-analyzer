@@ -12,6 +12,8 @@
 :- module(_, [token_transfer/5, mint/8, burn/8, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- entry token_transfer(Caller, To, Amount, Bal0, Bal) :
     (atm(Caller), atm(To), int(Amount), map(Bal0), var(Bal)).
 :- entry mint(Caller, Owner, Account, Amount, Bal0, Bal, Total0, Total) :
@@ -21,14 +23,14 @@
 
 % ERC20.transfer(recipient, amount) = _transfer(caller(), recipient, amount)
 token_transfer(Caller, To, Amount, !Bal) :-
-    map_get(Caller, Bal, 0, B1),                    % balanceOf(sender)
+    B1 = ~map_get(Caller, Bal, 0),                  % balanceOf(sender)
     B1 >= Amount,                                   % subtract: fails if negative
     new_obj(ubi),                                   % .subtract(amount): new UnsignedBigInteger
-    B1n is B1 - Amount,
+    B1n = B1 - Amount,
     map_put(Caller, B1n, !Bal),                     % balances.put(sender, ...)
-    map_get(To, Bal, 0, B2),                        % balanceOf(recipient)
+    B2 = ~map_get(To, Bal, 0),                      % balanceOf(recipient)
     new_obj(ubi),                                   % .add(amount): new UnsignedBigInteger
-    B2n is B2 + Amount,
+    B2n = B2 + Amount,
     map_put(To, B2n, !Bal),                         % balances.put(recipient, ...)
     emit(transfer).                                 % event(new Transfer(sender, recipient, amount))
 
@@ -36,11 +38,11 @@ token_transfer(Caller, To, Amount, !Bal) :-
 mint(Caller, Owner, Account, Amount, !Bal, !Total) :-
     Caller == Owner,                                % require(caller() == owner)
     new_obj(ubi),                                   % totalSupply.add(amount)
-    Tn is Total + Amount,
+    Tn = Total + Amount,
     Total := Tn,                                    % lib: totalSupply = totalSupply.add/subtract(amount)
-    map_get(Account, Bal, 0, B0),                   % balanceOf(account)
+    B0 = ~map_get(Account, Bal, 0),                 % balanceOf(account)
     new_obj(ubi),                                   % .add(amount)
-    B1 is B0 + Amount,
+    B1 = B0 + Amount,
     map_put(Account, B1, !Bal),                     % balances.put(account, ...)
     emit(transfer).                                 % event(new Transfer(null, account, amount))
 
@@ -48,12 +50,12 @@ mint(Caller, Owner, Account, Amount, !Bal, !Total) :-
 burn(Caller, Owner, Account, Amount, !Bal, !Total) :-
     Caller == Owner,                                % require(caller() == owner)
     new_obj(ubi),                                   % totalSupply.subtract(amount)
-    Tn is Total - Amount,
+    Tn = Total - Amount,
     Total := Tn,                                    % lib: totalSupply = totalSupply.add/subtract(amount)
-    map_get(Account, Bal, 0, B0),                   % balanceOf(account)
+    B0 = ~map_get(Account, Bal, 0),                 % balanceOf(account)
     B0 >= Amount,
     new_obj(ubi),                                   % .subtract(amount)
-    B1 is B0 - Amount,
+    B1 = B0 - Amount,
     map_put(Account, B1, !Bal),                     % balances.put(account, ...)
     emit(transfer).                                 % event(new Transfer(account, null, amount))
 
