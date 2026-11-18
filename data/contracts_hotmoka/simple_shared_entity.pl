@@ -9,6 +9,8 @@
 :- module(_, [place/10, accept/12, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- regtype offer/1.
 offer(offer(Seller, Cost, N, Ongoing)) :- atm(Seller), int(Cost), int(N), int(Ongoing).
 
@@ -25,9 +27,9 @@ offer(offer(Seller, Cost, N, Ongoing)) :- atm(Seller), int(Cost), int(N), int(On
 place(Caller, Amount, Offer, Sh, !Of, !SnapO, !B) :-
     Offer = offer(Seller, _, N, _),
     Seller == Caller,                               % require(offer.seller == seller)
-    map_get(Seller, Sh, 0, Mine), Mine > 0,         % require(shares.containsKey(seller))
-    map_get(Seller, Sh, 0, Shares),                 % sharesOf(seller)
-    on_sale(Of, Seller, OnSale),                      % sharesOnSaleOf(seller): scan of the offers
+    Mine = ~map_get(Seller, Sh, 0), Mine > 0,       % require(shares.containsKey(seller))
+    Shares = ~map_get(Seller, Sh, 0),               % sharesOf(seller)
+    OnSale = ~on_sale(Of, Seller),                    % sharesOnSaleOf(seller): scan of the offers
     Shares - OnSale >= N,
     clean_up(Of, none, !Of),                        % cleanUpOffers(null): scan of the offers
     map_put(Offer, 1, !Of),                         % offers.add(offer)
@@ -40,7 +42,7 @@ place(Caller, Amount, Offer, Sh, !Of, !SnapO, !B) :-
 % @FromContract accept(amount, offer)
 % Ok = 1 when the offer is accepted (the Java call fails otherwise).
 accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B, Ok) :-
-    map_get(Offer, Of, 0, Known),                   % require(offers.contains(offer))
+    Known = ~map_get(Offer, Of, 0),                 % require(offers.contains(offer))
     Offer = offer(Seller, Cost, N, Ongoing),
     if ((Known =:= 1, Ongoing =:= 1, Cost =< Amount)) {
         clean_up(Of, Offer, !Of),                   % cleanUpOffers(offer): scan of the offers
@@ -57,10 +59,10 @@ accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B, Ok) :-
 % (no accumulator: CiaoPP then measures the recursion on the list only)
 on_sale([], _, 0).
 on_sale([kv(O, _)|T], Seller, S) :-
-    on_sale(T, Seller, S1),
+    S1 = ~on_sale(T, Seller),
     load(O),
     O = offer(Sel, _, N, Ongoing),
-    if ((Sel == Seller, Ongoing =:= 1)) { S is S1 + N } else { S = S1 }.
+    if ((Sel == Seller, Ongoing =:= 1)) { S = S1 + N } else { S = S1 }.
 
 % cleanUpOffers(toRemove): removes toRemove and the offers no longer ongoing.
 % It scans the offers of the call (first argument) and removes from !Of.
@@ -76,10 +78,10 @@ to_remove(offer(_, _, _, 0), _).
 
 % removeShares: shares.update (get + put); the entry goes when it reaches 0.
 remove_shares(Holder, N, !Sh) :-
-    map_get(Holder, Sh, 0, S0),
-    S1 is S0 - N,
+    S0 = ~map_get(Holder, Sh, 0),
+    S1 = S0 - N,
     map_put(Holder, S1, !Sh),
-    map_get(Holder, Sh, 0, S2),                     % shares.get(shareholder).signum()
+    S2 = ~map_get(Holder, Sh, 0),                   % shares.get(shareholder).signum()
     if (S2 =:= 0) {
         map_remove(Holder, !Sh),
         emit(shareholder_removed)
@@ -87,8 +89,8 @@ remove_shares(Holder, N, !Sh) :-
 
 % addShares: shares.update with a default (new shareholder: one more event).
 add_shares(Holder, N, !Sh) :-
-    map_get(Holder, Sh, none, S0),
-    if (S0 == none) { emit(shareholder_added), S1 is N } else { S1 is S0 + N },
+    S0 = ~map_get(Holder, Sh, none),
+    if (S0 == none) { emit(shareholder_added), S1 is N } else { S1 = S0 + N },
     map_put(Holder, S1, !Sh).
 
 % --- Test: alice 60 shares, bob 40; alice offers 10 shares for 200, charlie accepts ---
