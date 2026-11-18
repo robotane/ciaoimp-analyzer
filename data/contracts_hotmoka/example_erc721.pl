@@ -4,6 +4,8 @@
 :- module(_, [mint/8, transfer_from/12, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- entry mint(Caller, Owner, To, TokenId, TO0, TO, NB0, NB) :
     (atm(Caller), atm(Owner), atm(To), int(TokenId), map(TO0), var(TO), map(NB0), var(NB)).
 :- entry transfer_from(Caller, From, To, TokenId, TO0, TO, NB0, NB, Ap0, Ap, OO, Op) :
@@ -34,39 +36,39 @@ transfer_from(Caller, From, To, TokenId, !TO, !NB, !Ap, OO, Op) :-
 
 % _mint(to, tokenId)
 mint_(To, TokenId, !TO, !NB) :-
-    map_get(TokenId, TO, none, E),                  % require(!_exists(tokenId)): tokenOwners.get
+    E = ~map_get(TokenId, TO, none),                % require(!_exists(tokenId)): tokenOwners.get
     E == none,
     map_put(TokenId, To, !TO),                      % tokenOwners.put(tokenId, to)
-    map_get(To, NB, 0, C),                          % ownedTokensCount.getOrDefault(to, ZERO)
+    C = ~map_get(To, NB, 0),                        % ownedTokensCount.getOrDefault(to, ZERO)
     new_obj(ubi),                                   % .add(ONE)
-    C1 is C + 1,
+    C1 = C + 1,
     map_put(To, C1, !NB),                           % ownedTokensCount.put(to, ...)
     emit(transfer).                                 % event(new Transfer(null, to, tokenId))
 
 % _isApprovedOrOwner(spender, tokenId), Owner = ownerOf(tokenId) already read
 approved_or_owner(Spender, Owner, TokenId, Ap, OO, Op) :-
     if (Spender == Owner) { true }
-    else if ((map_get(TokenId, Ap, none, A), A == Spender)) { true }     % getApproved(tokenId) == spender
+    else if ((A = ~map_get(TokenId, Ap, none), A == Spender)) { true }   % getApproved(tokenId) == spender
     else {
         map_get(Owner, OO, none, _),                            % isApprovedForAll(owner, spender):
-        map_get(op(Owner, Spender), Op, 0, V), V =:= 1          %   operatorApprovals.get(owner).getOrDefault(spender)
+        V = ~map_get(op(Owner, Spender), Op, 0), V =:= 1        %   operatorApprovals.get(owner).getOrDefault(spender)
     }.
 
 % transferFrom(from, to, tokenId)
 transfer_from_(Caller, From, To, TokenId, !TO, !NB, !Ap, OO, Op) :-
-    map_get(TokenId, TO, none, O),                  % ownerOf(tokenId) in _isApprovedOrOwner
+    O = ~map_get(TokenId, TO, none),                % ownerOf(tokenId) in _isApprovedOrOwner
     O \== none,
     approved_or_owner(Caller, O, TokenId, Ap, OO, Op),   % require(_isApprovedOrOwner(caller(), tokenId))
-    map_get(TokenId, TO, none, O2),                 % require(ownerOf(tokenId) == from) in _transferFrom
+    O2 = ~map_get(TokenId, TO, none),               % require(ownerOf(tokenId) == from) in _transferFrom
     O2 == From,
     map_remove(TokenId, !Ap),                       % _clearApproval(tokenId)
-    map_get(From, NB, 0, C1),                       % ownedTokensCount.get(from)
+    C1 = ~map_get(From, NB, 0),                     % ownedTokensCount.get(from)
     new_obj(ubi),                                   % .subtract(ONE)
-    C1n is C1 - 1,
+    C1n = C1 - 1,
     map_put(From, C1n, !NB),                        % ownedTokensCount.put(from, ...)
-    map_get(To, NB, 0, C2),                         % ownedTokensCount.getOrDefault(to, ZERO)
+    C2 = ~map_get(To, NB, 0),                       % ownedTokensCount.getOrDefault(to, ZERO)
     new_obj(ubi),                                   % .add(ONE)
-    C2n is C2 + 1,
+    C2n = C2 + 1,
     map_put(To, C2n, !NB),                          % ownedTokensCount.put(to, ...)
     map_put(TokenId, To, !TO),                      % tokenOwners.put(tokenId, to)
     emit(transfer).                                 % event(new Transfer(from, to, tokenId))
