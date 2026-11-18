@@ -25,7 +25,7 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
     Over =:= 0,                                     % require(!gameOver)
     X >= 1, X =< 3, Y >= 1, Y =< 3,                 % require(1 <= x && x <= 3 && 1 <= y && y <= 3)
     Idx is (Y - 1) * 3 + X - 1,
-    arr_get(Idx, Board, Cell),                      % require(at(x, y) == EMPTY): board.get
+    Cell = ~arr_get(Idx, Board),                    % require(at(x, y) == EMPTY): board.get
     Cell =:= 0,
     if (Turn =:= 1) {                               % if (turn == CROSS)
         if (Cross == null) {
@@ -37,7 +37,7 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
     } else {
         if (Circle == null) {
             Caller \== Cross,                       % require(crossPlayer != player)
-            balance(this, B, Bal),                  % balance()
+            Bal = ~balance(this, B),                % balance()
             Prev is Bal - Amount,                   % previousBet
             Amount >= Prev,                         % require(amount >= previousBet)
             Circle := Caller                        % circlePlayer = player
@@ -46,18 +46,18 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
         }
     },
     arr_set(Idx, Turn, !Board),                     % set(x, y, turn): board.set
-    game_over(X, Y, Turn, Board, Over1),            % isGameOver(x, y)
+    Over1 = ~game_over(X, Y, Turn, Board),          % isGameOver(x, y)
     Over := Over1,                                  % gameOver = ...
     if (Over1 =:= 1) {
-        balance(this, B, Bal1),                     % balance()
+        Bal1 = ~balance(this, B),                   % balance()
         Win is Bal1 * 9 // 10,                      % 90% goes to the winner
         transfer(this, Caller, Win, !B),            % player.receive(...)
-        balance(this, B, Bal2),                     % balance()
+        Bal2 = ~balance(this, B),                   % balance()
         transfer(this, Creator, Bal2, !B)           % creator.receive(balance())
     } else {
-        is_full(Board, Full),                       % isDraw()
+        Full = ~is_full(Board),                     % isDraw()
         if (Full =:= 1) {
-            balance(this, B, Bal3),                 % balance()
+            Bal3 = ~balance(this, B),               % balance()
             transfer(this, Creator, Bal3, !B)       % creator.receive(balance())
         } else {
             NT is 3 - Turn,
@@ -69,10 +69,10 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
 % the 12 reads are all done here (an upper bound of every path: CiaoPP does not charge the reads
 % of a test that fails half-way), then the tests are evaluated in the order of Java.
 game_over(X, Y, T, B, Over) :-
-    at(X, 1, B, A1), at(X, 2, B, A2), at(X, 3, B, A3),            % column x
-    at(1, Y, B, R1), at(2, Y, B, R2), at(3, Y, B, R3),            % row y
-    at(1, 1, B, D1), at(2, 2, B, D2), at(3, 3, B, D3),            % first diagonal
-    at(1, 3, B, E1), at(2, 2, B, E2), at(3, 1, B, E3),            % second diagonal
+    A1 = ~at(X, 1, B), A2 = ~at(X, 2, B), A3 = ~at(X, 3, B),      % column x
+    R1 = ~at(1, Y, B), R2 = ~at(2, Y, B), R3 = ~at(3, Y, B),      % row y
+    D1 = ~at(1, 1, B), D2 = ~at(2, 2, B), D3 = ~at(3, 3, B),      % first diagonal
+    E1 = ~at(1, 3, B), E2 = ~at(2, 2, B), E3 = ~at(3, 1, B),      % second diagonal
     if ((A1 =:= T, A2 =:= T, A3 =:= T)) { Over = 1 }
     else if ((R1 =:= T, R2 =:= T, R3 =:= T)) { Over = 1 }
     else if ((X =:= Y, D1 =:= T, D2 =:= T, D3 =:= T)) { Over = 1 }
@@ -82,14 +82,14 @@ game_over(X, Y, T, B, Over) :-
 % at(x, y)
 at(X, Y, Board, V) :-
     I is (Y - 1) * 3 + X - 1,
-    arr_get(I, Board, V).
+    V = ~arr_get(I, Board).
 
 % isDraw(): for (tile: board) if (tile == EMPTY) return false; the 9 reads of the loop over the
 % constant-size board are written out, all done (CiaoPP has no bound for numeric loops).
 is_full(B, Full) :-
-    arr_get(0, B, V0), arr_get(1, B, V1), arr_get(2, B, V2),
-    arr_get(3, B, V3), arr_get(4, B, V4), arr_get(5, B, V5),
-    arr_get(6, B, V6), arr_get(7, B, V7), arr_get(8, B, V8),
+    V0 = ~arr_get(0, B), V1 = ~arr_get(1, B), V2 = ~arr_get(2, B),
+    V3 = ~arr_get(3, B), V4 = ~arr_get(4, B), V5 = ~arr_get(5, B),
+    V6 = ~arr_get(6, B), V7 = ~arr_get(7, B), V8 = ~arr_get(8, B),
     if ((V0 =\= 0, V1 =\= 0, V2 =\= 0, V3 =\= 0, V4 =\= 0, V5 =\= 0, V6 =\= 0, V7 =\= 0, V8 =\= 0)) {
         Full = 1
     } else { Full = 0 }.
