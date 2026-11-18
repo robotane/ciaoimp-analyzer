@@ -27,14 +27,19 @@ LIBRARY = {"hotmoka.pl", "hotmoka_gas.pl"}
 ENTRY_RE = re.compile(r"^:-\s*entry\s+([a-z]\w*)\(", re.M)
 
 
-def run(names: list[str], ciaosh: str = "ciaosh") -> list[CostResult]:
-    OUT.mkdir(parents=True, exist_ok=True)
+def run(names: list[str], ciaosh: str = "ciaosh", src: Path = SRC, out: Path = OUT,
+        gas_package: Path | None = None) -> list[CostResult]:
+    """Analyse the contracts ``names`` of ``src`` in ``out``; ``gas_package`` replaces
+    hotmoka_gas.pl (another set of constants)."""
+    out.mkdir(parents=True, exist_ok=True)
     for lib in LIBRARY:
-        shutil.copy(SRC / lib, OUT / lib)
+        shutil.copy(src / lib, out / lib)
+    if gas_package is not None:
+        shutil.copy(gas_package, out / "hotmoka_gas.pl")
     results = []
     for name in names:
-        module = OUT / f"{name}.pl"
-        shutil.copy(SRC / f"{name}.pl", module)
+        module = out / f"{name}.pl"
+        shutil.copy(src / f"{name}.pl", module)
         entries = sorted(set(ENTRY_RE.findall(module.read_text(encoding="utf-8"))))
         co, seconds, log, peak_mb = analyze(ciaosh, module)
         res = CostResult(name, ok=co.exists(), seconds=seconds, peak_mb=peak_mb,
