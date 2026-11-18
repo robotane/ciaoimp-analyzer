@@ -17,6 +17,10 @@
 :- load_compilation_module(.(hotmoka_tr)).
 :- add_sentence_trans(hotmoka_tr:tr/3, 600).
 
+% Obj[field] := V (field of a storage object, see hotmoka_tr.pl).
+:- set_prolog_flag(read_postfix_blocks, on).
+:- op(40, yf, ['[]']).
+
 :- resource gas.
 :- head_cost(ub, gas, 30).
 :- head_cost(lb, gas, 30).

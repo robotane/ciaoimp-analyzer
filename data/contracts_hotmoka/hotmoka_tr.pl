@@ -17,6 +17,10 @@
 %        set_field(Campaign0, amount, A, Campaign)
 %    which becomes  store(field), Campaign0 = campaign(X1, X2, X3, _, X5),
 %                   Campaign = campaign(X1, X2, X3, A, X5).
+%    The same write is better written in one line, as in Java:
+%        Campaign[amount] := A
+%    which becomes  store(field), Campaign = campaign(X1, X2, X3, _, X5),
+%                   Campaign := campaign(X1, X2, X3, A, X5).
 %    A field name must belong to a single declared class of the module.
 %
 %  - Payable method. Before a @Payable method runs, Hotmoka moves the amount
@@ -83,6 +87,9 @@ memberv(X, [_|T]) :- memberv(X, T).
 body(G, _, _, G) :- var(G), !.
 body(':='(X, V), SV, _, (store(field), ':='(X, V))) :- var(X), memberv(X, SV), !.
 body(set_field(O0, F, V, O), _, Mod, (store(field), O0 = T0, O = T)) :- !,
+    field_terms(Mod, F, V, T0, T).
+body(':='('\6\postfix_block'(O, [F]), V), _, Mod, (store(field), O = T0, ':='(O, T))) :-
+    var(O), atom(F), !,
     field_terms(Mod, F, V, T0, T).
 body(G, SV, Mod, G2) :-
     nonvar(G), functor(G, _, Ar), Ar > 0, !,

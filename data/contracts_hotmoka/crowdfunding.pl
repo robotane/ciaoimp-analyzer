@@ -8,7 +8,7 @@
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [init/1, new_campaign/5, contribute/7, check_goal_reached/6, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- class(campaign(id, beneficiary, goal, amount, funders)).
 
@@ -45,25 +45,24 @@ contribute(Caller, Amount, Id, !Cs, !B) :-
     nth_campaign(Id, Cs, Camp),  % campaigns.get(campaignID): walk
     Camp = campaign(CId, Ben, Goal, Amt, Funders),
     new_obj(funder),                                % new Funder(caller(), amount)
-    list_add(funder(Caller, Amount), Funders, _),             % campaign.funders.add(funder): one new list node
-    Funders1 = [funder(Caller, Amount)|Funders],              % (its content in the state: the order is not observable)
-    Camp0 = campaign(CId, Ben, Goal, Amt, Funders1),          % (the list of funders is mutated in place: no field write)
-    Amt1 is Amt + Amount,                           % campaign.amount = campaign.amount + amount
-    set_field(Camp0, amount, Amt1, Camp1),          % campaign.amount = ...
-    replace_nth(Id, Camp1, !Cs).                    % (the campaign is mutated in place in Java)
+    list_add(funder(Caller, Amount), Funders, _),   % campaign.funders.add(funder): one new list node
+    Camp := campaign(CId, Ben, Goal, Amt, [funder(Caller, Amount)|Funders]),  % (the list is mutated in place: no field write)
+    Amt1 is Amt + Amount,
+    Camp[amount] := Amt1,                           % campaign.amount = campaign.amount + amount
+    replace_nth(Id, Camp, !Cs).                     % (the campaign is mutated in place in Java)
 
 % checkGoalReached(campaignID)
 check_goal_reached(Id, !Cs, !B, Reached) :-
     nth_campaign(Id, Cs, Camp),  % campaigns.get(campaignID): walk
     Camp = campaign(_, Ben, Goal, Amt, _),
-    ( Amt < Goal ->                                 % compareTo(campaign.amount, campaign.fundingGoal) < 0
+    if (Amt < Goal) {                               % compareTo(campaign.amount, campaign.fundingGoal) < 0
         Reached = 0                                 % return false
-    ;
-        set_field(Camp, amount, 0, Camp1),          % campaign.amount = BigInteger.ZERO
-        replace_nth(Id, Camp1, !Cs),                % (the campaign is mutated in place in Java)
+    } else {
+        Camp[amount] := 0,                          % campaign.amount = BigInteger.ZERO
+        replace_nth(Id, Camp, !Cs),                 % (the campaign is mutated in place in Java)
         transfer(this, Ben, Amt, !B),               % campaign.beneficiary.receive(amount)
         Reached = 1                                 % return true
-    ).
+    }.
 
 % StorageLinkedList.get(i): the walk loads one node per step, up to the index.
 nth_campaign(Id0, [C|_], X) :-
