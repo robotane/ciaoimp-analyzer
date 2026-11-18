@@ -13,6 +13,8 @@
 :- module(_, [token_transfer/5, approve/7, transfer_from/10, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- entry token_transfer(Caller, To, Amount, Bal0, Bal) :
     (atm(Caller), atm(To), int(Amount), map(Bal0), var(Bal)).
 :- entry approve(Caller, Spender, Amount, Own0, Own, Al0, Al) :
@@ -33,28 +35,28 @@ approve(Caller, Spender, Amount, !Own, !Al) :-
 transfer_from(Caller, Sender, To, Amount, !Bal, !Own, !Al) :-
     transfer_(Sender, To, Amount, !Bal),            % _transfer(sender, recipient, amount)
     map_get(Sender, Own, none, _),                  % allowance(sender, caller()): allowances.get(owner)
-    map_get(al(Sender, Caller), Al, 0, A),          %   .getOrDefault(spender)
+    A = ~map_get(al(Sender, Caller), Al, 0),        %   .getOrDefault(spender)
     A >= Amount,
     new_obj(ubi),                                   % .subtract(amount)
-    An is A - Amount,
+    An = A - Amount,
     approve_(Sender, Caller, An, !Own, !Al).        % _approve(sender, caller(), ...)
 
 % _transfer(sender, recipient, amount)
 transfer_(Sender, To, Amount, !Bal) :-
-    map_get(Sender, Bal, 0, B1),                    % balanceOf(sender)
+    B1 = ~map_get(Sender, Bal, 0),                  % balanceOf(sender)
     B1 >= Amount,                                   % subtract: fails if negative
     new_obj(ubi),                                   % .subtract(amount)
-    B1n is B1 - Amount,
+    B1n = B1 - Amount,
     map_put(Sender, B1n, !Bal),                     % balances.put(sender, ...)
-    map_get(To, Bal, 0, B2),                        % balanceOf(recipient)
+    B2 = ~map_get(To, Bal, 0),                      % balanceOf(recipient)
     new_obj(ubi),                                   % .add(amount)
-    B2n is B2 + Amount,
+    B2n = B2 + Amount,
     map_put(To, B2n, !Bal),                         % balances.put(recipient, ...)
     emit(transfer).                                 % event(new Transfer(sender, recipient, amount))
 
 % _approve(owner, spender, value)
 approve_(Owner, Spender, Value, !Own, !Al) :-
-    map_get(Owner, Own, none, O1),                  % allowances.computeIfAbsent(owner, ...): outer get
+    O1 = ~map_get(Owner, Own, none),                % allowances.computeIfAbsent(owner, ...): outer get
     if (O1 == none) {
         new_obj(inner_map),                         % new StorageTreeMap<>() for a new owner
         map_put(Owner, 1, !Own)                     % and its put in the outer map
