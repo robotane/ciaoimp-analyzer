@@ -1,0 +1,8 @@
+CiaoPP resource analysis (ciaopp_cost): gas bounds of the entries, input data/contracts_hotmoka (direct)
+Analyses: eterms, shfr, nf, det, resources
+
+=== simple_ponzi (OK, 2.6 s, 64 MB) ===
+  invest                 lb = 0
+                         ub = 6330
+                         call: atm(Caller), int(Value), atm(Last0), var(Last), int(Amt0), var(Amt), balances(B0), var(B)
+
