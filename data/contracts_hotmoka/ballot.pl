@@ -15,6 +15,8 @@
 :- module(_, [init/4, give_right/5, vote/6, delegate/6, winner/2, goal/1, goal_chain/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- class(paper(weight, hasVoted, delegate, votedProposal)).
 :- class(proposal(index, name, voteCount)).
 
@@ -36,18 +38,18 @@ proposal(proposal(I, Name, Count)) :- int(I), atm(Name), int(Count).
 % Ballot(proposalNames): the chairperson has a paper with the right to vote.
 init(Chair, Names, [kv(Chair, paper(1, 0, null, -1))], Props) :-
     new_obj(paper),                                 % new VotingPaper(), giveRightToVote()
-    init_props(Names, 0, Props).
+    Props = ~init_props(Names, 0).
 
 init_props([], _, []).
 init_props([N|T], I, [proposal(I, N, 0)|RT]) :-
     new_obj(proposal),                              % proposals.add(new Proposal(name))
-    I1 is I + 1,
-    init_props(T, I1, RT).
+    I1 = I + 1,
+    RT = ~init_props(T, I1).
 
 % @FromContract giveRightToVote(to)
 give_right(Caller, Chair, To, !Pa) :-
     Caller == Chair,                                % require(caller() == chairperson)
-    map_get(To, Pa, none, P0),                      % papers.computeIfAbsent(to, VotingPaper::new): tree get
+    P0 = ~map_get(To, Pa, none),                    % papers.computeIfAbsent(to, VotingPaper::new): tree get
     if (P0 == none) {
         new_obj(paper),                             % new VotingPaper() (not yet in the tree)
         map_put(To, paper(1, 0, null, -1), !Pa)     % computeIfAbsent puts the new key; giveRightToVote(): weight = 1
@@ -61,13 +63,13 @@ give_right(Caller, Chair, To, !Pa) :-
 
 % @FromContract voteFor(proposalIndex)
 vote(Caller, Index, !Pa, !Pr) :-
-    map_get(Caller, Pa, none, P),                   % getVotingPaperFor(caller()): papers.get(caller)
+    P = ~map_get(Caller, Pa, none),                 % getVotingPaperFor(caller()): papers.get(caller)
     paper_fields(P, W, HV, _, _),
     HV =:= 0,                                       % require(!paper.hasVoted())
     W > 0,                                          % require(paper.hasRightToVote())
-    get_proposal(Index, Pr, Prop),                  % proposals.get(index): walk
+    Prop = ~get_proposal(Index, Pr),                % proposals.get(index): walk
     Prop = proposal(_, _, Cnt),
-    Cnt1 is Cnt + W,
+    Cnt1 = Cnt + W,
     Prop[voteCount] := Cnt1,                        % proposal.voteCount += weight
     P[hasVoted] := 1,                               % hasVoted = true
     P[votedProposal] := Index,                      % votedProposal = proposal
@@ -76,28 +78,28 @@ vote(Caller, Index, !Pa, !Pr) :-
 
 % @FromContract delegate(to)
 delegate(To, Caller, !Pa, !Pr) :-
-    map_get(To, Pa, none, PTo),                     % papers.get(to)
+    PTo = ~map_get(To, Pa, none),                   % papers.get(to)
     paper_fields(PTo, WTo0, _, _, _),
     WTo0 > 0,                                       % require(delegatedPaper.hasRightToVote())
-    map_get(Caller, Pa, none, PC),                  % getVotingPaperFor(caller()): papers.get(caller)
+    PC = ~map_get(Caller, Pa, none),                % getVotingPaperFor(caller()): papers.get(caller)
     paper_fields(PC, W, HV, _, _),
     HV =:= 0,                                       % require(!paper.hasVoted())
     W > 0,                                          % require(paper.hasRightToVote())
     To \== Caller,                                  % require(delegate != payer)
                                                     % seen = new StorageTreeSet<>(): temporary, its cost is in tmp_get/tmp_put
-    map_get(To, Pa, none, From),                    % from = papers.get(delegate)
+    From = ~map_get(To, Pa, none),                  % from = papers.get(delegate)
     paper_fields(From, _, _, Del, _),
-    follow(Pa, Del, Pa, [], To, Fin),               % computeFinalDelegate: the walk, at most one hop per paper
+    Fin = ~follow(Pa, Del, Pa, [], To),             % computeFinalDelegate: the walk, at most one hop per paper
     % The papers are rebuilt (set_paper, no cost) only after the costly goals: CiaoPP does not
     % see that set_paper has a single solution and would multiply what follows by length(Pa).
     % Reading the paper of Fin before rebuilding the paper of Caller is the same (Fin \== Caller).
-    map_get(Fin, Pa, none, PF),                     % paperOfDelegate = papers.get(delegate)
+    PF = ~map_get(Fin, Pa, none),                   % paperOfDelegate = papers.get(delegate)
     paper_fields(PF, WF, HVF, _, VPF),
     if (HVF =:= 1) {                                % if (paperOfDelegate.hasVoted())
         load(voted_proposal),                       % votedProposal (a reference to a Proposal object)
         set_proposal(VPF, W, !Pr)                   % votedProposal.voteCount += weight
     } else {
-        WF1 is WF + W,
+        WF1 = WF + W,
         PF[weight] := WF1,                          % paperOfDelegate.weight += weight
         set_paper(Fin, PF, !Pa)                     % (the paper is mutated in place in Java)
     },
@@ -119,12 +121,12 @@ delegate(To, Caller, !Pa, !Pr) :-
 follow([], _, _, _, Last, Last).                    % never reached (a chain visits distinct papers)
 follow([_|Rest], Del, Pa, Seen, _, Final) :-
     differ(Del, null),                              % while (from.delegate != null)
-    tmp_get(Del, Seen, 0, InSeen),                  % seen.contains(delegate)
+    InSeen = ~tmp_get(Del, Seen, 0),                % seen.contains(delegate)
     InSeen =:= 0,                                   % require(!seen.contains(delegate))
     tmp_put(Del, 1, Seen, Seen1),                   % seen.add(delegate)
-    map_get(Del, Pa, none, From),                   % from = papers.get(delegate)
+    From = ~map_get(Del, Pa, none),                 % from = papers.get(delegate)
     paper_fields(From, _, _, Del1, _),
-    follow(Rest, Del1, Pa, Seen1, Del, Final).      % delegate = from.delegate
+    Final = ~follow(Rest, Del1, Pa, Seen1, Del).    % delegate = from.delegate
 follow([_|_], null, _, _, Last, Last).              % from.delegate == null: the walk ends
 
 differ(A, B) :- A \== B.
@@ -159,7 +161,7 @@ get_proposal(I0, [P|T], X) :-
     P = proposal(I, _, _),
     I =\= I0,
     load(P),                                        % the node
-    get_proposal(I0, T, X).
+    X = ~get_proposal(I0, T).
 
 % The functional update of the proposal I0 (no cost of its own besides the steps).
 put_proposal(I0, V, [P|T], [V|T]) :-
@@ -174,7 +176,7 @@ put_proposal(I0, V, [P|T], [P|T1]) :-
 set_proposal(I0, W, [P|T], [P1|T]) :-
     P = proposal(I, _, C),
     I =:= I0,
-    C1 is C + W,
+    C1 = C + W,
     P[voteCount] := C1,
     P1 = P.
 set_proposal(I0, W, [P|T], [P|T1]) :-
