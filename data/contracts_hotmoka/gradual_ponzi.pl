@@ -5,7 +5,7 @@
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [init/2, invest/6, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- regtype addrs/1.
 addrs([]).
@@ -26,15 +26,11 @@ invest(Caller, Amount, !Inv, !B) :-
     Amount >= 1000,                                 % require(amount >= MINIMUM_INVESTMENT)
     list_size(Inv, N),                              % investors.size()
     Each is Amount // N,                            % eachInvestorGets = amount / investors.size()
-    pay_all(Inv, Each, !B),                         % investors.forEach(investor -> investor.receive(each))
+    for (P in list(Inv)) {                          % investors.forEach(investor -> ...)
+        load(P),                                    % the node of the list
+        transfer(this, P, Each, !B)                 % investor.receive(each)
+    },
     list_add(Caller, !Inv).                         % investors.add(caller()): one new list node
-
-% investors.forEach(investor -> investor.receive(each)): one node load and one payment per investor.
-pay_all([], _, !B).
-pay_all([P|T], Each, !B) :-
-    load(P),                                        % the node of the list
-    transfer(this, P, Each, !B),                    % investor.receive(each)
-    pay_all(T, Each, !B).
 
 % --- Test: alice creates the contract; bob invests 1000, carol invests 2000 ---
 % Expected: bob's 1000 goes to alice; carol's 2000 is split between alice and bob (1000 each):

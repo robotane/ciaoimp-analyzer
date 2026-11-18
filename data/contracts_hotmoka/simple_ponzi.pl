@@ -5,7 +5,7 @@
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [init/2, invest/8, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- entry invest(Caller, Value, Last0, Last, Amt0, Amt, B0, B) :
     (atm(Caller), int(Value), atm(Last0), var(Last), int(Amt0), var(Amt),
@@ -18,10 +18,9 @@ init(null, 0).
 % @FromContract invest(amount)
 invest(Caller, Value, !Last, !Amt, !B) :-
     Value > Amt * 11 // 10,                     % require(amount > 110% of current)
-    ( Last \== null ->
+    if (Last \== null) {
         transfer(this, Last, Value, !B)         % currentInvestor.receive(amount)
-    ; true
-    ),
+    },
     Last := Caller,                             % currentInvestor = caller()
     Amt := Value.                               % currentInvestment = amount
 

@@ -25,27 +25,43 @@
 %    and every clause of Name, whose first two arguments are the caller and the
 %    amount and whose last state variable is the coin balances, starts with
 %        transfer(Caller, this, Amount, !Balances).
+%
+%  - Loops over a list. The contract writes the loop of the Ciao loops package,
+%        for (X in list(L)) { Body }
+%    Ciao expands it into a helper whose clauses take the list apart in their
+%    body (Curr = [X|_], then Curr = [_|T]): CiaoPP then does not see that the
+%    list gets shorter, and the bound is infinite. This translation expands the
+%    loop itself, into the canonical recursion on the list:
+%        p$forN([X|T], In..., !S...) :- Body, p$forN(T, In..., !S...).
+%        p$forN([], In..., !S...).
+%    In = the variables of Body also used elsewhere in the clause (inputs),
+%    S = the state variables of Body (!S or S := V in Body).
 
 :- module(hotmoka_tr, [tr/3], [datafacts]).
 
 :- use_module(library(aggregates), [findall/3]).
-:- use_module(library(lists), [length/2]).
+:- use_module(library(lists), [length/2, append/3]).
+:- use_module(library(terms_vars), [varset/2]).
 
 :- data payable_pred/2.   % payable_pred(Module, Name)
 :- data class_def/3.      % class_def(Module, Class, FieldNames)
+:- data loop_count/2.     % loop_count(Module, N): helpers of loops created so far
 
 tr(end_of_file, end_of_file, Mod) :- !,
     retractall_fact(payable_pred(Mod, _)),
-    retractall_fact(class_def(Mod, _, _)).
+    retractall_fact(class_def(Mod, _, _)),
+    retractall_fact(loop_count(Mod, _)).
 tr((:- payable(Names)), [], Mod) :- !,
     add_payable(Names, Mod).
 tr((:- class(Spec)), [], Mod) :- !,
     Spec =.. [C|Fields],
     assertz_fact(class_def(Mod, C, Fields)).
-tr((H :- B), (H :- B2), Mod) :- !,
+tr((H :- B), Clauses, Mod) :- !,
     state_vars(H, SV),
     body(B, SV, Mod, B1),
-    payable_prefix(H, SV, Mod, B1, B2).
+    payable_prefix(H, SV, Mod, B1, B2),
+    functor(H, Name, _),
+    loops((H :- B2), Name, Mod, Clauses).
 tr(C, C, _).
 
 add_payable((A, B), Mod) :- !, add_payable(A, Mod), add_payable(B, Mod).
@@ -100,3 +116,71 @@ payable_prefix(_, _, _, B, B).
 
 last([X], X) :- !.
 last([_|T], X) :- last(T, X).
+
+% --- Loops ---------------------------------------------------------------
+
+loop_term(for('\6\postfix_block'(in(X, list(L)), '{}'(Body))), X, L, Body).
+
+% loops(Clause, Name, Mod, Clauses): Clause with its loops replaced by calls to
+% helpers, followed by the clauses of the helpers (themselves expanded).
+loops((H :- B), Name, Mod, Clauses) :-
+    first_loop(B, Loop, Marker, B1), !,
+    loop_term(Loop, X, L, Body),
+    varset((H :- B1), Rest),
+    varset(Body, BV),
+    loop_state(Body, BV, LS),
+    del_vars(BV, [X, Marker|LS], BV1),
+    inter_vars(BV1, Rest, In),
+    new_helper(Name, Mod, P),
+    sv_terms(LS, SVs),
+    append(In, SVs, Extra),
+    Call =.. [P, L|Extra],
+    Marker = Call,
+    copy_term(f(X, Extra, Body), f(X1, Extra1, Body1)),
+    Rec =.. [P, [X1|T]|Extra1],
+    Next =.. [P, T|Extra1],
+    copy_term(Extra1, Extra2),
+    Base =.. [P, []|Extra2],
+    loops((H :- B1), Name, Mod, C1),
+    loops((Rec :- (Body1, Next)), P, Mod, C2),
+    append(C1, [Base|C2], Clauses).
+loops(C, _, _, [C]).
+
+% The first loop of a body (outermost, left to right), replaced by a fresh variable.
+first_loop(G, _, _, _) :- var(G), !, fail.
+first_loop(G, G, M, M) :- loop_term(G, _, _, _), !.
+first_loop(G, Loop, M, G2) :-
+    functor(G, F, A), A > 0,
+    G =.. [F|As],
+    first_loop_list(As, Loop, M, As2),
+    G2 =.. [F|As2].
+first_loop_list([A|As], Loop, M, [A2|As]) :- first_loop(A, Loop, M, A2), !.
+first_loop_list([A|As], Loop, M, [A|As2]) :- first_loop_list(As, Loop, M, As2).
+
+% The state variables of a loop body: V of !V or of V := _ in it.
+loop_state(Body, BV, LS) :- st_vars(Body, [], LS0), keep_vars(BV, LS0, LS).
+st_vars(G, Acc, Acc) :- var(G), !.
+st_vars('!'(V), Acc, [V|Acc]) :- var(V), !.
+st_vars(':='(V, E), Acc, Out) :- var(V), !, st_vars(E, [V|Acc], Out).
+st_vars(G, Acc, Out) :- G =.. [_|As], st_list(As, Acc, Out).
+st_list([], Acc, Acc).
+st_list([A|As], Acc, Out) :- st_vars(A, Acc, Acc1), st_list(As, Acc1, Out).
+
+keep_vars([], _, []).
+keep_vars([V|Vs], S, [V|R]) :- memberv(V, S), !, keep_vars(Vs, S, R).
+keep_vars([_|Vs], S, R) :- keep_vars(Vs, S, R).
+del_vars([], _, []).
+del_vars([V|Vs], S, R) :- memberv(V, S), !, del_vars(Vs, S, R).
+del_vars([V|Vs], S, [V|R]) :- del_vars(Vs, S, R).
+inter_vars(Vs, S, R) :- keep_vars(Vs, S, R).
+
+sv_terms([], []).
+sv_terms([V|Vs], ['!'(V)|Ts]) :- sv_terms(Vs, Ts).
+
+new_helper(Name, Mod, P) :-
+    ( current_fact(loop_count(Mod, N0)) -> true ; N0 = 0 ),
+    N is N0 + 1,
+    retractall_fact(loop_count(Mod, _)),
+    assertz_fact(loop_count(Mod, N)),
+    number_codes(N, Cs), atom_codes(NA, Cs),
+    atom_concat(Name, '$for', P0), atom_concat(P0, NA, P).
