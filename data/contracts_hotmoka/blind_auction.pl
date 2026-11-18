@@ -4,13 +4,22 @@
 % State: Bene (beneficiary), BEnd (biddingEnd), REnd (revealEnd), HBdr (highestBidder,
 %        or null), HBid (highestBid, or null), Bids = tree map, list of
 %        kv(Bidder, [bid(Hash, Deposit), ...]) (StorageTreeMap<Contract, StorageList<Bid>>).
-% The hash of a bid is the term hash(Value, Fake, Salt), the digest of the revealed bid.
+% The hash of a bid is the term hash(Value, Fake, Salt), the digest of the revealed bid;
+% a revealed bid (RevealedBid) is the term revealed_bid(Value, Fake, Salt).
+% Fields of the storage objects (a bid, a revealed bid) are read as in Java, V = Obj[field]
+% (see hotmoka_tr.pl: the first read of an object loads it).
 % B: coin balances, list of bal(Address, Amount).
 
-:- module(_, [init/4, bid/9, reveal/15, auction_end/9, goal/1],
+:- module(_, [init/4, bid/9, reveal/13, auction_end/9, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
+:- class(bid(hash, deposit)).
+:- class(revealed_bid(value, fake, salt)).
+
+:- regtype revealed_bid/1.
+revealed_bid(revealed_bid(Value, Fake, Salt)) :- int(Value), int(Fake), gnd(Salt).
 
 :- regtype opt/1.
 opt(null).
@@ -19,8 +28,8 @@ opt(X) :- int(X).
 :- entry bid(Caller, Amount, Now, BEnd, Hash, Bids0, Bids, B0, B) :
     (atm(Caller), int(Amount), int(Now), int(BEnd), gnd(Hash), map(Bids0), var(Bids),
      balances(B0), var(B)).
-:- entry reveal(Caller, Now, BEnd, REnd, Value, Fake, Salt, Bids0, Bids, HBdr0, HBdr, HBid0, HBid, B0, B) :
-    (atm(Caller), int(Now), int(BEnd), int(REnd), int(Value), int(Fake), gnd(Salt),
+:- entry reveal(Caller, Now, BEnd, REnd, Revealed, Bids0, Bids, HBdr0, HBdr, HBid0, HBid, B0, B) :
+    (atm(Caller), int(Now), int(BEnd), int(REnd), revealed_bid(Revealed),
      map(Bids0), var(Bids), atm(HBdr0), var(HBdr), opt(HBid0), var(HBid),
      balances(B0), var(B)).
 :- entry auction_end(Bene, Now, REnd, HBid, HBdr0, HBdr, B0, B, Winner) :
@@ -46,28 +55,28 @@ bid(Caller, Amount, Now, BEnd, Hash, !Bids, !B) :-
     L1 = ~list_add(bid(Hash, Amount), L),           % .add(bid): one new list node
     map_put(Caller, L1, !Bids).                     % new key: tree put (an existing list is mutated in place in Java)
 
-% @FromContract reveal(revealed), revealed = RevealedBid(Value, Fake, Salt)
-reveal(Caller, Now, BEnd, REnd, Value, Fake, Salt, !Bids, !HBdr, !HBid, !B) :-
+% @FromContract reveal(revealed)
+reveal(Caller, Now, BEnd, REnd, Revealed, !Bids, !HBdr, !HBid, !B) :-
     Now >= BEnd,                                    % onlyAfter(biddingEnd)
     Now =< REnd,                                    % onlyBefore(revealEnd)
     L = ~map_get(Caller, Bids, none),               % this.bids.get(bidder)
-    first_bid(L, BidHash, Deposit, Rest),           % require(bids != null && bids.size() > 0), bids.removeFirst()
-    load(head_node),                                % bids.removeFirst(): the head node
+    list_remove_first(Bid, L, Rest),                % require(bids != null && bids.size() > 0), bids.removeFirst()
     map_put(Caller, Rest, !Bids),                   % (Java mutates the list in place, no tree put)
-    load(revealed),                                 % revealed.value, revealed.fake
-    load(salt),                                     % revealed.salt.toArray()
-    load(stored_hash),                              % hash.toArray()
-    load(bid_object),                               % bid.deposit
-    if (BidHash \== hash(Value, Fake, Salt)) {      % !bid.matches(revealed, digest)
+    % refundFor(bidder, bid, revealed, digest), bid.matches(revealed, digest):
+    Value = Revealed[value],                        % revealed.value
+    Fake = Revealed[fake],                          % revealed.fake
+    Salt = Revealed[salt],
+    SaltBytes = ~to_array(Salt),                    % revealed.salt.toArray()
+    Hash = Bid[hash],
+    HashBytes = ~to_array(Hash),                    % hash.toArray()
+    Deposit = Bid[deposit],                         % bid.deposit
+    if (HashBytes \== hash(Value, Fake, SaltBytes)) {   % !bid.matches(revealed, digest)
         Refund = 0
     } else if ((Fake =:= 0, Deposit >= Value, better(Value, HBid))) {
         place_bid(Caller, Value, !HBdr, !HBid, !B), % placeBid(bidder, revealed.value)
         Refund = Deposit - Value
     } else { Refund = Deposit },
     transfer(this, Caller, Refund, !B).             % bidder.receive(refundFor(...)): always executed
-
-% The first bid of the list of a bidder (fails if there is none).
-first_bid([bid(H, D)|R], H, D, R).
 
 % placeBid: the first test of Java, highestBid == null || value > highestBid
 better(_, null) :- !.
@@ -101,8 +110,8 @@ goal([A, Bo, Be, T]) :-
     REnd = 200,
     bid(alice, 200, 10, BEnd, hash(150, 0, sa), [], Bids1, B0, B1),
     bid(bob, 100, 20, BEnd, hash(100, 0, sb), Bids1, Bids2, B1, B2),
-    reveal(alice, 110, BEnd, REnd, 150, 0, sa, Bids2, Bids3, H0, H1, null, HB1, B2, B3),
-    reveal(bob, 120, BEnd, REnd, 100, 0, sb, Bids3, _, H1, H2, HB1, HB2, B3, B4),
+    reveal(alice, 110, BEnd, REnd, revealed_bid(150, 0, sa), Bids2, Bids3, H0, H1, null, HB1, B2, B3),
+    reveal(bob, 120, BEnd, REnd, revealed_bid(100, 0, sb), Bids3, _, H1, H2, HB1, HB2, B3, B4),
     auction_end(bene, 210, REnd, HB2, H2, _, B4, B5, _),
     balance(alice, B5, A),
     balance(bob, B5, Bo),

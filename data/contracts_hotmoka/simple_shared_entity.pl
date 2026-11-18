@@ -3,7 +3,8 @@
 % State: Sh = shares, tree map kv(Shareholder, Number);
 %        Of = offers, tree set kv(offer(Seller, Cost, Number, Ongoing), 1)
 %             (Ongoing = 1 while the offer is ongoing, 0 once expired);
-%        SnapO = snapshotOfOffers, SnapS = snapshotOfShares (the last snapshots taken, or none).
+%        SnapO = snapshotOfOffers, SnapS = snapshotOfShares (the last snapshots taken, or none;
+%        snapshot/2 creates the view object).
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [place/10, accept/12, goal/1],
@@ -33,8 +34,7 @@ place(Caller, Amount, Offer, Sh, !Of, !SnapO, !B) :-
     Shares - OnSale >= N,
     clean_up(Of, none, !Of),                        % cleanUpOffers(null): scan of the offers
     map_put(Offer, 1, !Of),                         % offers.add(offer)
-    new_obj(snapshot),                              % Java: offers.snapshot() creates a view object
-    SnapO := snapshot,                              % snapshotOfOffers = offers.snapshot()
+    SnapO := ~snapshot(Of),                         % snapshotOfOffers = offers.snapshot()
     emit(offer_placed).                             % event(new OfferPlaced(offer))
 
 :- payable(accept).                             % @Payable: the amount sent is received first
@@ -49,8 +49,7 @@ accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B, Ok) :-
         remove_shares(Seller, N, !Sh),
         add_shares(Caller, N, !Sh),
         transfer(this, Seller, Cost, !B),           % offer.seller.receive(offer.cost)
-        new_obj(snapshot),                          % Java: shares.snapshot() creates a view object
-        SnapS := snapshot,                          % snapshotOfShares = shares.snapshot()
+        SnapS := ~snapshot(Sh),                     % snapshotOfShares = shares.snapshot()
         emit(offer_accepted),                       % event(new OfferAccepted(buyer, offer))
         Ok = 1
     } else { Ok = 0 }.

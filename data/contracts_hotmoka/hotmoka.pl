@@ -10,17 +10,26 @@
 %   tree maps    map_get/4, map_put/4, map_remove/3 (StorageTreeMap, StorageTreeSet)
 %   linked lists list_add/3 (StorageLinkedList.add: one new node)
 %                list_size/2 (StorageLinkedList.size: reads its size field)
+%                list_remove_first/3 (StorageLinkedList.removeFirst: reads the
+%                head node; fails on an empty list)
 %   arrays       arr_get/3, arr_set/4 (StorageTreeArray of fixed size)
-%   objects      load/1   (read a storage object while scanning a collection)
-%                new_obj/1 (create a storage object)
+%   big integers ubi_add/3, ubi_sub/3 (UnsignedBigInteger.add/subtract: the
+%                result is a new storage object)
+%   snapshots    snapshot/2 (snapshot() of a Snapshottable map/set: a new view object)
+%   bytes        to_array/2 (Bytes32Snapshot.toArray: reads the storage object)
+%   objects      load/1   (read a storage object; added by hotmoka_tr.pl: one per
+%                         node of a for loop, one per object read with Obj[f])
+%                new_obj/1 (create a storage object: the Java new X(...))
 %                emit/1   (create and emit an event)
-%                store/1  (write a field of the contract or of a storage object)
+%                store/1  (write a field of the contract or of a storage object;
+%                         added by hotmoka_tr.pl)
 %
 % Maps are lists of kv(Key, Value); an absent key reads as the given default.
 
 :- module(hotmoka, [transfer/5, balance/3,
                     map_get/4, map_put/4, map_remove/3, tmp_get/4, tmp_put/4,
-                    list_add/3, list_size/2, arr_get/3, arr_set/4,
+                    list_add/3, list_size/2, list_remove_first/3, arr_get/3, arr_set/4,
+                    ubi_add/3, ubi_sub/3, snapshot/2, to_array/2,
                     load/1, new_obj/1, emit/1, store/1], []).
 
 % --- Coins: list of bal(Address, Amount) ---
@@ -69,6 +78,8 @@ list_add(X, [Y|T], [Y|T1]) :-
 list_size([], 0).
 list_size([_|T], N) :- list_size(T, N0), N is N0 + 1.
 
+list_remove_first(X, [X|T], T).
+
 % --- Arrays: list of cells, index from 0 ---
 
 arr_get(0, [X|_], X) :- !.
@@ -80,6 +91,16 @@ arr_set(0, V, [_|T], [V|T]) :- !.
 arr_set(I, V, [X|T], [X|T1]) :-
     I1 is I - 1,
     arr_set(I1, V, T, T1).
+
+% --- UnsignedBigInteger: integers ---
+
+ubi_add(A, B, C) :- C is A + B.
+ubi_sub(A, B, C) :- C is A - B.
+
+% --- Snapshot (the view is not modelled) and bytes (the term itself) ---
+
+snapshot(_, snapshot).
+to_array(X, X).
 
 % --- Objects and events: no effect on the state of the Prolog model ---
 

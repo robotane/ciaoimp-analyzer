@@ -21,6 +21,16 @@
 :- measure(list_add/3, [void, length, length]).
 :- mode(list_size/2, [+, -]).
 :- measure(list_size/2, [length, int]).
+:- mode(list_remove_first/3, [-, +, -]).
+:- measure(list_remove_first/3, [void, length, length]).
+:- mode(ubi_add/3, [+, +, -]).
+:- measure(ubi_add/3, [int, int, int]).
+:- mode(ubi_sub/3, [+, +, -]).
+:- measure(ubi_sub/3, [int, int, int]).
+:- mode(snapshot/2, [+, -]).
+:- measure(snapshot/2, [void, void]).
+:- mode(to_array/2, [+, -]).
+:- measure(to_array/2, [void, void]).
 :- mode(arr_get/3, [+, +, -]).
 :- measure(arr_get/3, [void, length, void]).
 :- mode(arr_set/4, [+, +, +, -]).
@@ -62,6 +72,11 @@ list_add(X, [], [X]).
 list_add(X, [Y|T], [Y|T1]) :- list_add(X, T, T1).
 list_size([], 0).
 list_size([_|T], N) :- list_size(T, N0), N is N0 + 1.
+list_remove_first(X, [X|T], T).
+ubi_add(A, B, C) :- C is A + B.
+ubi_sub(A, B, C) :- C is A - B.
+snapshot(_, snapshot).
+to_array(X, X).
 arr_get(I, [X|_], X) :- I =:= 0, !.
 arr_get(I, [_|T], X) :- I1 is I - 1, arr_get(I1, T, X).
 arr_set(I, V, [_|T], [V|T]) :- I =:= 0, !.

@@ -4,7 +4,7 @@
 %        Al = the INNER maps of allowances, all in one tree map kv(al(Owner, Spender), Amount)
 %        (CiaoPP cannot see the length of a map stored in a term: the inner maps are flattened,
 %        so the descent in an inner map is priced on the total number of allowances).
-% Each UnsignedBigInteger add/subtract creates a new storage object (new_obj);
+% Each UnsignedBigInteger add/subtract creates a new storage object (its gas is in ubi_add/ubi_sub);
 % the tree Node of a new key is part of the cost of map_put.
 % The ERC20 sources are not on disk: the work of the inherited methods follows
 % hotmoka-bench/costmodel/java_vs_prolog.md (lib).
@@ -36,21 +36,18 @@ transfer_from(Caller, Sender, To, Amount, !Bal, !Own, !Al) :-
     transfer_(Sender, To, Amount, !Bal),            % _transfer(sender, recipient, amount)
     map_get(Sender, Own, none, _),                  % allowance(sender, caller()): allowances.get(owner)
     A = ~map_get(al(Sender, Caller), Al, 0),        %   .getOrDefault(spender)
-    A >= Amount,
-    new_obj(ubi),                                   % .subtract(amount)
-    An = A - Amount,
+    A >= Amount,                                    % require of subtract: no negative result
+    An = ~ubi_sub(A, Amount),                       % .subtract(amount)
     approve_(Sender, Caller, An, !Own, !Al).        % _approve(sender, caller(), ...)
 
 % _transfer(sender, recipient, amount)
 transfer_(Sender, To, Amount, !Bal) :-
     B1 = ~map_get(Sender, Bal, 0),                  % balanceOf(sender)
-    B1 >= Amount,                                   % subtract: fails if negative
-    new_obj(ubi),                                   % .subtract(amount)
-    B1n = B1 - Amount,
+    B1 >= Amount,                                   % require of subtract: no negative result
+    B1n = ~ubi_sub(B1, Amount),                     % .subtract(amount)
     map_put(Sender, B1n, !Bal),                     % balances.put(sender, ...)
     B2 = ~map_get(To, Bal, 0),                      % balanceOf(recipient)
-    new_obj(ubi),                                   % .add(amount)
-    B2n = B2 + Amount,
+    B2n = ~ubi_add(B2, Amount),                     % .add(amount)
     map_put(To, B2n, !Bal),                         % balances.put(recipient, ...)
     emit(transfer).                                 % event(new Transfer(sender, recipient, amount))
 

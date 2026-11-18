@@ -58,7 +58,7 @@ transfer_from(Caller, From, To, TokenId, !TO, !NB, !Ap, OO, Op) :-
 %        Op = the INNER maps of operatorApprovals, flattened in one tree map kv(op(Owner, Operator), Approved)
 %        (CiaoPP cannot see the length of a map stored in a term: the descent in an inner map is
 %        priced on the total number of pairs).
-% Each UnsignedBigInteger add/subtract creates a new storage object (new_obj);
+% Each UnsignedBigInteger add/subtract creates a new storage object (its gas is in ubi_add/ubi_sub);
 % the tree Node of a new key is part of the cost of map_put.
 
 % _mint(to, tokenId)
@@ -67,8 +67,7 @@ mint_(To, TokenId, !TO, !NB) :-
     E == none,
     map_put(TokenId, To, !TO),                      % tokenOwners.put(tokenId, to)
     C = ~map_get(To, NB, 0),                        % ownedTokensCount.getOrDefault(to, ZERO)
-    new_obj(ubi),                                   % .add(ONE)
-    C1 = C + 1,
+    C1 = ~ubi_add(C, 1),                            % .add(ONE)
     map_put(To, C1, !NB),                           % ownedTokensCount.put(to, ...)
     emit(transfer).                                 % event(new Transfer(null, to, tokenId))
 
@@ -90,12 +89,10 @@ transfer_from_(Caller, From, To, TokenId, !TO, !NB, !Ap, OO, Op) :-
     O2 == From,
     map_remove(TokenId, !Ap),                       % _clearApproval(tokenId)
     C1 = ~map_get(From, NB, 0),                     % ownedTokensCount.get(from)
-    new_obj(ubi),                                   % .subtract(ONE)
-    C1n = C1 - 1,
+    C1n = ~ubi_sub(C1, 1),                          % .subtract(ONE)
     map_put(From, C1n, !NB),                        % ownedTokensCount.put(from, ...)
     C2 = ~map_get(To, NB, 0),                       % ownedTokensCount.getOrDefault(to, ZERO)
-    new_obj(ubi),                                   % .add(ONE)
-    C2n = C2 + 1,
+    C2n = ~ubi_add(C2, 1),                          % .add(ONE)
     map_put(To, C2n, !NB),                          % ownedTokensCount.put(to, ...)
     map_put(TokenId, To, !TO),                      % tokenOwners.put(tokenId, to)
     emit(transfer).                                 % event(new Transfer(from, to, tokenId))

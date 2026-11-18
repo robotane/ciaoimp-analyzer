@@ -76,12 +76,34 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
    => ( size(lb, N, length(L)), size(ub, N, length(L)) )
    + ( not_fails, is_det, cost(lb, gas, 60), cost(ub, gas, 60) ).
 
+:- trust pred list_remove_first(X, L0, L)
+   => ( size(lb, L, length(L0)-1), size(ub, L, length(L0)-1) )
+   + ( is_det, cost(lb, gas, 1000), cost(ub, gas, 1000) ).
+
 :- trust pred arr_get(I, A, X)
    + ( not_fails, is_det, cost(lb, gas, 500), cost(ub, gas, 500) ).
 
 :- trust pred arr_set(I, V, A0, A)
    => ( size(lb, A, length(A0)), size(ub, A, length(A0)) )
    + ( not_fails, is_det, cost(lb, gas, 500), cost(ub, gas, 500) ).
+
+% UnsignedBigInteger.add/subtract: the result is a new storage object (the require of
+% subtract, a non-negative result, is the test written before it in the contract).
+:- trust pred ubi_add(A, B, C)
+   => num(C)
+   + ( not_fails, is_det, cost(lb, gas, 7700), cost(ub, gas, 7700) ).
+
+:- trust pred ubi_sub(A, B, C)
+   => num(C)
+   + ( not_fails, is_det, cost(lb, gas, 7700), cost(ub, gas, 7700) ).
+
+% snapshot() of a Snapshottable map/set: a new view object.
+:- trust pred snapshot(M, S)
+   + ( not_fails, is_det, cost(lb, gas, 7700), cost(ub, gas, 7700) ).
+
+% Bytes32Snapshot.toArray(): reads the storage object.
+:- trust pred to_array(X, A)
+   + ( not_fails, is_det, cost(lb, gas, 1000), cost(ub, gas, 1000) ).
 
 :- trust pred load(X)
    + ( not_fails, is_det, cost(lb, gas, 1000), cost(ub, gas, 1000) ).
