@@ -90,7 +90,8 @@ transferFrom(From, To, TokenId, Caller, !S) :-
 goal(Results) :-
     init(shark, s, _, S1),
     mint(alice, 1, S1, S2),
-    approve(bob, 1, alice, S2, S3),
+    approve(bob, 1, alice, S2, S3a),
+    setApprovalForAll(dave, 1, alice, S3a, S3),
     transferFrom(alice, charlie, 1, bob, S3, S4),
     S4 = state(_, _, TO, NB, _, _),
     get_owner(1, TO, OwnerToken1),

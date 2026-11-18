@@ -25,7 +25,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from src.annotation import demote_modes
-from src.annotation.annotate.__main__ import annotate, apply_mode_overrides_to_file
+from src.annotation.annotate.__main__ import annotate
 from src.cleaning.expand.__main__ import process_file as expand_native
 from src.cleaning.normalize.__main__ import normalize
 from src.pipeline.commands import find_executable, run_capture, run_checked
@@ -199,7 +199,6 @@ class PipelineRunner:
                     normalize_stats["fix_dlist"],
                 )
                 demote_modes.demote_fixpoint(annotated)
-                apply_mode_overrides_to_file(annotated)
             else:
                 print("  [3/3] Annotate + mode demotion... skipped (--no-caslog)")
 
@@ -380,18 +379,39 @@ class PipelineRunner:
         return 0 if fail == 0 else 1
 
     def run_ciaopp_cost_results(self, names: list[str], normalized: bool = False) -> int:
-        """Gas bounds with CiaoPP's resource analysis, for contracts with a spec."""
+        """Gas bounds with CiaoPP's resource analysis.
+
+        The spec of each contract (module declaration, regtypes, entries) is
+        generated from the contract and its scenario goal/1
+        (src/ciaopp_cost/genspec.py) into <output dir>/specs. With
+        CIAOPP_COST_SPECS=hand, the hand-written specs of
+        data/ciaopp_cost/specs{,_normalized} are used instead (reference).
+        """
         if not self.options.run_ciaopp_cost:
             return 0
         from src import ciaopp_cost
+        from src.ciaopp_cost.genspec import generate
 
-        input_dir, specs_dir, out_dir, results_file = self.paths.ciaopp_cost_variant(normalized)
+        input_dir, hand_dir, out_dir, results_file = self.paths.ciaopp_cost_variant(normalized)
+        hand = os.environ.get("CIAOPP_COST_SPECS", "generated") == "hand"
         label = "build/normalized" if normalized else "build/executable"
+        label += ", hand-written specs" if hand else ", generated specs"
         print(f"=== CiaoPP cost analysis (gas bounds, {label}) ===")
         results, missing = [], []
         for name in names:
-            spec = specs_dir / f"{name}.pl"
             source = input_dir / f"{name}.pl"
+            if hand:
+                spec = hand_dir / f"{name}.pl"
+            else:
+                spec = out_dir / "specs" / f"{name}.pl"
+                spec.parent.mkdir(parents=True, exist_ok=True)
+                typed_from = self.paths.executable_dir / f"{name}.pl" if normalized else None
+                try:
+                    spec.write_text(generate(source, self.paths.ciaopp_cost_model_dir, typed_from),
+                                    encoding="utf-8")
+                except Exception as exc:  # no scenario, goal/1 fails...
+                    print(f"  {name}: no spec generated ({exc})", file=sys.stderr)
+                    spec.unlink(missing_ok=True)
             if not spec.is_file() or not source.is_file():
                 missing.append(name)
                 continue
@@ -399,10 +419,10 @@ class PipelineRunner:
                                       self.paths.ciaopp_cost_model_dir,
                                       out_dir, self.ciaosh)
             status = ciaopp_cost.status_of(res)
-            print(f"  {name}: {status} ({res.seconds:.1f} s, {res.peak_mb} MB, {len(res.bounds)} bound(s))")
+            print(f"  {name}: {status} ({len(res.bounds)} bound(s))")
             results.append(res)
         if missing:
-            print(f"  no spec yet: {', '.join(missing)}")
+            print(f"  no spec: {', '.join(missing)}")
         results_file.write_text(ciaopp_cost.format_results(results, missing, label), encoding="utf-8")
         print()
         return 0 if all(r.ok for r in results) else 1

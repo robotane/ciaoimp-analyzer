@@ -1,0 +1,65 @@
+=== auction ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/auction.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/auction_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/auction.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== ballot ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/ballot.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/ballot_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/ballot.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== blind_auction ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/blind_auction.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/blind_auction_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/blind_auction.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== crowdfunding ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/crowdfunding.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/crowdfunding_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/crowdfunding.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== crypto_buddy ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/crypto_buddy.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/crypto_buddy_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/crypto_buddy.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== crypto_shark ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/crypto_shark.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/crypto_shark_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/crypto_shark.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== distributor ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/distributor.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/distributor_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/distributor.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== example_coin ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/example_coin.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/example_coin_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/example_coin.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== example_erc721 ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/example_erc721.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/example_erc721_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/example_erc721.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== gradual_ponzi ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/gradual_ponzi.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/gradual_ponzi_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/gradual_ponzi.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== shared_entity ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/shared_entity.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/shared_entity_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/shared_entity.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== simple_auction ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/simple_auction.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/simple_auction_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/simple_auction.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== simple_ponzi ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/simple_ponzi.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/simple_ponzi_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/simple_ponzi.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== simple_pyramid ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/simple_pyramid.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/simple_pyramid_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/simple_pyramid.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== simple_shared_entity ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/simple_shared_entity.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/simple_shared_entity_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/simple_shared_entity.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+=== tictactoe ===
+ERROR: [Thread main] -g basm('/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/tictactoe.pl','/home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/bnf_asm/tictactoe_bnf_asm.txt'): see/1: source_sink `'progs//home/robotane/Projects/stage/projet/src/ciaoimp_pipeline_portable/build/normalized/tictactoe.pl.pro'' does not exist (No such file or directory)
+  [ERREUR] compilation BNF echouee
+
+BNF Java VM : 0 OK, 16 ERREURS

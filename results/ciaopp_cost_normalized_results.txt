@@ -1,223 +1,223 @@
-CiaoPP resource analysis (ciaopp_cost): gas bounds of the entries, input build/normalized
+CiaoPP resource analysis (ciaopp_cost): gas bounds of the entries, input build/normalized, generated specs
 Analyses: eterms, shfr, nf, det, resources
 
-=== auction (OK, 13.4 s, 88 MB) ===
+=== auction (OK, 15.0 s, 89 MB) ===
   bid                    lb = 0
-                         ub = 8*length(B1)
-                         call: atm(Caller), nnegint(Amount), nnegint(Now), atm(Bene), num(End), atm(HB), nnegint(HBid), nnegint(Ended), var(Bene2), var(End2), var(HB2), var(HBid2), var(Ended2), balances(B1), var(B2)
+                         ub = 8*length(A14)
+                         call: atm(A1), int(A2), int(A3), atm(A4), num(A5), atm(A6), int(A7), int(A8), var(A9), var(A10), var(A11), var(A12), var(A13), balances(A14), var(A15)
   end                    lb = 0
-                         ub = 4*length(B1)
-                         call: nnegint(Now), atm(Bene), num(End), atm(HB), nnegint(HBid), nnegint(Ended), var(Bene2), var(End2), var(HB2), var(HBid2), var(Ended2), balances(B1), var(B2)
+                         ub = 4*length(A12)
+                         call: int(A1), atm(A2), num(A3), atm(A4), int(A5), int(A6), var(A7), var(A8), var(A9), var(A10), var(A11), balances(A12), var(A13)
   goal                   lb = 0
                          ub = 128
   init                   lb = 0
                          ub = 0
-                         call: nnegint(BT), atm(Bene), nnegint(Now), var(S0), var(B2), var(E2), var(HB2), var(HBid2), var(En2)
+                         call: int(A1), atm(A2), int(A3), var(A4), var(A5), var(A6), var(A7), var(A8), var(A9)
 
-=== ballot (OK, 60.6 s, 128 MB) ===
-  delegate               lb = length(Pa)
+=== ballot (OK, 89.2 s, 137 MB) ===
+  delegate               lb = length(A5)
                          ub = inf
-                         call: atm(Caller), atm(To), atm(C), list(^(proposal('basic_props:atm','basic_props:num')),P), list(^(paper(atm,gnd,int,atm,int)),Pa), var(C2), var(P2), var(Pa2)
+                         call: atm(A1), atm(A2), atm(A3), list(^(proposal('basic_props:atm','basic_props:num')),A4), list(^(paper(atm,gnd,int,atm,int)),A5), var(A6), var(A7), var(A8)
   give_right             lb = 0
-                         ub = length(Pa)
-                         call: atm(Voter), atm(Caller), atm(C), proposals(P), papers(Pa), var(C2), var(P2), var(Pa2)
+                         ub = length(A5)
+                         call: atm(A1), atm(A2), atm(A3), proposal_t_list(A4), paper_t_list(A5), var(A6), var(A7), var(A8)
   goal                   lb = 0
                          ub = inf
   init                   lb = 0
                          ub = 0
-                         call: names(Names), atm(Caller), var(C2), var(P2), var(Pa2)
-  vote                   lb = length(Pa)
-                         ub = length(Pa)
-                         call: int(Prop), atm(Caller), atm(C), list(^(proposal('basic_props:atm','basic_props:num')),P), list(^(paper(gnd,gnd,int,gnd,int)),Pa), var(C2), var(P2), var(Pa2)
+                         call: atm_list(A1), atm(A2), var(A3), var(A4), var(A5)
+  vote                   lb = length(A5)
+                         ub = length(A5)
+                         call: int(A1), atm(A2), atm(A3), list(^(proposal('basic_props:atm','basic_props:num')),A4), list(^(paper(gnd,gnd,int,gnd,int)),A5), var(A6), var(A7), var(A8)
   winner                 lb = 0
                          ub = inf
-                         call: var(W), atm(C), list(^(proposal('basic_props:atm','basic_props:num')),P), list(^(paper(gnd,gnd,int,gnd,int)),Pa)
+                         call: var(A1), atm(A2), list(^(proposal('basic_props:atm','basic_props:num')),A3), list(^(paper(gnd,gnd,int,gnd,int)),A4)
 
-=== blind_auction (OK, 42.8 s, 121 MB) ===
+=== blind_auction (OK, 43.8 s, 131 MB) ===
   auction_end            lb = 0
-                         ub = 4*length(B1)
-                         call: nnegint(Now), atm(Bene), num(BEnd), num(REnd), atm(HB), nnegint(HBid), term(Bids), var(Bene2), var(BEnd2), var(REnd2), var(HB2), var(HBid2), var(Bids2), balances(B1), var(B2)
+                         ub = 4*length(A14)
+                         call: int(A1), atm(A2), num(A3), num(A4), atm(A5), int(A6), bid_t_list(A7), var(A8), var(A9), var(A10), var(A11), var(A12), var(A13), balances(A14), var(A15)
   bid                    lb = 0
-                         ub = 4*length(B1)
-                         call: atm(Caller), nnegint(Amount), nnegint(Now), atm(Hash), atm(Bene), num(BEnd), num(REnd), atm(HB), nnegint(HBid), bids(Bids), var(Bene2), var(BEnd2), var(REnd2), var(HB2), var(HBid2), var(Bids2), balances(B1), var(B2)
+                         ub = 4*length(A17)
+                         call: atm(A1), int(A2), int(A3), atm(A4), atm(A5), num(A6), num(A7), atm(A8), int(A9), bid_t_list(A10), var(A11), var(A12), var(A13), var(A14), var(A15), var(A16), balances(A17), var(A18)
   goal                   lb = 0
                          ub = inf
   init                   lb = 0
                          ub = 0
-                         call: nnegint(BT), nnegint(RT), atm(Caller), nnegint(Now), var(S0), var(A), var(B), var(C), var(D), var(E), var(F)
+                         call: int(A1), int(A2), atm(A3), int(A4), var(A5), var(A6), var(A7), var(A8), var(A9), var(A10), var(A11)
   reveal                 lb = 0
                          ub = inf
-                         call: atm(Caller), nnegint(Now), atm(Hash), nnegint(Value), nnegint(Fake), atm(Bene), num(BEnd), num(REnd), atm(HB), nnegint(HBid), term(Bids), var(Bene2), var(BEnd2), var(REnd2), var(HB2), var(HBid2), var(Bids2), balances(B1), var(B2)
+                         call: atm(A1), int(A2), atm(A3), int(A4), int(A5), atm(A6), num(A7), num(A8), atm(A9), int(A10), bid_t_list(A11), var(A12), var(A13), var(A14), var(A15), var(A16), var(A17), balances(A18), var(A19)
 
-=== crowdfunding (OK, 11.2 s, 78 MB) ===
+=== crowdfunding (OK, 20.6 s, 94 MB) ===
   check_goal_reached     lb = 0
-                         ub = inf
-                         call: nnegint(Id), var(Reached), rt844(Cs1), var(Cs2), balances(B1), var(B2)
+                         ub = 4*(length(A3)*length(A5))
+                         call: int(A1), var(A2), rt1160(A3), var(A4), balances(A5), var(A6)
   contribute             lb = 0
-                         ub = 4*length(B1)
-                         call: atm(Caller), nnegint(Amount), nnegint(Id), rt844(Cs1), var(Cs2), balances(B1), var(B2)
-  goal                   lb = 0
-                         ub = inf
-  init                   lb = 0
-                         ub = 0
-                         call: term(Caller), var(Cs)
-  new_campaign           lb = 0
-                         ub = 0
-                         call: atm(Ben), nnegint(Goal), var(Id), campaigns(Cs1), var(Cs2)
-
-=== crypto_buddy (OK, 11.2 s, 78 MB) ===
-  approve                lb = 0
-                         ub = 0
-                         call: atm(Spender), nnegint(Amount), atm(Caller), atm(Name), tok_balances(TB), allowances(Al), var(N2), var(TB2), var(Al2)
-  goal                   lb = 0
-                         ub = 53
-  init                   lb = 0
-                         ub = 0
-                         call: atm(Name), atm(Caller), var(S0), var(N2), var(TB2), var(Al2)
-  token_transfer         lb = length(TB)
-                         ub = 2*length(TB)+1
-                         call: atm(To), nnegint(Amount), atm(Caller), atm(Name), rt57(TB), rt59(Al), var(N2), var(TB2), var(Al2)
-  transferFrom           lb = length(Al)+length(TB)
-                         ub = length(Al)+2*length(TB)+1
-                         call: atm(From), atm(To), nnegint(Amount), atm(Caller), atm(Name), tok_balances(TB), allowances(Al), var(N2), var(TB2), var(Al2)
-
-=== crypto_shark (OK, 20.4 s, 93 MB) ===
-  approve                lb = length(Owners)
-                         ub = length(Owners)
-                         call: atm(To), nnegint(Tok), atm(Caller), atm(Name), atm(Symbol), nft_owners(Owners), rt59(Bals), nft_approvals(Apprs), nft_operators(Ops), var(N2), var(Sy2), var(O2), var(B2), var(A2), var(Op2)
-  goal                   lb = 0
-                         ub = 26
-  init                   lb = 0
-                         ub = 0
-                         call: atm(Name), atm(Symbol), var(S0), var(N2), var(Sy2), var(O2), var(B2), var(A2), var(Op2)
-  mint                   lb = length(Owners)
-                         ub = length(Bals)+length(Owners)
-                         call: atm(To), nnegint(Tok), atm(Name), atm(Symbol), nft_owners(Owners), nft_balances(Bals), nft_approvals(Apprs), nft_operators(Ops), var(N2), var(Sy2), var(O2), var(B2), var(A2), var(Op2)
-  setApprovalForAll      lb = 0
-                         ub = 0
-                         call: atm(Operator), int(Flag), atm(Caller), atm(Name), atm(Symbol), nft_owners(Owners), nft_balances(Bals), nft_approvals(Apprs), nft_operators(Ops), var(N2), var(Sy2), var(O2), var(B2), var(A2), var(Op2)
-  transferFrom           lb = length(Owners)
-                         ub = length(Ops)+length(Apprs)+2*length(Bals)+length(Owners)+1
-                         call: atm(From), atm(To), nnegint(Tok), atm(Caller), atm(Name), atm(Symbol), nft_owners(Owners), rt59(Bals), nft_approvals(Apprs), nft_operators(Ops), var(N2), var(Sy2), var(O2), var(B2), var(A2), var(Op2)
-
-=== distributor (OK, 6.6 s, 71 MB) ===
-  add_as_payee           lb = 0
-                         ub = 0
-                         call: atm(Caller), atm(Owner), payees(P), var(O2), var(P2)
-  distribute             lb = 0
-                         ub = 4*length(B1)+4*(length(P)*length(B1))
-                         call: atm(Caller), int(Amount), atm(Owner), payees(P), var(O2), var(P2), balances(B1), var(B2)
+                         ub = 4*length(A6)
+                         call: atm(A1), int(A2), int(A3), rt1160(A4), var(A5), balances(A6), var(A7)
   goal                   lb = 0
                          ub = 64
   init                   lb = 0
                          ub = 0
-                         call: atm(Caller), var(S0), var(O2), var(P2)
+                         call: var(A1), var(A2)
+  new_campaign           lb = 0
+                         ub = 0
+                         call: atm(A1), int(A2), var(A3), campaign_t_list(A4), var(A5)
 
-=== example_coin (OK, 13.6 s, 85 MB) ===
-  burn                   lb = length(TB)
-                         ub = length(TB)
-                         call: atm(Account), nnegint(Amount), atm(Caller), atm(Name), atm(Symbol), atm(Owner), num(Supply), rt418(TB), var(N2), var(Sy2), var(O2), var(Su2), var(TB2)
+=== crypto_buddy (OK, 11.2 s, 78 MB) ===
+  approve                lb = 0
+                         ub = 0
+                         call: atm(A1), int(A2), atm(A3), atm(A4), tok_balances(A5), allowances(A6), var(A7), var(A8), var(A9)
+  goal                   lb = 0
+                         ub = 53
+  init                   lb = 0
+                         ub = 0
+                         call: atm(A1), atm(A2), var(A3), var(A4), var(A5), var(A6)
+  token_transfer         lb = length(A5)
+                         ub = 2*length(A5)+1
+                         call: atm(A1), int(A2), atm(A3), atm(A4), rt57(A5), rt59(A6), var(A7), var(A8), var(A9)
+  transferFrom           lb = length(A7)+length(A6)
+                         ub = length(A7)+2*length(A6)+1
+                         call: atm(A1), atm(A2), int(A3), atm(A4), atm(A5), tok_balances(A6), allowances(A7), var(A8), var(A9), var(A10)
+
+=== crypto_shark (OK, 18.6 s, 95 MB) ===
+  approve                lb = length(A6)
+                         ub = length(A6)
+                         call: atm(A1), int(A2), atm(A3), atm(A4), atm(A5), nft_owners(A6), rt59(A7), nft_approvals(A8), nft_operators(A9), var(A10), var(A11), var(A12), var(A13), var(A14), var(A15)
+  goal                   lb = 0
+                         ub = 27
+  init                   lb = 0
+                         ub = 0
+                         call: atm(A1), atm(A2), var(A3), var(A4), var(A5), var(A6), var(A7), var(A8), var(A9)
+  mint                   lb = length(A5)
+                         ub = length(A6)+length(A5)
+                         call: atm(A1), int(A2), atm(A3), atm(A4), nft_owners(A5), nft_balances(A6), nft_approvals(A7), nft_operators(A8), var(A9), var(A10), var(A11), var(A12), var(A13), var(A14)
+  setApprovalForAll      lb = 0
+                         ub = 0
+                         call: atm(A1), int(A2), atm(A3), atm(A4), atm(A5), nft_owners(A6), rt59(A7), nft_approvals(A8), nft_operators(A9), var(A10), var(A11), var(A12), var(A13), var(A14), var(A15)
+  transferFrom           lb = length(A7)
+                         ub = length(A10)+length(A9)+2*length(A8)+length(A7)+1
+                         call: atm(A1), atm(A2), int(A3), atm(A4), atm(A5), atm(A6), nft_owners(A7), rt59(A8), nft_approvals(A9), nft_operators(A10), var(A11), var(A12), var(A13), var(A14), var(A15), var(A16)
+
+=== distributor (OK, 7.0 s, 72 MB) ===
+  add_as_payee           lb = 0
+                         ub = 0
+                         call: atm(A1), atm(A2), atm_list(A3), var(A4), var(A5)
+  distribute             lb = 0
+                         ub = 4*length(A7)+4*(length(A4)*length(A7))
+                         call: atm(A1), int(A2), atm(A3), atm_list(A4), var(A5), var(A6), balances(A7), var(A8)
+  goal                   lb = 0
+                         ub = 64
+  init                   lb = 0
+                         ub = 0
+                         call: atm(A1), var(A2), var(A3), var(A4)
+
+=== example_coin (OK, 14.0 s, 86 MB) ===
+  burn                   lb = length(A8)
+                         ub = length(A8)
+                         call: atm(A1), int(A2), atm(A3), atm(A4), atm(A5), atm(A6), num(A7), rt418(A8), var(A9), var(A10), var(A11), var(A12), var(A13)
   goal                   lb = 0
                          ub = 73
   init                   lb = 0
                          ub = 0
-                         call: atm(Name), atm(Symbol), atm(Caller), var(S0), var(N2), var(Sy2), var(O2), var(Su2), var(TB2)
+                         call: atm(A1), atm(A2), atm(A3), var(A4), var(A5), var(A6), var(A7), var(A8), var(A9)
   mint                   lb = 0
-                         ub = length(TB)
-                         call: atm(Account), nnegint(Amount), atm(Caller), atm(Name), atm(Symbol), atm(Owner), nnegint(Supply), rt55(TB), var(N2), var(Sy2), var(O2), var(Su2), var(TB2)
-  token_transfer         lb = length(TB)
-                         ub = 2*length(TB)+1
-                         call: atm(To), nnegint(Amount), atm(Caller), atm(Name), atm(Symbol), atm(Owner), nnegint(Supply), tok_balances(TB), var(N2), var(Sy2), var(O2), var(Su2), var(TB2)
+                         ub = length(A8)
+                         call: atm(A1), int(A2), atm(A3), atm(A4), atm(A5), atm(A6), int(A7), rt55(A8), var(A9), var(A10), var(A11), var(A12), var(A13)
+  token_transfer         lb = length(A8)
+                         ub = 2*length(A8)+1
+                         call: atm(A1), int(A2), atm(A3), atm(A4), atm(A5), atm(A6), int(A7), tok_balances(A8), var(A9), var(A10), var(A11), var(A12), var(A13)
 
-=== example_erc721 (OK, 9.6 s, 78 MB) ===
+=== example_erc721 (OK, 10.4 s, 77 MB) ===
   goal                   lb = 0
                          ub = 42
   init                   lb = 0
                          ub = 0
-                         call: atm(Name), atm(Symbol), var(S0), var(N2), var(Sy2), var(O2), var(B2)
-  mint                   lb = length(Owners)
-                         ub = length(Bals)+length(Owners)
-                         call: atm(To), nnegint(Tok), atm(Name), atm(Symbol), nft_owners(Owners), rt57(Bals), var(N2), var(Sy2), var(O2), var(B2)
-  transferFrom           lb = length(Owners)
-                         ub = 2*length(Bals)+length(Owners)+1
-                         call: atm(From), atm(To), nnegint(Tok), atm(Caller), atm(Name), atm(Symbol), nft_owners(Owners), rt60(Bals), var(N2), var(Sy2), var(O2), var(B2)
+                         call: atm(A1), atm(A2), var(A3), var(A4), var(A5), var(A6), var(A7)
+  mint                   lb = length(A5)
+                         ub = length(A6)+length(A5)
+                         call: atm(A1), int(A2), atm(A3), atm(A4), nft_owners(A5), rt57(A6), var(A7), var(A8), var(A9), var(A10)
+  transferFrom           lb = length(A7)
+                         ub = 2*length(A8)+length(A7)+1
+                         call: atm(A1), atm(A2), int(A3), atm(A4), atm(A5), atm(A6), nft_owners(A7), rt60(A8), var(A9), var(A10), var(A11), var(A12)
 
-=== gradual_ponzi (OK, 7.6 s, 73 MB) ===
+=== gradual_ponzi (OK, 8.6 s, 74 MB) ===
   goal                   lb = 0
                          ub = 112
   init                   lb = 0
                          ub = 0
-                         call: atm(Caller), var(S0), var(I2)
+                         call: atm(A1), var(A2), var(A3)
   invest                 lb = 0
-                         ub = 4*length(B1)+4*(length(I1)*length(B1))
-                         call: atm(Caller), int(Value), investors(I1), var(I2), balances(B1), var(B2)
+                         ub = 4*length(A5)+4*(length(A3)*length(A5))
+                         call: atm(A1), int(A2), atm_list(A3), var(A4), balances(A5), var(A6)
 
-=== shared_entity (OK, 12.6 s, 83 MB) ===
+=== shared_entity (OK, 14.2 s, 85 MB) ===
   accept_offer           lb = 0
-                         ub = 2.0*length(Of)**2+8*(length(Of)*length(B1))-length(Of)+2*(length(Sh)*length(Of))
-                         call: nnegint(Id), atm(Caller), nnegint(Amount), shares(Sh), offers(Of), num(Nx), var(Sh2), var(Of2), var(Nx2), balances(B1), var(B2)
+                         ub = inf
+                         call: int(A1), atm(A2), int(A3), sh_t_list(A4), offer_t_list(A5), num(A6), var(A7), var(A8), var(A9), balances(A10), var(A11)
   goal                   lb = 0
-                         ub = 59.0
+                         ub = inf
   init                   lb = 0
                          ub = 0
-                         call: shares(Shares), var(S0), var(Sh2), var(Of2), var(Nx2)
-  place_offer            lb = length(Sh)
-                         ub = length(Sh)
-                         call: nnegint(Price), nnegint(N), atm(Caller), shares(Sh), offers(Of), nnegint(Nx), var(Sh2), var(Of2), var(Nx2)
+                         call: sh_t_list(A1), var(A2), var(A3), var(A4), var(A5)
+  place_offer            lb = length(A4)
+                         ub = length(A4)
+                         call: int(A1), int(A2), atm(A3), sh_t_list(A4), offer_t_list(A5), int(A6), var(A7), var(A8), var(A9)
 
-=== simple_auction (OK, 9.6 s, 81 MB) ===
+=== simple_auction (OK, 11.2 s, 81 MB) ===
   auction_end            lb = 0
-                         ub = 4*length(B1)
-                         call: nnegint(Now), atm(Bene), num(End), nnegint(HBid), atm(HB), var(Bene2), var(End2), var(HBid2), var(HB2), balances(B1), var(B2)
+                         ub = 4*length(A10)
+                         call: int(A1), atm(A2), num(A3), int(A4), atm(A5), var(A6), var(A7), var(A8), var(A9), balances(A10), var(A11)
   bid                    lb = 0
-                         ub = 8*length(B1)
-                         call: atm(Caller), nnegint(Amount), nnegint(Now), atm(Bene), num(End), nnegint(HBid), atm(HB), var(Bene2), var(End2), var(HBid2), var(HB2), balances(B1), var(B2)
+                         ub = 8*length(A12)
+                         call: atm(A1), int(A2), int(A3), atm(A4), num(A5), int(A6), atm(A7), var(A8), var(A9), var(A10), var(A11), balances(A12), var(A13)
   goal                   lb = 0
                          ub = 96
   init                   lb = 0
                          ub = 0
-                         call: nnegint(BT), atm(Bene), nnegint(Now), var(S0), var(B2), var(E2), var(HBid2), var(HB2)
+                         call: int(A1), atm(A2), int(A3), var(A4), var(A5), var(A6), var(A7), var(A8)
 
-=== simple_ponzi (OK, 5.8 s, 70 MB) ===
+=== simple_ponzi (OK, 6.6 s, 70 MB) ===
   goal                   lb = 0
                          ub = 57
   init                   lb = 0
                          ub = 0
-                         call: term(Caller), var(L2), var(A2)
+                         call: var(A1), var(A2), var(A3)
   invest                 lb = 0
-                         ub = 8*length(B1)
-                         call: atm(Caller), int(Amount), atm(Last), int(LastA), var(L2), var(A2), balances(B1), var(B2)
+                         ub = 8*length(A7)
+                         call: atm(A1), int(A2), atm(A3), int(A4), var(A5), var(A6), balances(A7), var(A8)
 
-=== simple_pyramid (OK, 8.2 s, 75 MB) ===
+=== simple_pyramid (OK, 10.0 s, 75 MB) ===
   goal                   lb = 0
                          ub = 112
   init                   lb = 0
                          ub = 0
-                         call: atm(Caller), var(X), var(Inv), var(Prev)
+                         call: atm(A1), var(A2), var(A3), var(A4)
   invest                 lb = 0
-                         ub = 4*length(B1)+4*(length(Inv1)*length(B1))
-                         call: atm(Caller), nnegint(Amount), investors(Inv1), nnegint(Prev1), var(Inv2), var(Prev2), balances(B1), var(B2)
+                         ub = 4*length(A7)+4*(length(A3)*length(A7))
+                         call: atm(A1), int(A2), atm_list(A3), int(A4), var(A5), var(A6), balances(A7), var(A8)
 
-=== simple_shared_entity (OK, 12.4 s, 83 MB) ===
+=== simple_shared_entity (OK, 13.2 s, 85 MB) ===
   accept                 lb = 0
-                         ub = 2.0*length(Of)**2+8*(length(Of)*length(B1))-length(Of)+2*(length(Sh)*length(Of))
-                         call: nnegint(Id), atm(Caller), nnegint(Amount), shares(Sh), offers(Of), num(Nx), var(Sh2), var(Of2), var(Nx2), balances(B1), var(B2)
+                         ub = inf
+                         call: int(A1), atm(A2), int(A3), sh_t_list(A4), offer_t_list(A5), num(A6), var(A7), var(A8), var(A9), balances(A10), var(A11)
   goal                   lb = 0
-                         ub = 59.0
+                         ub = inf
   init                   lb = 0
                          ub = 0
-                         call: shares(Shares), var(S0), var(Sh2), var(Of2), var(Nx2)
-  place_offer            lb = length(Sh)
-                         ub = length(Sh)
-                         call: nnegint(Price), nnegint(N), atm(Caller), shares(Sh), offers(Of), nnegint(Nx), var(Sh2), var(Of2), var(Nx2)
+                         call: sh_t_list(A1), var(A2), var(A3), var(A4), var(A5)
+  place_offer            lb = length(A4)
+                         ub = length(A4)
+                         call: int(A1), int(A2), atm(A3), sh_t_list(A4), offer_t_list(A5), int(A6), var(A7), var(A8), var(A9)
 
-=== tictactoe (OK, 28.8 s, 116 MB) ===
+=== tictactoe (OK, 32.0 s, 117 MB) ===
   goal                   lb = 0
                          ub = 2447
   init                   lb = 0
-                         ub = 8*length(B1)
-                         call: atm(P1), atm(P2), nnegint(Bet), var(S0), var(Q1), var(Q2), var(T2), var(W2), var(Bd2), balances(B1), var(B2)
-  play                   lb = length(Board)
-                         ub = 8*length(B1)+19*length(Board)+18
-                         call: int(Pos), atm(Caller), atm(P1), atm(P2), nnegint(Turn), nnegint(Winner), cells(Board), var(Q1), var(Q2), var(T2), var(W2), var(Bd2), balances(B1), var(B2)
+                         ub = 8*length(A10)
+                         call: atm(A1), atm(A2), int(A3), var(A4), var(A5), var(A6), var(A7), var(A8), var(A9), balances(A10), var(A11)
+  play                   lb = length(A7)
+                         ub = 8*length(A13)+19*length(A7)+18
+                         call: int(A1), atm(A2), atm(A3), atm(A4), int(A5), int(A6), cell_t_list(A7), var(A8), var(A9), var(A10), var(A11), var(A12), balances(A13), var(A14)
 

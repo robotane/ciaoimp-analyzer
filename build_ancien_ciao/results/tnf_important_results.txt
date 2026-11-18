@@ -1,0 +1,18 @@
+auction              : [1000, 850, 150, 0]
+ballot               : ['prop_a']
+blind_auction        : [850, 1000, 150, 0]
+crowdfunding         : [800, 850, 350, 0]
+crypto_buddy         : [700, 0, 200, 100]
+crypto_shark         : ['charlie', 1, 1]
+distributor          : [1150, 1150, 700, 0]
+example_coin         : [999500, 400, 200, 1000100]
+example_erc721       : ['bob', 'alice', 1, 1]
+gradual_ponzi        : [3000, 1000, -1000, 0]
+shared_entity        : [1500, 1000, 500, 0]
+simple_auction       : [1000, 800, 200, 0]
+simple_ponzi         : [1020, 880, 100]
+simple_pyramid       : [2705, 1505, 290, 0]
+simple_shared_entity : [1200, 1000, 800, 0]
+tictactoe            : [900, 900, 200]
+
+TNF : 16 OK, 0 ERREURS

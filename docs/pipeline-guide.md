@@ -113,6 +113,43 @@ Elle relance uniquement la compilation TNF puis la VM Python.
 : comparaison textuelle entre `source`, `executable`, `normalized` et
 `annotated`.
 
+## Ce que le pipeline déduit seul
+
+Aucune partie du pipeline ne connaît un contrat par son nom. Ce qui était
+écrit à la main pour chaque contrat est maintenant déduit du contrat et de son
+scénario `goal/1`.
+
+Specs CiaoPP (`src/ciaopp_cost/genspec.py`)
+: le scénario est exécuté appel par appel (`collect_calls.pl`) ; les
+opérations sont les prédicats appelés par `goal/1` (hors primitives de
+`blockchain.pl`) ; leurs types d'arguments sont la généralisation des valeurs
+observées, avant et après chaque appel, les champs d'état étant suivis d'une
+opération à la suivante. Une table du modèle de coût (`balances`, ...) garde
+son nom. Les specs écrites à la main de `data/ciaopp_cost/specs*` restent
+disponibles comme référence avec `CIAOPP_COST_SPECS=hand`.
+
+Modes CasLog (`src/annotation/collect_modes.pl`)
+: les modes sont ceux observés quand `goal/1` s'exécute (`+` : argument lié à
+chaque appel, ou libre à l'appel et à la sortie ; `-` sinon).
+
+Boucles (`src/cleaning/loops`, `src/annotation/accumulators.py`)
+: les boucles `for` du Ciao actuel sont remises sous forme canonique (cas de
+base `[]`, sans coupure ni argument de reste), les arguments inutilisés des
+auxiliaires sont supprimés ; pour CasLog seulement, une liste construite par
+accumulateur devient une récursion structurelle (même longueur, même coût,
+ordre inversé).
+
+## Règles d'écriture d'un contrat
+
+1. Le contrat a un scénario `goal/1` qui s'exécute sans échec.
+2. Le scénario appelle chaque opération du contrat au moins une fois. Une
+   opération jamais appelée n'a ni entrée CiaoPP ni annotation CasLog ; elle
+   est signalée (avertissement de `genspec`, commentaire en tête du fichier
+   annoté).
+3. Les tables d'état que le scénario laisse vides sont typées comme listes de
+   termes clos (`gnd`) ; pour un type plus précis, le scénario doit les
+   remplir au moins une fois.
+
 ## Dépannage
 
 Si un lancement échoue, regarder dans cet ordre :

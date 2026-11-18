@@ -21,17 +21,6 @@ from .measures import _collect_evidence, _share_by_variable, _finalize_measures
 from .propagate import _find_body_calls, _vars_in
 from ..demote_modes import demote_fixpoint
 
-MODE_OVERRIDES: dict[str, dict[tuple[str, int], list[str]]] = {
-    "crowdfunding": {
-        ("aux_cond_5", 12): ["+", "+", "+", "+", "-", "+", "+", "-", "-", "+", "+", "+"],
-    },
-}
-
-MODE_LINE_RE = re.compile(
-    r"^(:-\s*mode\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*/\s*(\d+)\s*,\s*\[)([^\]]*)(\]\s*\)\s*\.)",
-    re.MULTILINE,
-)
-
 
 def _split_source_clauses(text: str) -> list[str]:
     """Split a Prolog source into top-level clauses, preserving clause text."""
@@ -121,49 +110,105 @@ def _normalize_hints(hints: dict | None) -> tuple[
     )
 
 
-def _apply_mode_overrides(src: Path, modes_map: dict[tuple[str, int], list[str]]) -> None:
-    """Apply targeted overrides for helpers that remain noisy under CasLog.
+from src.utils.prolog import split_top_level
 
-    The compact pipeline intentionally exposes only 3 public stages. These
-    overrides preserve that compact architecture while aligning a few internal
-    helper annotations with the stable behavior historically used on this
-    corpus.
-    """
-    file_overrides = MODE_OVERRIDES.get(src.stem)
-    if not file_overrides:
-        return
-    for key, modes in file_overrides.items():
-        if key in modes_map and len(modes_map[key]) == len(modes):
-            modes_map[key] = list(modes)
+COLLECT_MODES = Path(__file__).resolve().parents[1] / "collect_modes.pl"
 
 
-def apply_mode_overrides_to_file(path: Path) -> None:
-    """Re-apply targeted overrides after mode demotion.
+def observed_modes(src: Path) -> dict[tuple[str, int], list[str]]:
+    """Modes seen when goal/1 runs (collect_modes.pl): ``+`` for an argument
+    ground at every call, or unbound at every call and every exit (ignored by
+    the predicate); ``-`` otherwise. Predicates goal/1 never calls are absent
+    (their modes are inferred from the clauses)."""
+    import json
+    import subprocess
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "modes.json"
+        try:
+            subprocess.run(["swipl", "-q", str(COLLECT_MODES), "--", str(src), str(out)],
+                           check=True, timeout=120, capture_output=True, text=True)
+            data = json.loads(out.read_text(encoding="utf-8"))
+        except (subprocess.SubprocessError, OSError, ValueError):
+            return {}
+    modes = {}
+    for key, args in data.items():
+        name, arity = key.rsplit("/", 1)
+        if not any(a["ground"] + a["var"] + a["partial"] for a in args):
+            continue
+        def mode(a):
+            if a["var"] == 0 and a["partial"] == 0:
+                return "+"
+            if a["partial"] == 0 and a["ground"] == 0 and a["exits"] and a["var_exit"] == a["exits"]:
+                return "+"
+            return "-"
+        modes[(name, int(arity))] = [mode(a) for a in args]
+    return modes
 
-    ``demote_fixpoint`` may legitimately change helper modes, but for a few
-    contract-specific helpers we want the final annotated file to keep a known
-    stable mode shape.
-    """
-    file_overrides = MODE_OVERRIDES.get(path.stem)
-    if not file_overrides:
-        return
-    text = path.read_text()
 
-    def repl(match: re.Match) -> str:
-        key = (match.group(2), int(match.group(3)))
-        modes = file_overrides.get(key)
-        if not modes:
-            return match.group(0)
-        return match.group(1) + ", ".join(modes) + match.group(5)
+def _void_loop_accumulators(grouped, modes_map, measures_map) -> None:
+    """In a loop over a list (a clause [X|T] at k whose last goal is the
+    recursive call with T at k), an integer input that changes from one
+    iteration to the next (a value accumulator: sum, found value) gets the
+    measure void instead of int: with a size of its own the time is a
+    recurrence in two sizes, which CasLog does not solve. Lists threaded
+    through the loop (a table updated at each step) keep their length: their
+    size does not grow, and the cost of the steps depends on it. (List
+    accumulators that grow were already made structural.)"""
+    from src.cleaning.loops.rewrite import _cons
+    from src.utils.prolog import parse_call
+    for key, preds in grouped.items():
+        name, arity = key
+        for _, args, body in preds:
+            goals = [g.strip() for g in split_top_level(body)] if isinstance(body, str) and body.strip() else []
+            if not goals:
+                continue
+            last = parse_call(goals[-1])
+            if not last or last[0] != name or len(last[1]) != arity:
+                continue
+            ks = [k for k in range(arity) if (c := _cons(args[k])) and last[1][k] == c[1]]
+            if not ks:
+                continue
+            for j in range(arity):
+                if j in ks or modes_map[key][j] != "+":
+                    continue
+                if last[1][j].strip() != args[j].strip() and measures_map[key][j] == "int":
+                    measures_map[key][j] = "void"
 
-    updated = MODE_LINE_RE.sub(repl, text)
-    if updated != text:
-        path.write_text(updated)
+
+def _keep_exercised(text: str, observed: dict) -> tuple[str, list[str]]:
+    """Keep the predicates goal/1 runs (when modes were observed at all): the
+    others have no observed modes, and a wrong guess stops CasLog on the whole
+    file. They are listed in a comment of the annotated file."""
+    if not observed:
+        return text, []
+    from src.utils.prolog import parse_call, split_head_body
+    kept, dropped = [], set()
+    for clause in _split_source_clauses(text):
+        head, _ = split_head_body(clause)
+        call = parse_call(head.strip())
+        key = (call[0], len(call[1])) if call else (head.strip(), 0)
+        if not clause.strip() or clause.lstrip().startswith(":-") or key in observed:
+            kept.append(clause)
+        else:
+            dropped.add(f"{key[0]}/{key[1]}")
+    return "".join(kept).lstrip(), sorted(dropped)
 
 
 def annotate(src: Path, dst: Path, hints: dict | None = None) -> list[str]:
-    """Annotate ``src`` into ``dst`` and return generated directive strings."""
-    text = remove_execution_predicates(src.read_text())
+    """Annotate ``src`` into ``dst`` and return generated directive strings.
+
+    The list accumulators of the loops are first made structural
+    (src/annotation/accumulators.py: same sizes and costs, CasLog input only),
+    then the modes are observed on goal/1."""
+    import tempfile
+    from src.annotation.accumulators import process_file as structural_accumulators
+    with tempfile.TemporaryDirectory() as tmp:
+        prepared = Path(tmp) / src.name
+        structural_accumulators(src, prepared)
+        observed = observed_modes(prepared)
+        text = remove_execution_predicates(prepared.read_text())
+    text, unexercised = _keep_exercised(text, observed)
     parsed = parse_clauses(text)
     forced_outputs, forced_lengths = _normalize_hints(hints)
 
@@ -193,7 +238,10 @@ def annotate(src: Path, dst: Path, hints: dict | None = None) -> list[str]:
         ev = _share_by_variable(name, arity, preds, ev)
         evidence_map[key] = ev
 
-    _apply_mode_overrides(src, modes_map)
+    # modes observed on the scenario replace the syntactic guess
+    for key, modes in observed.items():
+        if key in modes_map and len(modes) == len(modes_map[key]):
+            modes_map[key] = list(modes)
 
     measures_map: dict[tuple[str, int], list[str]] = {
         key: _finalize_measures(key[0], evidence_map[key]) for key in order
@@ -204,6 +252,8 @@ def annotate(src: Path, dst: Path, hints: dict | None = None) -> list[str]:
         changed = False
         for key in order:
             name, arity = key
+            if key in observed:
+                continue
             preds = grouped[key]
             for nm, args, body in preds:
                 if nm != name:
@@ -295,6 +345,8 @@ def annotate(src: Path, dst: Path, hints: dict | None = None) -> list[str]:
             if 0 <= p < len(measures_map[key]):
                 measures_map[key][p] = "length"
 
+    _void_loop_accumulators(grouped, modes_map, measures_map)
+
     directives: list[str] = []
     for key in order:
         name, arity = key
@@ -305,7 +357,9 @@ def annotate(src: Path, dst: Path, hints: dict | None = None) -> list[str]:
             f":- measure({name}/{arity}, [{', '.join(measures)}]).\n"
         )
 
-    out = "\n".join(directives) + "\n\n" + text
+    note = (f"% Not run by goal/1, not analysed: {', '.join(unexercised)}\n\n"
+            if unexercised else "")
+    out = note + "\n".join(directives) + "\n\n" + text
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(out)
     return directives

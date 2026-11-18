@@ -1,0 +1,401 @@
+CiaoImp pipeline - rapport automatique des differences entre etapes
+==============================================================================
+
+Contrats analyses: 1
+Limite de diff par transition: 400 lignes
+Configurer avec STAGE_DIFF_MAX_LINES=0 pour un diff complet.
+
+##############################################################################
+CONTRAT: crypto_shark
+##############################################################################
+
+Statistiques par etape
+------------------------------------------------------------------------------
+source           100 lines, 3257 bytes, sha256=a235b656b06463e1
+executable       148 lines, 4039 bytes, sha256=9755ee71a4f93dd7
+normalized       96 lines, 3869 bytes, sha256=df67721002d2ff8f
+
+Transition source -> executable
+------------------------------------------------------------------------------
+--- /home/robotane/Projects/stage/projet/src/ciaoimp-analyzer/data/source/crypto_shark.pl
++++ /home/robotane/Projects/stage/projet/src/ciaoimp-analyzer/build/executable/crypto_shark.pl
+@@ -1,100 +1,148 @@
+-% ERC721 avec approbations par token et par opérateur (crypto_shark).
+-% Pas de blockchain ETH : les NFT sont gérés en interne.
+-% Etat : state(Name, Symbol, TokenOwners, NFTBalances, Approvals, OpApprovals)
+-:- module(_, [goal/1], [fsyntax, statevars, hiord, loops]).
+-:- fun_eval arith(true).
+-
+-% --- Helpers ---
+-
+-get_owner(Id, TO) := Owner :-
+-    Owner := 'null',
+-    for (Entry in list(TO)) {
+-        Entry = t_o(I, O),
+-        if (I == Id, Owner == 'null') { Owner := O }
+-    }.
+-
+-get_nft_bal(Addr, NB) := Bal :-
+-    Bal := 0,
+-    for (Entry in list(NB)) {
+-        Entry = n_b(A, Amt),
+-        if (A == Addr, Bal == 0) { Bal := Amt }
+-    }.
+-
+-get_appr(Id, App) := Spender :-
+-    Spender := 'null',
+-    for (Entry in list(App)) {
+-        Entry = app(I, S),
+-        if (I == Id, Spender == 'null') { Spender := S }
+-    }.
+-
+-get_op_appr(Owner, Operator, Op) := Approved :-
+-    Approved := 0,
+-    for (Entry in list(Op)) {
+-        Entry = op(O, OpAddr, V),
+-        if (O == Owner, OpAddr == Operator, Approved == 0) { Approved := V }
+-    }.
+-
+-% --- Contrat ---
+-
+-init(Name, Symbol, !S) :-
+-    S := state(Name, Symbol, [], [], [], []).
+-
+-mint(To, TokenId, !S) :-
+-    state(Name, Symbol, TO, NB, App, Op) = S,
+-    get_owner(TokenId, TO, Owner),
+-    if (Owner == 'null') {
+-        TO1 := [t_o(TokenId, To) | TO],
+-        get_nft_bal(To, NB, ToBal),
+-        NewToBal is ToBal + 1,
+-        NB1 := [n_b(To, NewToBal) | NB],
+-        S := state(Name, Symbol, TO1, NB1, App, Op)
+-    }.
+-
+-approve(To, TokenId, Caller, !S) :-
+-    state(Name, Symbol, TO, NB, App, Op) = S,
+-    get_owner(TokenId, TO, Owner),
+-    if (Caller == Owner) {
+-        App1 := [app(TokenId, To) | App],
+-        S := state(Name, Symbol, TO, NB, App1, Op)
+-    }.
+-
+-setApprovalForAll(Operator, Approved, Caller, !S) :-
+-    state(Name, Symbol, TO, NB, App, Op) = S,
+-    Op1 := [op(Caller, Operator, Approved) | Op],
+-    S := state(Name, Symbol, TO, NB, App, Op1).
+-
+-transferFrom(From, To, TokenId, Caller, !S) :-
+-    state(Name, Symbol, TO, NB, App, Op) = S,
+-    get_owner(TokenId, TO, Owner),
+-    if (Owner == From) {
+-        get_appr(TokenId, App, Spender),
+-        get_op_appr(Owner, Caller, Op, OpApproved),
+-        if (Caller == Owner ; Spender == Caller ; OpApproved == 1) {
+-            App1 := [app(TokenId, 'null') | App],
+-            get_nft_bal(From, NB, FromBal),
+-            NewFromBal is FromBal - 1,
+-            NB1 := [n_b(From, NewFromBal) | NB],
+-            get_nft_bal(To, NB1, ToBal),
+-            NewToBal is ToBal + 1,
+-            NB2 := [n_b(To, NewToBal) | NB1],
+-            TO1 := [t_o(TokenId, To) | TO],
+-            S := state(Name, Symbol, TO1, NB2, App1, Op)
+-        }
+-    }.
+-
+-% --- Test ---
+-% Scenario : mint token 1 pour alice, alice approuve bob pour token 1,
+-%            bob transfère token 1 vers charlie.
+-% Attendu : alice=0 NFT, charlie=1 NFT, owner(1)=charlie
+-
+-goal(Results) :-
+-    init(shark, s, _, S1),
+-    mint(alice, 1, S1, S2),
+-    approve(bob, 1, alice, S2, S3a),
+-    setApprovalForAll(dave, 1, alice, S3a, S3),
+-    transferFrom(alice, charlie, 1, bob, S3, S4),
+-    S4 = state(_, _, TO, NB, _, _),
+-    get_owner(1, TO, OwnerToken1),
+-    get_nft_bal(alice,   NB, AliceNFT),
+-    get_nft_bal(charlie, NB, CharlieNFT),
+-    Results = [OwnerToken1, AliceNFT, CharlieNFT].
++get_owner(A, B, C) :-
++    aux_disj_11(null, C, _, _, B, A).
++aux_disj_11(A, B, _, C, D, E) :-
++    aux_disj_12(A, B, D, C, E).
++aux_disj_12(A, B, [t_o(C, D)|E], F, G) :-
++    !,
++    aux_disj_13(G, A, C, D, H),
++    aux_disj_12(H, B, E, F, G).
++aux_disj_12(A, A, B, B, _).
++aux_disj_13(A, null, A, B, B) :-
++    !.
++aux_disj_13(_, A, _, _, A).
++get_nft_bal(A, B, C) :-
++    aux_disj_5(0, C, _, _, B, A).
++aux_disj_5(A, B, _, C, D, E) :-
++    aux_disj_6(A, B, D, C, E).
++aux_disj_6(A, B, [n_b(C, D)|E], F, G) :-
++    !,
++    aux_disj_7(G, A, C, D, H),
++    aux_disj_6(H, B, E, F, G).
++aux_disj_6(A, A, B, B, _).
++aux_disj_7(A, 0, A, B, B) :-
++    !.
++aux_disj_7(_, A, _, _, A).
++get_appr(A, B, C) :-
++    aux_disj_2(null, C, _, _, B, A).
++aux_disj_2(A, B, _, C, D, E) :-
++    aux_disj_3(A, B, D, C, E).
++aux_disj_3(A, B, [app(C, D)|E], F, G) :-
++    !,
++    aux_disj_4(G, A, C, D, H),
++    aux_disj_3(H, B, E, F, G).
++aux_disj_3(A, A, B, B, _).
++aux_disj_4(A, null, A, B, B) :-
++    !.
++aux_disj_4(_, A, _, _, A).
++get_op_appr(A, B, C, D) :-
++    aux_disj_8(0, D, _, _, C, A, B).
++aux_disj_8(A, B, _, C, D, E, F) :-
++    aux_disj_9(A, B, D, C, E, F).
++aux_disj_9(A, B, [op(C, D, E)|F], G, H, I) :-
++    !,
++    aux_disj_10(H, I, A, C, D, E, J),
++    aux_disj_9(J, B, F, G, H, I).
++aux_disj_9(A, A, B, B, _, _).
++aux_disj_10(A, B, 0, A, B, C, C) :-
++    !.
++aux_disj_10(_, _, A, _, _, _, A).
++init(A, B, _, state(A, B, [], [], [], [])).
++mint(A, B, state(C, D, E, F, G, H), I) :-
++    get_owner(B, E, J),
++    aux_disj_14(A,
++                B,
++                state(C, D, E, F, G, H),
++                I,
++                C,
++                D,
++                E,
++                F,
++                G,
++                H,
++                J).
++aux_disj_14(A, B, _, state(C, D, [t_o(B, A)|E], [n_b(A, F)|G], H, I), C, D, E, G, H, I, null) :-
++    !,
++    get_nft_bal(A, G, J),
++    K is J+1,
++    F is K.
++aux_disj_14(_, _, A, A, _, _, _, _, _, _, _).
++approve(A, B, C, state(D, E, F, G, H, I), J) :-
++    get_owner(B, F, K),
++    aux_disj_1(A,
++               B,
++               C,
++               state(D, E, F, G, H, I),
++               J,
++               D,
++               E,
++               F,
++               G,
++               H,
++               I,
++               K).
++aux_disj_1(A, B, C, _, state(D, E, F, G, [app(B, A)|H], I), D, E, F, G, H, I, C) :-
++    !.
++aux_disj_1(_, _, _, A, A, _, _, _, _, _, _, _).
++setApprovalForAll(A, B, C, state(D, E, F, G, H, I), state(D, E, F, G, H, [op(C, A, B)|I])).
++transferFrom(A, B, C, D, state(E, F, G, H, I, J), K) :-
++    get_owner(C, G, L),
++    aux_disj_15(A,
++                B,
++                C,
++                D,
++                state(E, F, G, H, I, J),
++                K,
++                E,
++                F,
++                G,
++                H,
++                I,
++                J,
++                L).
++aux_disj_15(A, B, C, D, E, F, G, H, I, J, K, L, A) :-
++    !,
++    get_appr(C, K, M),
++    get_op_appr(A, D, L, N),
++    aux_disj_16(A,
++                B,
++                C,
++                D,
++                E,
++                F,
++                G,
++                H,
++                I,
++                J,
++                K,
++                L,
++                A,
++                M,
++                N).
++aux_disj_15(_, _, _, _, A, A, _, _, _, _, _, _, _).
++aux_disj_16(A, B, C, D, _, state(E, F, [t_o(C, B)|G], [n_b(B, H), n_b(A, I)|J], [app(C, null)|K], L), E, F, G, J, K, L, M, N, O) :-
++    aux_disj_17(D, M, N, O),
++    !,
++    get_nft_bal(A, J, P),
++    Q is P-1,
++    I is Q,
++    get_nft_bal(B, [n_b(A, I)|J], R),
++    S is R+1,
++    H is S.
++aux_disj_16(_, _, _, _, A, A, _, _, _, _, _, _, _, _, _).
++aux_disj_17(A, A, _, _).
++aux_disj_17(A, _, A, _).
++aux_disj_17(_, _, _, 1).
++goal([A, B, C]) :-
++    init(shark, s, _, D),
++    mint(alice, 1, D, E),
++    approve(bob, 1, alice, E, F),
++    setApprovalForAll(dave, 1, alice, F, G),
++    transferFrom(alice,
++                 charlie,
++                 1,
++                 bob,
++                 G,
++                 state(_, _, H, I, _, _)),
++    get_owner(1, H, A),
++    get_nft_bal(alice, I, B),
++    get_nft_bal(charlie, I, C).
+
+Transition executable -> normalized
+------------------------------------------------------------------------------
+--- /home/robotane/Projects/stage/projet/src/ciaoimp-analyzer/build/executable/crypto_shark.pl
++++ /home/robotane/Projects/stage/projet/src/ciaoimp-analyzer/build/normalized/crypto_shark.pl
+@@ -46,80 +46,33 @@
+ aux_disj_10(A, B, 0, A, B, C, C) :-
+     !.
+ aux_disj_10(_, _, A, _, _, _, A).
+-init(A, B, _, state(A, B, [], [], [], [])).
+-mint(A, B, state(C, D, E, F, G, H), I) :-
++init(A, B, _, A, B, [], [], [], []).
++mint(A, B, C, D, E, F, G, H, I_1, I_2, I_3, I_4, I_5, I_6) :-
+     get_owner(B, E, J),
+-    aux_disj_14(A,
+-                B,
+-                state(C, D, E, F, G, H),
+-                I,
+-                C,
+-                D,
+-                E,
+-                F,
+-                G,
+-                H,
+-                J).
+-aux_disj_14(A, B, _, state(C, D, [t_o(B, A)|E], [n_b(A, F)|G], H, I), C, D, E, G, H, I, null) :-
++    aux_disj_14(A, B, C, D, E, F, G, H, I_1, I_2, I_3, I_4, I_5, I_6, C, D, E, F, G, H, J).
++aux_disj_14(A, B, _, _, _, _, _, _, C, D, [t_o(B, A)|E], [n_b(A, F)|G], H, I, C, D, E, G, H, I, null) :-
+     !,
+     get_nft_bal(A, G, J),
+     K is J+1,
+     F is K.
+-aux_disj_14(_, _, A, A, _, _, _, _, _, _, _).
+-approve(A, B, C, state(D, E, F, G, H, I), J) :-
++aux_disj_14(_, _, A_1, A_2, A_3, A_4, A_5, A_6, A_1, A_2, A_3, A_4, A_5, A_6, _, _, _, _, _, _, _).
++approve(A, B, C, D, E, F, G, H, I, J_1, J_2, J_3, J_4, J_5, J_6) :-
+     get_owner(B, F, K),
+-    aux_disj_1(A,
+-               B,
+-               C,
+-               state(D, E, F, G, H, I),
+-               J,
+-               D,
+-               E,
+-               F,
+-               G,
+-               H,
+-               I,
+-               K).
+-aux_disj_1(A, B, C, _, state(D, E, F, G, [app(B, A)|H], I), D, E, F, G, H, I, C) :-
++    aux_disj_1(A, B, C, D, E, F, G, H, I, J_1, J_2, J_3, J_4, J_5, J_6, D, E, F, G, H, I, K).
++aux_disj_1(A, B, C, _, _, _, _, _, _, D, E, F, G, [app(B, A)|H], I, D, E, F, G, H, I, C) :-
+     !.
+-aux_disj_1(_, _, _, A, A, _, _, _, _, _, _, _).
+-setApprovalForAll(A, B, C, state(D, E, F, G, H, I), state(D, E, F, G, H, [op(C, A, B)|I])).
+-transferFrom(A, B, C, D, state(E, F, G, H, I, J), K) :-
++aux_disj_1(_, _, _, A_1, A_2, A_3, A_4, A_5, A_6, A_1, A_2, A_3, A_4, A_5, A_6, _, _, _, _, _, _, _).
++setApprovalForAll(A, B, C, D, E, F, G, H, I, D, E, F, G, H, [op(C, A, B)|I]).
++transferFrom(A, B, C, D, E, F, G, H, I, J, K_1, K_2, K_3, K_4, K_5, K_6) :-
+     get_owner(C, G, L),
+-    aux_disj_15(A,
+-                B,
+-                C,
+-                D,
+-                state(E, F, G, H, I, J),
+-                K,
+-                E,
+-                F,
+-                G,
+-                H,
+-                I,
+-                J,
+-                L).
+-aux_disj_15(A, B, C, D, E, F, G, H, I, J, K, L, A) :-
++    aux_disj_15(A, B, C, D, E, F, G, H, I, J, K_1, K_2, K_3, K_4, K_5, K_6, E, F, G, H, I, J, L).
++aux_disj_15(A, B, C, D, E_1, E_2, E_3, E_4, E_5, E_6, F_1, F_2, F_3, F_4, F_5, F_6, G, H, I, J, K, L, A) :-
+     !,
+     get_appr(C, K, M),
+     get_op_appr(A, D, L, N),
+-    aux_disj_16(A,
+-                B,
+-                C,
+-                D,
+-                E,
+-                F,
+-                G,
+-                H,
+-                I,
+-                J,
+-                K,
+-                L,
+-                A,
+-                M,
+-                N).
+-aux_disj_15(_, _, _, _, A, A, _, _, _, _, _, _, _).
+-aux_disj_16(A, B, C, D, _, state(E, F, [t_o(C, B)|G], [n_b(B, H), n_b(A, I)|J], [app(C, null)|K], L), E, F, G, J, K, L, M, N, O) :-
++    aux_disj_16(A, B, C, D, E_1, E_2, E_3, E_4, E_5, E_6, F_1, F_2, F_3, F_4, F_5, F_6, G, H, I, J, K, L, A, M, N).
++aux_disj_15(_, _, _, _, A_1, A_2, A_3, A_4, A_5, A_6, A_1, A_2, A_3, A_4, A_5, A_6, _, _, _, _, _, _, _).
++aux_disj_16(A, B, C, D, _, _, _, _, _, _, E, F, [t_o(C, B)|G], [n_b(B, H), n_b(A, I)|J], [app(C, null)|K], L, E, F, G, J, K, L, M, N, O) :-
+     aux_disj_17(D, M, N, O),
+     !,
+     get_nft_bal(A, J, P),
+@@ -128,21 +81,16 @@
+     get_nft_bal(B, [n_b(A, I)|J], R),
+     S is R+1,
+     H is S.
+-aux_disj_16(_, _, _, _, A, A, _, _, _, _, _, _, _, _, _).
++aux_disj_16(_, _, _, _, A_1, A_2, A_3, A_4, A_5, A_6, A_1, A_2, A_3, A_4, A_5, A_6, _, _, _, _, _, _, _, _, _).
+ aux_disj_17(A, A, _, _).
+ aux_disj_17(A, _, A, _).
+ aux_disj_17(_, _, _, 1).
+ goal([A, B, C]) :-
+-    init(shark, s, _, D),
+-    mint(alice, 1, D, E),
+-    approve(bob, 1, alice, E, F),
+-    setApprovalForAll(dave, 1, alice, F, G),
+-    transferFrom(alice,
+-                 charlie,
+-                 1,
+-                 bob,
+-                 G,
+-                 state(_, _, H, I, _, _)),
++    init(shark, s, _, D_1, D_2, D_3, D_4, D_5, D_6),
++    mint(alice, 1, D_1, D_2, D_3, D_4, D_5, D_6, E_1, E_2, E_3, E_4, E_5, E_6),
++    approve(bob, 1, alice, E_1, E_2, E_3, E_4, E_5, E_6, F_1, F_2, F_3, F_4, F_5, F_6),
++    setApprovalForAll(dave, 1, alice, F_1, F_2, F_3, F_4, F_5, F_6, G_1, G_2, G_3, G_4, G_5, G_6),
++    transferFrom(alice, charlie, 1, bob, G_1, G_2, G_3, G_4, G_5, G_6, _, _, H, I, _, _),
+     get_owner(1, H, A),
+     get_nft_bal(alice, I, B),
+     get_nft_bal(charlie, I, C).
+

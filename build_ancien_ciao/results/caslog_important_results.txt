@@ -1,0 +1,87 @@
+CasLog — contrats annotés : RESULTATS DES PREDICATS IMPORTANTS
+==============================================================
+
+--- CONTRAT : AUCTION ---
+  - init/9 : Temps = [1]
+  - bid/15 : Temps = [16* $14+22]
+  - end/13 : Temps = [8* $12+11]
+
+--- CONTRAT : BALLOT ---
+  - init_props/2 : Temps = [$1+1]
+  - init/5 : Temps = [$1+2]
+  - give_right/8 : Temps = [4* $5+8]
+  - delegate/8 : Temps = [inf]
+  - vote/8 : Temps = [inf]
+  - best_proposal/4 : Temps = [inf]
+  - winner/4 : Temps = [inf]
+
+--- CONTRAT : BLIND_AUCTION ---
+  - init/11 : Temps = [1]
+  - bid/18 : Temps = [8* $17+11]
+
+--- CONTRAT : CROWDFUNDING ---
+  - init/2 : Temps = [1]
+  - len_list/2 : Temps = [$1+1]
+  - new_campaign/5 : Temps = [$4+2]
+  - contribute/7 : Temps = [8* $6+2* $4+11]
+
+--- CONTRAT : CRYPTO_BUDDY ---
+  - init/6 : Temps = [1]
+  - approve/9 : Temps = [1]
+  - transferFrom/10 : Temps = [2* $7+4* $6+10]
+  - token_transfer/9 : Temps = [4* $5+8]
+
+--- CONTRAT : CRYPTO_SHARK ---
+  - init/9 : Temps = [1]
+  - mint/14 : Temps = [2* $6+2* $5+6]
+  - approve/15 : Temps = [2* $6+4]
+  - setApprovalForAll/15 : Temps = [1]
+
+--- CONTRAT : DISTRIBUTOR ---
+  - init/4 : Temps = [1]
+  - add_as_payee/5 : Temps = [1]
+  - len_list/2 : Temps = [$1+1]
+  - distribute/8 : Temps = [8*($7* $4)+8* $7+11* $4+13]
+
+--- CONTRAT : EXAMPLE_COIN ---
+  - init/9 : Temps = [1]
+  - token_transfer/13 : Temps = [4* $8+8]
+  - mint/13 : Temps = [2* $8+4]
+  - burn/13 : Temps = [2* $8+4]
+
+--- CONTRAT : EXAMPLE_ERC721 ---
+  - init/7 : Temps = [1]
+  - mint/10 : Temps = [2* $6+2* $5+6]
+  - transferFrom/12 : Temps = [4* $8+2* $7+10]
+
+--- CONTRAT : GRADUAL_PONZI ---
+  - init/3 : Temps = [1]
+  - invest/6 : Temps = [8*($5* $3)+8* $5+11* $3+13]
+
+--- CONTRAT : SHARED_ENTITY ---
+  - init/5 : Temps = [1]
+  - place_offer/9 : Temps = [2* $4+4]
+  - accept_offer/11 : Temps = [inf]
+
+--- CONTRAT : SIMPLE_AUCTION ---
+  - init/8 : Temps = [1]
+  - bid/13 : Temps = [16* $12+22]
+  - auction_end/11 : Temps = [8* $10+12]
+
+--- CONTRAT : SIMPLE_PONZI ---
+  - init/3 : Temps = [1]
+  - invest/8 : Temps = [16* $7+22]
+
+--- CONTRAT : SIMPLE_PYRAMID ---
+  - init/4 : Temps = [1]
+  - invest/8 : Temps = [8*($7* $3)+8* $7+11* $3+13]
+
+--- CONTRAT : SIMPLE_SHARED_ENTITY ---
+  - init/5 : Temps = [1]
+  - place_offer/9 : Temps = [2* $4+4]
+  - accept/11 : Temps = [inf]
+
+--- CONTRAT : TICTACTOE ---
+  - check_winner/2 : Temps = [18* $1+20]
+  - init/11 : Temps = [16* $10+19]
+
