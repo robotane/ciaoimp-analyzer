@@ -7,6 +7,8 @@
 :- module(_, [init/4, bid/10, auction_end/9, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- entry bid(Caller, Amount, Now, End, HBid0, HBid, HBdr0, HBdr, B0, B) :
     (atm(Caller), int(Amount), int(Now), int(End), int(HBid0), var(HBid),
      atm(HBdr0), var(HBdr), balances(B0), var(B)).
@@ -16,7 +18,7 @@
 
 % SimpleAuction(biddingTime, beneficiary)
 init(BiddingTime, Now, End, Bidder) :-
-    End is Now + BiddingTime,                       % auctionEnd = now() + biddingTime
+    End = Now + BiddingTime,                        % auctionEnd = now() + biddingTime
     Bidder = null.
 
 :- payable(bid).                             % @Payable: the amount sent is received first
