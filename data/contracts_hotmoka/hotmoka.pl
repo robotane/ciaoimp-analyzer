@@ -13,13 +13,14 @@
 %   objects      load/1   (read a storage object while scanning a collection)
 %                new_obj/1 (create a storage object)
 %                emit/1   (create and emit an event)
+%                store/1  (write a field of the contract or of a storage object)
 %
 % Maps are lists of kv(Key, Value); an absent key reads as the given default.
 
 :- module(hotmoka, [transfer/5, balance/3,
                     map_get/4, map_put/4, map_remove/3,
                     list_add/3, arr_get/3, arr_set/4,
-                    load/1, new_obj/1, emit/1], []).
+                    load/1, new_obj/1, emit/1, store/1], []).
 
 % --- Coins: list of bal(Address, Amount) ---
 
@@ -77,3 +78,4 @@ arr_set(I, V, [X|T], [X|T1]) :-
 load(_).
 new_obj(_).
 emit(_).
+store(_).

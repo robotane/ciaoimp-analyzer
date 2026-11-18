@@ -29,6 +29,7 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
     ( Turn =:= 1 ->                                 % if (turn == CROSS)
         ( Cross == null ->
             Amount >= 100,                          % require(amount >= MINIMUM_BET)
+            store(crossPlayer),                     % Java: crossPlayer = player
             Cross := Caller                         % crossPlayer = player
         ;
             Caller == Cross                         % require(player == crossPlayer)
@@ -39,6 +40,7 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
             balance(this, B, Bal),                  % balance()
             Prev is Bal - Amount,                   % previousBet
             Amount >= Prev,                         % require(amount >= previousBet)
+            store(circlePlayer),                    % Java: circlePlayer = player
             Circle := Caller                        % circlePlayer = player
         ;
             Caller == Circle                        % require(player == circlePlayer)
@@ -46,6 +48,7 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
     ),
     arr_set(Idx, Turn, !Board),                     % set(x, y, turn): board.set
     game_over(X, Y, Turn, Board, Over1),            % isGameOver(x, y)
+    store(gameOver),                                % Java: gameOver = true/false (in isGameOver)
     Over := Over1,                                  % gameOver = ...
     ( Over1 =:= 1 ->
         balance(this, B, Bal1),                     % balance()
@@ -60,6 +63,7 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
             transfer(this, Creator, Bal3, !B)       % creator.receive(balance())
         ;
             NT is 3 - Turn,
+            store(turn),                            % Java: turn = turn.nextTurn()
             Turn := NT                              % turn = turn.nextTurn()
         )
     ).

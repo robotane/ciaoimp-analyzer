@@ -77,5 +77,8 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
 :- trust pred new_obj(X)
    + ( not_fails, is_det, cost(lb, gas, @C_NEW@), cost(ub, gas, @C_NEW@) ).
 
+:- trust pred store(X)
+   + ( not_fails, is_det, cost(lb, gas, @C_STORE@), cost(ub, gas, @C_STORE@) ).
+
 :- trust pred emit(X)
    + ( not_fails, is_det, cost(lb, gas, @C_EVENT@), cost(ub, gas, @C_EVENT@) ).

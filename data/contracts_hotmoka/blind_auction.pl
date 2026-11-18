@@ -78,7 +78,9 @@ place_bid(Bidder, Value, !HBdr, !HBid, !B) :-
         transfer(this, HBdr, HBid, !B)              % highestBidder.receive(highestBid)
     ; true
     ),
+    store(highestBid),                              % Java: highestBid = value
     HBid := Value,                                  % highestBid = value
+    store(highestBidder),                           % Java: highestBidder = bidder
     HBdr := Bidder,                                 % highestBidder = bidder
     emit(bid_increase).                             % event(new BidIncrease(bidder, value))
 
@@ -89,6 +91,7 @@ auction_end(Bene, Now, REnd, HBid, !HBdr, !B, Winner) :-
     ( Winner \== null ->
         transfer(this, Bene, HBid, !B),             % beneficiary.receive(highestBid)
         emit(auction_end),                          % event(new AuctionEnd(winner, highestBid))
+        store(highestBidder),                       % Java: highestBidder = null
         HBdr := null                                % highestBidder = null
     ; true
     ).

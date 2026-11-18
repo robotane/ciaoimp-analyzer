@@ -29,6 +29,7 @@ invest(Caller, Amount, !Inv, !N, !Prev, !B) :-
     pay_all(Inv, Each, !B),                         % investors.forEach(investor -> investor.receive(each))
     list_add(Caller, !Inv),                         % investors.addFirst(caller()): one new list node
     N := N + 1,                                     % (size field of the list)
+    store(previousInvestment),                      % Java: previousInvestment = amount
     Prev := Amount.                                 % previousInvestment = amount
 
 % investors.forEach(investor -> investor.receive(each)): one node load and one payment per investor.

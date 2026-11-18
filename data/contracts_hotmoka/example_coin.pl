@@ -6,6 +6,8 @@
 % the tree Node of a new key is part of the cost of map_put.
 % The ERC20 sources are not on disk: the work of the inherited methods follows
 % hotmoka-bench/costmodel/java_vs_prolog.md (lib).
+% store/1: the field writes of the library methods are inferred from the standard ERC20 implementation
+% (totalSupply is reassigned in _mint and _burn; balances is only a map).
 
 :- module(_, [token_transfer/5, mint/8, burn/8, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
@@ -35,6 +37,7 @@ mint(Caller, Owner, Account, Amount, !Bal, !Total) :-
     Caller == Owner,                                % require(caller() == owner)
     new_obj(ubi),                                   % totalSupply.add(amount)
     Tn is Total + Amount,
+    store(totalSupply),                             % lib: totalSupply = totalSupply.add/subtract(amount)
     Total := Tn,                                    % totalSupply = ...
     map_get(Account, Bal, 0, B0),                   % balanceOf(account)
     new_obj(ubi),                                   % .add(amount)
@@ -47,6 +50,7 @@ burn(Caller, Owner, Account, Amount, !Bal, !Total) :-
     Caller == Owner,                                % require(caller() == owner)
     new_obj(ubi),                                   % totalSupply.subtract(amount)
     Tn is Total - Amount,
+    store(totalSupply),                             % lib: totalSupply = totalSupply.add/subtract(amount)
     Total := Tn,                                    % totalSupply = ...
     map_get(Account, Bal, 0, B0),                   % balanceOf(account)
     B0 >= Amount,

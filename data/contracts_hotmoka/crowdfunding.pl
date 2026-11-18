@@ -46,6 +46,7 @@ contribute(Caller, Amount, Id, !Cs, !B) :-
     list_add(funder(Caller, Amount), Funders, _),             % campaign.funders.add(funder): one new list node
     Funders1 = [funder(Caller, Amount)|Funders],              % (its content in the state: the order is not observable)
     Amt1 is Amt + Amount,                           % campaign.amount = campaign.amount + amount
+    store(amount),                                  % Java: campaign.amount = ... (field of the existing Campaign)
     replace_nth(Id, campaign(Id, Ben, Goal, Amt1, Funders1), !Cs).   % (the campaign is mutated in place in Java)
 
 % checkGoalReached(campaignID)
@@ -55,6 +56,7 @@ check_goal_reached(Id, !Cs, !B, Reached) :-
     ( Amt < Goal ->                                 % compareTo(campaign.amount, campaign.fundingGoal) < 0
         Reached = 0                                 % return false
     ;
+        store(amount),                              % Java: campaign.amount = BigInteger.ZERO
         replace_nth(Id, campaign(Id, Ben, Goal, 0, Funders), !Cs),   % campaign.amount = ZERO
         transfer(this, Ben, Amt, !B),               % campaign.beneficiary.receive(amount)
         Reached = 1                                 % return true

@@ -51,6 +51,7 @@ give_right(Caller, Chair, To, !Pa) :-
         paper_fields(P0, W, HV, D, VP),
         HV =:= 0,                                   % require(!paper.hasVoted())
         W =:= 0,                                    % require(!paper.hasRightToVote())
+        store(weight),                              % Java: this.weight = 1 (existing paper)
         set_paper(To, paper(1, HV, D, VP), !Pa)     % paper.giveRightToVote(): weight = 1 (in place)
     ).
 
@@ -61,6 +62,9 @@ vote(Caller, Index, !Pa, !Pr) :-
     HV =:= 0,                                       % require(!paper.hasVoted())
     W > 0,                                          % require(paper.hasRightToVote())
     add_votes(Index, W, !Pr),                       % proposals.get(index): walk; proposal.voteCount += weight
+    store(voteCount),                               % Java: proposal.voteCount += weight
+    store(hasVoted),                                % Java: hasVoted = true
+    store(votedProposal),                           % Java: votedProposal = proposal
     set_paper(Caller, paper(W, 1, D, Index), !Pa).  % hasVoted = true; votedProposal = proposal
 
 % @FromContract delegate(to)
@@ -80,14 +84,18 @@ delegate(To, Caller, !Pa, !Pr) :-
     % KNOWN DEVIATION: CiaoPP gives no finite bound when the final delegate is returned by the
     % recursion, so the code below uses To (the first delegate) where Java uses the final one.
     % The cost is the same; the state differs from Java only when the chain has more than one hop.
+    store(hasVoted),                                % Java: this.hasVoted = true
+    store(delegate),                                % Java: this.delegate = delegate
     set_paper(Caller, paper(W, 1, To, VP), !Pa),    % this.hasVoted = true; this.delegate = delegate
     map_get(To, Pa, none, PF),                      % paperOfDelegate = papers.get(delegate)
     paper_fields(PF, WF, HVF, DF, VPF),
     ( HVF =:= 1 ->                                  % if (paperOfDelegate.hasVoted())
         load(voted_proposal),                       % votedProposal (a reference to a Proposal object)
-        set_proposal(VPF, W, !Pr)                   % votedProposal.voteCount += weight
+        set_proposal(VPF, W, !Pr),                  % votedProposal.voteCount += weight
+        store(voteCount)                            % Java: votedProposal.voteCount += weight
     ;
         WF1 is WF + W,
+        store(weight),                              % Java: paperOfDelegate.weight += weight
         set_paper(To, paper(WF1, HVF, DF, VPF), !Pa)    % paperOfDelegate.weight += weight
     ).
 

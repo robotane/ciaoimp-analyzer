@@ -21,7 +21,9 @@ invest(Caller, Value, !Last, !Amt, !B) :-
         transfer(this, Last, Value, !B)         % currentInvestor.receive(amount)
     ; true
     ),
+    store(currentInvestor),                     % Java: currentInvestor = caller()
     Last := Caller,
+    store(currentInvestment),                   % Java: currentInvestment = amount
     Amt := Value.
 
 % --- Test: alice invests 100, then bob 120 ---
