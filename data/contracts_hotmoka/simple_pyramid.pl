@@ -19,8 +19,8 @@ addrs([A|T]) :- atm(A), addrs(T).
      int(Prev0), var(Prev), balances(B0), var(B)).
 
 % SimplePyramid(): the creator is the first investor
-init(Creator, [Creator], 1000) :-                % investors.add(caller()), previousInvestment = 1000
-    new_obj(node).
+init(Creator, Inv, 1000) :-                      % previousInvestment = 1000
+    Inv = ~list_add(Creator, []).                   % investors.add(caller())
 
 :- payable(invest).                             % @Payable: the amount sent is received first
 
@@ -31,7 +31,6 @@ invest(Caller, Amount, !Inv, !Prev, !B) :-
     N = ~list_size(Inv),                            % investors.size()
     Each = Amount // N,                             % eachInvestorGets = amount / investors.size()
     for (P in list(Inv)) {                          % investors.forEach(investor -> investor.receive(each))
-        load(P),                                    % the node of the list
         transfer(this, P, Each, !B)                 % investor.receive(each)
     },
     list_add(Caller, !Inv),                         % investors.addFirst(caller()): one new list node
@@ -43,7 +42,9 @@ invest(Caller, Amount, !Inv, !Prev, !B) :-
 goal([A, Bo, C, T]) :-
     B0 = [bal(alice, 2000), bal(bob, 2000), bal(carol, 2000), bal(this, 0)],
     init(alice, Inv0, P0),
-    invest(bob, 1100, Inv0, Inv1, P0, P1, B0, B1),
+    Inv0 == [alice],
+    Inv0b = [alice],                                % (the literal keeps the call types of the analysis typed)
+    invest(bob, 1100, Inv0b, Inv1, P0, P1, B0, B1),
     Inv1 == [alice, bob],
     Inv1b = [alice, bob],                           % (the literal keeps the call types of the analysis typed)
     invest(carol, 1210, Inv1b, _, P1, _, B1, B2),

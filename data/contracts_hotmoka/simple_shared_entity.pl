@@ -69,7 +69,6 @@ on_sale([kv(O, _)|T], Seller, S) :-
 clean_up(Offers, ToRemove, !Of) :-
     for (E in list(Offers)) {
         E = kv(O, _),
-        load(O),
         if (to_remove(O, ToRemove)) { map_remove(O, !Of) }
     }.
 

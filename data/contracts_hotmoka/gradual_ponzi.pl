@@ -18,8 +18,8 @@ addrs([A|T]) :- atm(A), addrs(T).
      balances(B0), var(B)).
 
 % GradualPonzi(): the creator is the first investor
-init(Creator, [Creator]) :-                      % investors.add(caller())
-    new_obj(node).
+init(Creator, Inv) :-
+    Inv = ~list_add(Creator, []).                   % investors.add(caller())
 
 :- payable(invest).                             % @Payable: the amount sent is received first
 
@@ -29,7 +29,6 @@ invest(Caller, Amount, !Inv, !B) :-
     N = ~list_size(Inv),                            % investors.size()
     Each = Amount // N,                             % eachInvestorGets = amount / investors.size()
     for (P in list(Inv)) {                          % investors.forEach(investor -> ...)
-        load(P),                                    % the node of the list
         transfer(this, P, Each, !B)                 % investor.receive(each)
     },
     list_add(Caller, !Inv).                         % investors.add(caller()): one new list node
@@ -40,7 +39,9 @@ invest(Caller, Amount, !Inv, !B) :-
 goal([A, Bo, C, T]) :-
     B0 = [bal(alice, 2000), bal(bob, 2000), bal(carol, 2000), bal(this, 0)],
     init(alice, Inv0),
-    invest(bob, 1000, Inv0, Inv1, B0, B1),
+    Inv0 == [alice],
+    Inv0b = [alice],                                % (the literal keeps the call types of the analysis typed)
+    invest(bob, 1000, Inv0b, Inv1, B0, B1),
     Inv1 == [alice, bob],
     Inv1b = [alice, bob],                           % (the literal keeps the call types of the analysis typed)
     invest(carol, 2000, Inv1b, _, B1, B2),

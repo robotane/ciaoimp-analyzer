@@ -31,7 +31,6 @@ distribute(Caller, Amount, Owner, Payees, !B) :-
     if (N > 0) {                                    % if (size > 0)
         Each = Amount // N,                         % eachGets = amount / size
         for (P in list(Payees)) {                   % payees.forEach(payee -> payee.receive(eachGets))
-            load(P),                                % the node of the list
             transfer(this, P, Each, !B)             % payee.receive(each)
         },
         Rest = ~balance(this, B),                   % balance()

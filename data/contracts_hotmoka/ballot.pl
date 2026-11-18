@@ -96,7 +96,6 @@ delegate(To, Caller, !Pa, !Pr) :-
     PF = ~map_get(Fin, Pa, none),                   % paperOfDelegate = papers.get(delegate)
     paper_fields(PF, WF, HVF, _, VPF),
     if (HVF =:= 1) {                                % if (paperOfDelegate.hasVoted())
-        load(voted_proposal),                       % votedProposal (a reference to a Proposal object)
         set_proposal(VPF, W, !Pr)                   % votedProposal.voteCount += weight
     } else {
         WF1 = WF + W,
@@ -172,10 +171,12 @@ put_proposal(I0, V, [P|T], [P|T1]) :-
     I =\= I0,
     put_proposal(I0, V, T, T1).
 
-% proposal.voteCount += weight on a Proposal already reached through a reference.
+% votedProposal.voteCount += weight: the Proposal is reached through a reference (the walk on
+% the index I0 only finds it in the Prolog list: no cost of its own besides the steps).
 set_proposal(I0, W, [P|T], [P1|T]) :-
-    P = proposal(I, _, C),
+    P = proposal(I, _, _),
     I =:= I0,
+    C = P[voteCount],                               % votedProposal.voteCount (reads the Proposal)
     C1 = C + W,
     P[voteCount] := C1,
     P1 = P.

@@ -23,6 +23,13 @@
 %                   Campaign := campaign(X1, X2, X3, A, X5).
 %    A field name must belong to a single declared class of the module.
 %
+%    The same field is read as in Java (A = campaign.amount):
+%        A = Campaign[amount]
+%    which becomes  load(Campaign), Campaign = campaign(_, _, _, A, _).
+%    Hotmoka loads a storage object once in a transaction, at its first use: only
+%    the first read of an object in a clause adds load(Obj); the other reads of
+%    the same object in the clause are the unification alone.
+%
 %  - Payable method. Before a @Payable method runs, Hotmoka moves the amount
 %    sent from the caller to the contract. The contract declares
 %        :- payable(Name).
@@ -40,6 +47,13 @@
 %        p$forN([], In..., !S...).
 %    In = the variables of Body also used elsewhere in the clause (inputs),
 %    S = the state variables of Body (!S or S := V in Body).
+%    The lists of a Hotmoka contract are storage collections (StorageLinkedList,
+%    the entries of a StorageTreeMap/Set): the Java iteration reads one storage
+%    node per element. Each iteration therefore starts with load(X):
+%        p$forN([X|T], In..., !S...) :- load(X), Body, p$forN(T, In..., !S...).
+%    (A Prolog list that is not a storage collection is not walked with for.)
+%    The node is a distinct object from the element: a field read X[f] in Body
+%    loads the element itself, once more.
 
 :- module(hotmoka_tr, [tr/3], [datafacts]).
 
@@ -65,7 +79,8 @@ tr((H :- B), Clauses, Mod) :- !,
     body(B, SV, Mod, B1),
     payable_prefix(H, SV, Mod, B1, B2),
     functor(H, Name, _),
-    loops((H :- B2), Name, Mod, Clauses).
+    loops((H :- B2), Name, Mod, Clauses0),
+    first_reads(Clauses0, Clauses).
 tr(C, C, _).
 
 add_payable((A, B), Mod) :- !, add_payable(A, Mod), add_payable(B, Mod).
@@ -91,6 +106,9 @@ body(set_field(O0, F, V, O), _, Mod, (store(field), O0 = T0, O = T)) :- !,
 body(':='('\6\postfix_block'(O, [F]), V), _, Mod, (store(field), O = T0, ':='(O, T))) :-
     var(O), atom(F), !,
     field_terms(Mod, F, V, T0, T).
+body('='(V, '\6\postfix_block'(O, [F])), _, Mod, ('$hm_read'(O), O = T)) :-
+    var(O), atom(F), !,
+    field_terms(Mod, F, V, _, T).
 body(G, SV, Mod, G2) :-
     nonvar(G), functor(G, _, Ar), Ar > 0, !,
     G =.. [F|As],
@@ -113,6 +131,35 @@ field_terms(Mod, F, _, _, _) :-
 
 replace([F1|Fs], F, [_|Xs], V, [V|Xs]) :- F1 == F, !, Fs = Fs.
 replace([_|Fs], F, [X|Xs], V, [X|Ys]) :- replace(Fs, F, Xs, V, Ys).
+
+% First read of an object in a clause: '$hm_read'(O) becomes load(O) the first
+% time O is read (left to right), and disappears after.
+first_reads([], []).
+first_reads([(H :- B)|Cs], [(H :- B1)|Cs1]) :- !,
+    reads(B, [], _, B0),
+    none_true(B0, B1),
+    first_reads(Cs, Cs1).
+first_reads([C|Cs], [C|Cs1]) :- first_reads(Cs, Cs1).
+
+reads(G, L, L, G) :- var(G), !.
+reads('$hm_read'(O), L, L, '$hm_none') :- memberv(O, L), !.
+reads('$hm_read'(O), L, [O|L], load(O)) :- !.
+reads((A, B), L0, L, G) :- !,
+    reads(A, L0, L1, A1),
+    reads(B, L1, L, B1),
+    ( A1 == '$hm_none' -> G = B1 ; B1 == '$hm_none' -> G = A1 ; G = (A1, B1) ).
+reads(G, L0, L, G1) :-
+    functor(G, F, Ar), Ar > 0, !,
+    G =.. [F|As],
+    reads_list(As, L0, L, As1),
+    G1 =.. [F|As1].
+reads(G, L, L, G).
+reads_list([], L, L, []).
+reads_list([A|As], L0, L, [A2|As1]) :-
+    reads(A, L0, L1, A1), none_true(A1, A2), reads_list(As, L1, L, As1).
+
+none_true(G, true) :- G == '$hm_none', !.
+none_true(G, G).
 
 payable_prefix(H, SV, Mod, B, (transfer(Caller, this, Amount, '!'(Bal)), B)) :-
     functor(H, N, _),
@@ -144,12 +191,12 @@ loops((H :- B), Name, Mod, Clauses) :-
     Call =.. [P, L|Extra],
     Marker = Call,
     copy_term(f(X, Extra, Body), f(X1, Extra1, Body1)),
-    Rec =.. [P, [X1|T]|Extra1],
+    Rec =.. [P, [X1|T]|Extra1],              % one storage node read per element
     Next =.. [P, T|Extra1],
     copy_term(Extra1, Extra2),
     Base =.. [P, []|Extra2],
     loops((H :- B1), Name, Mod, C1),
-    loops((Rec :- (Body1, Next)), P, Mod, C2),
+    loops((Rec :- (load(X1), Body1, Next)), P, Mod, C2),
     append(C1, [Base|C2], Clauses).
 loops(C, _, _, [C]).
 
