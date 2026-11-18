@@ -8,6 +8,8 @@
 :- module(_, [add_as_payee/3, distribute/6, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- regtype addrs/1.
 addrs([]).
 addrs([A|T]) :- atm(A), addrs(T).
@@ -25,14 +27,14 @@ add_as_payee(Caller, !Payees) :-
 
 % @FromContract distribute(amount)
 distribute(Caller, Amount, Owner, Payees, !B) :-
-    list_size(Payees, N),                           % int size = payees.size()
+    N = ~list_size(Payees),                         % int size = payees.size()
     if (N > 0) {                                    % if (size > 0)
-        Each is Amount // N,                        % eachGets = amount / size
+        Each = Amount // N,                         % eachGets = amount / size
         for (P in list(Payees)) {                   % payees.forEach(payee -> payee.receive(eachGets))
             load(P),                                % the node of the list
             transfer(this, P, Each, !B)             % payee.receive(each)
         },
-        balance(this, B, Rest),                     % balance()
+        Rest = ~balance(this, B),                   % balance()
         transfer(this, Owner, Rest, !B)             % owner.receive(balance())
     }.
 
