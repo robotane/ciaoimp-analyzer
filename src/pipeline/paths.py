@@ -15,6 +15,7 @@ relative paths.  The public build layout is intentionally small:
     BNF assembly emitted by the ``basm`` predicate in ``tnf.pro``.
 """
 from __future__ import annotations
+import os
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -121,8 +122,17 @@ class PipelinePaths:
         return self.root / "data" / "ciaopp_cost" / "specs"
 
     @property
+    def ciaopp_cost_model(self) -> str:
+        """Name of the cost model: "" for data/ciaopp_cost/gas_model.pl (default),
+        otherwise the env variable CIAOPP_COST_MODEL, e.g. "hotmoka" for
+        data/ciaopp_cost/models/hotmoka/{gas_model,blockchain}.pl."""
+        return os.environ.get("CIAOPP_COST_MODEL", "")
+
+    @property
     def ciaopp_cost_model_dir(self) -> Path:
         """gas_model.pl (cost model package) and blockchain.pl (primitives)."""
+        if self.ciaopp_cost_model:
+            return self.root / "data" / "ciaopp_cost" / "models" / self.ciaopp_cost_model
         return self.root / "data" / "ciaopp_cost"
 
     @property
@@ -136,12 +146,13 @@ class PipelinePaths:
         build/normalized (the CasLog input, state fields as arguments) with
         data/ciaopp_cost/specs_normalized.
         """
+        sfx = f"_{self.ciaopp_cost_model}" if self.ciaopp_cost_model else ""
         if not normalized:
             return (self.executable_dir, self.ciaopp_cost_specs_dir,
-                    self.ciaopp_cost_dir, self.ciaopp_cost_results)
+                    self.build_dir / f"ciaopp_cost{sfx}", self.results_dir / f"ciaopp_cost{sfx}_results.txt")
         return (self.normalized_dir, self.root / "data" / "ciaopp_cost" / "specs_normalized",
-                self.build_dir / "ciaopp_cost_normalized",
-                self.results_dir / "ciaopp_cost_normalized_results.txt")
+                self.build_dir / f"ciaopp_cost_normalized{sfx}",
+                self.results_dir / f"ciaopp_cost_normalized{sfx}_results.txt")
 
     @property
     def plcafe_jar(self) -> Path:
