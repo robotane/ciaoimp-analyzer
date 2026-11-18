@@ -72,15 +72,11 @@ reveal(Caller, Now, BEnd, REnd, Revealed, !Bids, !HBdr, !HBid, !B) :-
     Deposit = Bid[deposit],                         % bid.deposit
     if (HashBytes \== hash(Value, Fake, SaltBytes)) {   % !bid.matches(revealed, digest)
         Refund = 0
-    } else if ((Fake =:= 0, Deposit >= Value, better(Value, HBid))) {
+    } else if ((Fake =:= 0, Deposit >= Value, (HBid == null ; Value > HBid))) {   % placeBid: highestBid == null || value > highestBid
         place_bid(Caller, Value, !HBdr, !HBid, !B), % placeBid(bidder, revealed.value)
         Refund = Deposit - Value
     } else { Refund = Deposit },
     transfer(this, Caller, Refund, !B).             % bidder.receive(refundFor(...)): always executed
-
-% placeBid: the first test of Java, highestBid == null || value > highestBid
-better(_, null) :- !.
-better(Value, HBid) :- Value > HBid.
 
 % placeBid: the previous highest bidder is refunded, the new bid is recorded.
 place_bid(Bidder, Value, !HBdr, !HBid, !B) :-
