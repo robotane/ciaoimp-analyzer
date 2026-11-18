@@ -22,8 +22,8 @@
 :- op(40, yf, ['[]']).
 
 :- resource gas.
-:- head_cost(ub, gas, 30).
-:- head_cost(lb, gas, 30).
+:- head_cost(ub, gas, 0).
+:- head_cost(lb, gas, 0).
 :- literal_cost(ub, gas, 0).
 :- literal_cost(lb, gas, 0).
 :- trust_default + cost(ub, gas, 0).
@@ -46,70 +46,86 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
 
 :- trust pred transfer(From, To, Amount, B0, B)
    => ( balances(B), size(lb, B, length(B0)), size(ub, B, length(B0)) )
-   + ( not_fails, is_det, cost(lb, gas, 3135), cost(ub, gas, 3135) ).
+   + ( not_fails, is_det, cost(lb, gas, 9598), cost(ub, gas, 9598) ).
 
 :- trust pred balance(A, B, V)
-   + ( not_fails, is_det, cost(lb, gas, 60), cost(ub, gas, 60) ).
+   + ( not_fails, is_det, cost(lb, gas, 803), cost(ub, gas, 803) ).
 
 :- trust pred map_get(K, M, D, V)
    + ( not_fails, is_det,
-       cost(lb, gas, 8575+4537*log2(length(M)+1)),
-       cost(ub, gas, 8575+4537*log2(length(M)+1)) ).
+       cost(lb, gas, 1364+243*log2(length(M)+1)),
+       cost(ub, gas, 1364+243*log2(length(M)+1)) ).
 
 :- trust pred map_put(K, V, M0, M)
    => ( map(M), size(lb, M, length(M0)), size(ub, M, length(M0)+1) )
    + ( not_fails, is_det,
-       cost(lb, gas, 8575+4537*log2(length(M0)+1)),
-       cost(ub, gas, 8575+4537*log2(length(M0)+1)+7700) ).
+       cost(lb, gas, 1775+11603*log2(length(M0)+1)),
+       cost(ub, gas, 1775+11603*log2(length(M0)+1)+27179) ).
 
 :- trust pred map_remove(K, M0, M)
    => ( map(M), size(lb, M, 0), size(ub, M, length(M0)) )
    + ( not_fails, is_det,
-       cost(lb, gas, 8575+4537*log2(length(M0)+1)),
-       cost(ub, gas, 8575+4537*log2(length(M0)+1)) ).
+       cost(lb, gas, 1775+11603*log2(length(M0)+1)),
+       cost(ub, gas, 1775+11603*log2(length(M0)+1)) ).
+
+% Temporary tree map/set (created in the transaction, never stored), e.g. the
+% StorageTreeSet seen of Ballot.computeFinalDelegate.
+:- trust pred tmp_get(K, M, D, V)
+   + ( not_fails, is_det,
+       cost(lb, gas, 465+991*log2(length(M)+1)),
+       cost(ub, gas, 465+991*log2(length(M)+1)) ).
+
+:- trust pred tmp_put(K, V, M0, M)
+   => ( map(M), size(lb, M, length(M0)), size(ub, M, length(M0)+1) )
+   + ( not_fails, is_det,
+       cost(lb, gas, 465+991*log2(length(M0)+1)),
+       cost(ub, gas, 465+991*log2(length(M0)+1)) ).
 
 :- trust pred list_add(X, L0, L)
    => ( size(lb, L, length(L0)+1), size(ub, L, length(L0)+1) )
-   + ( not_fails, is_det, cost(lb, gas, 7700), cost(ub, gas, 7700) ).
+   + ( not_fails, is_det, cost(lb, gas, 27179), cost(ub, gas, 27179) ).
 
 :- trust pred list_size(L, N)
    => ( size(lb, N, length(L)), size(ub, N, length(L)) )
-   + ( not_fails, is_det, cost(lb, gas, 60), cost(ub, gas, 60) ).
+   + ( not_fails, is_det, cost(lb, gas, 803), cost(ub, gas, 803) ).
 
 :- trust pred list_remove_first(X, L0, L)
    => ( size(lb, L, length(L0)-1), size(ub, L, length(L0)-1) )
-   + ( is_det, cost(lb, gas, 1000), cost(ub, gas, 1000) ).
+   + ( is_det, cost(lb, gas, 844), cost(ub, gas, 844) ).
 
 :- trust pred arr_get(I, A, X)
-   + ( not_fails, is_det, cost(lb, gas, 500), cost(ub, gas, 500) ).
+   + ( not_fails, is_det, cost(lb, gas, 1273), cost(ub, gas, 1273) ).
 
 :- trust pred arr_set(I, V, A0, A)
    => ( size(lb, A, length(A0)), size(ub, A, length(A0)) )
-   + ( not_fails, is_det, cost(lb, gas, 500), cost(ub, gas, 500) ).
+   + ( not_fails, is_det, cost(lb, gas, 7266), cost(ub, gas, 7266) ).
 
 % UnsignedBigInteger.add/subtract: the result is a new storage object (the require of
 % subtract, a non-negative result, is the test written before it in the contract).
 :- trust pred ubi_add(A, B, C)
    => num(C)
-   + ( not_fails, is_det, cost(lb, gas, 7700), cost(ub, gas, 7700) ).
+   + ( not_fails, is_det, cost(lb, gas, 27179), cost(ub, gas, 27179) ).
 
 :- trust pred ubi_sub(A, B, C)
    => num(C)
-   + ( not_fails, is_det, cost(lb, gas, 7700), cost(ub, gas, 7700) ).
+   + ( not_fails, is_det, cost(lb, gas, 27179), cost(ub, gas, 27179) ).
 
 % snapshot() of a Snapshottable map/set: a new view object.
 :- trust pred snapshot(M, S)
-   + ( not_fails, is_det, cost(lb, gas, 7700), cost(ub, gas, 7700) ).
+   + ( not_fails, is_det, cost(lb, gas, 27179), cost(ub, gas, 27179) ).
 
 % Bytes32Snapshot.toArray(): reads the storage object.
 :- trust pred to_array(X, A)
-   + ( not_fails, is_det, cost(lb, gas, 1000), cost(ub, gas, 1000) ).
+   + ( not_fails, is_det, cost(lb, gas, 844), cost(ub, gas, 844) ).
 
 :- trust pred load(X)
-   + ( not_fails, is_det, cost(lb, gas, 1000), cost(ub, gas, 1000) ).
+   + ( not_fails, is_det, cost(lb, gas, 844), cost(ub, gas, 844) ).
 
 :- trust pred new_obj(X)
-   + ( not_fails, is_det, cost(lb, gas, 7700), cost(ub, gas, 7700) ).
+   + ( not_fails, is_det, cost(lb, gas, 27179), cost(ub, gas, 27179) ).
+
+:- trust pred store(X)
+   + ( not_fails, is_det, cost(lb, gas, 7044), cost(ub, gas, 7044) ).
 
 :- trust pred emit(X)
-   + ( not_fails, is_det, cost(lb, gas, 10300), cost(ub, gas, 10300) ).
+   + ( not_fails, is_det, cost(lb, gas, 12181), cost(ub, gas, 12181) ).
