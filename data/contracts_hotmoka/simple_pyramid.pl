@@ -8,6 +8,8 @@
 :- module(_, [init/3, invest/8, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- regtype addrs/1.
 addrs([]).
 addrs([A|T]) :- atm(A), addrs(T).
@@ -24,10 +26,10 @@ init(Creator, [Creator], 1000) :-                % investors.add(caller()), prev
 
 % @FromContract invest(amount)
 invest(Caller, Amount, !Inv, !Prev, !B) :-
-    Min is Prev * 11 // 10,                         % minimumInvestment = previousInvestment * 11 / 10
+    Min = Prev * 11 // 10,                          % minimumInvestment = previousInvestment * 11 / 10
     Amount >= Min,                                  % require(amount >= minimumInvestment)
-    list_size(Inv, N),                              % investors.size()
-    Each is Amount // N,                            % eachInvestorGets = amount / investors.size()
+    N = ~list_size(Inv),                            % investors.size()
+    Each = Amount // N,                             % eachInvestorGets = amount / investors.size()
     for (P in list(Inv)) {                          % investors.forEach(investor -> investor.receive(each))
         load(P),                                    % the node of the list
         transfer(this, P, Each, !B)                 % investor.receive(each)
