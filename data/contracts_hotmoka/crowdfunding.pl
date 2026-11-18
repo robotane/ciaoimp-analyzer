@@ -10,6 +10,8 @@
 :- module(_, [init/1, new_campaign/5, contribute/7, check_goal_reached/6, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
+:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
 :- class(campaign(id, beneficiary, goal, amount, funders)).
 
 :- regtype campaigns/1.
@@ -32,7 +34,7 @@ init([]).
 
 % newCampaign(beneficiary, goal)
 new_campaign(Ben, Goal, !Cs, Id) :-
-    list_size(Cs, N),                               % campaigns.size()
+    N = ~list_size(Cs),                             % campaigns.size()
     new_obj(campaign),                              % new Campaign(beneficiary, goal)
     new_obj(funders),                               % its field funders = new StorageLinkedList<>()
     list_add(campaign(N, Ben, Goal, 0, []), !Cs),   % campaigns.add(campaign): one new list node
@@ -42,18 +44,18 @@ new_campaign(Ben, Goal, !Cs, Id) :-
 
 % @FromContract contribute(amount, campaignID)
 contribute(Caller, Amount, Id, !Cs, !B) :-
-    nth_campaign(Id, Cs, Camp),  % campaigns.get(campaignID): walk
+    Camp = ~nth_campaign(Id, Cs), % campaigns.get(campaignID): walk
     Camp = campaign(CId, Ben, Goal, Amt, Funders),
     new_obj(funder),                                % new Funder(caller(), amount)
     list_add(funder(Caller, Amount), Funders, _),   % campaign.funders.add(funder): one new list node
     Camp := campaign(CId, Ben, Goal, Amt, [funder(Caller, Amount)|Funders]),  % (the list is mutated in place: no field write)
-    Amt1 is Amt + Amount,
+    Amt1 = Amt + Amount,
     Camp[amount] := Amt1,                           % campaign.amount = campaign.amount + amount
     replace_nth(Id, Camp, !Cs).                     % (the campaign is mutated in place in Java)
 
 % checkGoalReached(campaignID)
 check_goal_reached(Id, !Cs, !B, Reached) :-
-    nth_campaign(Id, Cs, Camp),  % campaigns.get(campaignID): walk
+    Camp = ~nth_campaign(Id, Cs), % campaigns.get(campaignID): walk
     Camp = campaign(_, Ben, Goal, Amt, _),
     if (Amt < Goal) {                               % compareTo(campaign.amount, campaign.fundingGoal) < 0
         Reached = 0                                 % return false
@@ -74,7 +76,7 @@ nth_campaign(Id0, [C|T], X) :-
     C = campaign(Id, _, _, _, _),
     Id =\= Id0,
     load(C),
-    nth_campaign(Id0, T, X).
+    X = ~nth_campaign(Id0, T).
 
 % The functional update of the campaign Id0 (no cost of its own besides the steps).
 replace_nth(Id0, V, [C|T], [V|T]) :-
