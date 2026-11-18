@@ -8,7 +8,7 @@
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [init/4, bid/9, reveal/15, auction_end/9, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- regtype opt/1.
 opt(null).
@@ -36,11 +36,10 @@ init(BiddingTime, Now, BEnd, HBdr) :-
 bid(Caller, Amount, Now, BEnd, Hash, !Bids, !B) :-
     Now =< BEnd,                                    % onlyBefore(biddingEnd)
     map_get(Caller, Bids, none, L0),                % bids.computeIfAbsent(caller, ...): tree get
-    ( L0 == none ->
+    if (L0 == none) {
         new_obj(list),                              % new StorageLinkedList (bidder not yet in the tree)
         L = []
-    ; L = L0
-    ),
+    } else { L = L0 },
     new_obj(bid),                                   % new Bid(hash, amount)
     list_add(bid(Hash, Amount), L, L1),             % .add(bid): one new list node
     map_put(Caller, L1, !Bids).                     % new key: tree put (an existing list is mutated in place in Java)
@@ -57,13 +56,12 @@ reveal(Caller, Now, BEnd, REnd, Value, Fake, Salt, !Bids, !HBdr, !HBid, !B) :-
     load(salt),                                     % revealed.salt.toArray()
     load(stored_hash),                              % hash.toArray()
     load(bid_object),                               % bid.deposit
-    ( BidHash \== hash(Value, Fake, Salt) ->        % !bid.matches(revealed, digest)
+    if (BidHash \== hash(Value, Fake, Salt)) {      % !bid.matches(revealed, digest)
         Refund = 0
-    ; Fake =:= 0, Deposit >= Value, better(Value, HBid) ->
+    } else if ((Fake =:= 0, Deposit >= Value, better(Value, HBid))) {
         place_bid(Caller, Value, !HBdr, !HBid, !B), % placeBid(bidder, revealed.value)
         Refund is Deposit - Value
-    ; Refund = Deposit
-    ),
+    } else { Refund = Deposit },
     transfer(this, Caller, Refund, !B).             % bidder.receive(refundFor(...)): always executed
 
 % The first bid of the list of a bidder (fails if there is none).
@@ -75,10 +73,9 @@ better(Value, HBid) :- Value > HBid.
 
 % placeBid: the previous highest bidder is refunded, the new bid is recorded.
 place_bid(Bidder, Value, !HBdr, !HBid, !B) :-
-    ( HBdr \== null ->
+    if (HBdr \== null) {
         transfer(this, HBdr, HBid, !B)              % highestBidder.receive(highestBid)
-    ; true
-    ),
+    },
     HBid := Value,                                  % highestBid = value
     HBdr := Bidder,                                 % highestBidder = bidder
     emit(bid_increase).                             % event(new BidIncrease(bidder, value))
@@ -87,12 +84,11 @@ place_bid(Bidder, Value, !HBdr, !HBid, !B) :-
 auction_end(Bene, Now, REnd, HBid, !HBdr, !B, Winner) :-
     Now >= REnd,                                    % onlyAfter(revealEnd)
     Winner = HBdr,                                  % winner = highestBidder
-    ( Winner \== null ->
+    if (Winner \== null) {
         transfer(this, Bene, HBid, !B),             % beneficiary.receive(highestBid)
         emit(auction_end),                          % event(new AuctionEnd(winner, highestBid))
         HBdr := null                                % highestBidder = null
-    ; true
-    ).
+    }.
 
 % --- Test: alice bids (deposit 200, value 150), bob bids (deposit 100, value 100);
 % both reveal; alice wins; end. ---

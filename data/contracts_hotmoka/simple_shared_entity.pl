@@ -7,7 +7,7 @@
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [place/10, accept/12, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- regtype offer/1.
 offer(offer(Seller, Cost, N, Ongoing)) :- atm(Seller), int(Cost), int(N), int(Ongoing).
@@ -42,7 +42,7 @@ place(Caller, Amount, Offer, Sh, !Of, !SnapO, !B) :-
 accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B, Ok) :-
     map_get(Offer, Of, 0, Known),                   % require(offers.contains(offer))
     Offer = offer(Seller, Cost, N, Ongoing),
-    ( Known =:= 1, Ongoing =:= 1, Cost =< Amount ->
+    if ((Known =:= 1, Ongoing =:= 1, Cost =< Amount)) {
         clean_up(Of, Offer, !Of),                   % cleanUpOffers(offer): scan of the offers
         remove_shares(Seller, N, !Sh),
         add_shares(Caller, N, !Sh),
@@ -51,8 +51,7 @@ accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B, Ok) :-
         SnapS := snapshot,                          % snapshotOfShares = shares.snapshot()
         emit(offer_accepted),                       % event(new OfferAccepted(buyer, offer))
         Ok = 1
-    ; Ok = 0
-    ).
+    } else { Ok = 0 }.
 
 % sharesOnSaleOf(seller): sum of the shares of the ongoing offers of Seller.
 % (no accumulator: CiaoPP then measures the recursion on the list only)
@@ -61,15 +60,16 @@ on_sale([kv(O, _)|T], Seller, S) :-
     on_sale(T, Seller, S1),
     load(O),
     O = offer(Sel, _, N, Ongoing),
-    ( Sel == Seller, Ongoing =:= 1 -> S is S1 + N ; S = S1 ).
+    if ((Sel == Seller, Ongoing =:= 1)) { S is S1 + N } else { S = S1 }.
 
 % cleanUpOffers(toRemove): removes toRemove and the offers no longer ongoing.
 % It scans the offers of the call (first argument) and removes from !Of.
-clean_up([], _, !Of).
-clean_up([kv(O, _)|T], ToRemove, !Of) :-
-    load(O),
-    ( to_remove(O, ToRemove) -> map_remove(O, !Of) ; true ),
-    clean_up(T, ToRemove, !Of).
+clean_up(Offers, ToRemove, !Of) :-
+    for (E in list(Offers)) {
+        E = kv(O, _),
+        load(O),
+        if (to_remove(O, ToRemove)) { map_remove(O, !Of) }
+    }.
 
 to_remove(O, O) :- !.
 to_remove(offer(_, _, _, 0), _).
@@ -80,16 +80,15 @@ remove_shares(Holder, N, !Sh) :-
     S1 is S0 - N,
     map_put(Holder, S1, !Sh),
     map_get(Holder, Sh, 0, S2),                     % shares.get(shareholder).signum()
-    ( S2 =:= 0 ->
+    if (S2 =:= 0) {
         map_remove(Holder, !Sh),
         emit(shareholder_removed)
-    ; true
-    ).
+    }.
 
 % addShares: shares.update with a default (new shareholder: one more event).
 add_shares(Holder, N, !Sh) :-
     map_get(Holder, Sh, none, S0),
-    ( S0 == none -> emit(shareholder_added), S1 is N ; S1 is S0 + N ),
+    if (S0 == none) { emit(shareholder_added), S1 is N } else { S1 is S0 + N },
     map_put(Holder, S1, !Sh).
 
 % --- Test: alice 60 shares, bob 40; alice offers 10 shares for 200, charlie accepts ---

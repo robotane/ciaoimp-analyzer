@@ -5,7 +5,7 @@
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [init/4, bid/10, auction_end/9, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- entry bid(Caller, Amount, Now, End, HBid0, HBid, HBdr0, HBdr, B0, B) :
     (atm(Caller), int(Amount), int(Now), int(End), int(HBid0), var(HBid),
@@ -25,10 +25,9 @@ init(BiddingTime, Now, End, Bidder) :-
 bid(Caller, Amount, Now, End, !HBid, !HBdr, !B) :-
     Now < End,                                      % require(now() < auctionEnd)
     Amount > HBid,                                  % require(amount > highestBid)
-    ( HBdr \== null ->
+    if (HBdr \== null) {
         transfer(this, HBdr, HBid, !B)              % highestBidder.receive(highestBid)
-    ; true
-    ),
+    },
     HBdr := Caller,                                 % highestBidder = caller()
     HBid := Amount,                                 % highestBid = amount
     emit(bid_increase).                             % event(new BidIncrease(highestBidder, amount))
@@ -37,12 +36,11 @@ bid(Caller, Amount, Now, End, !HBid, !HBdr, !B) :-
 auction_end(Bene, Now, End, HBid, !HBdr, !B, Winner) :-
     Now >= End,                                     % require(now() >= auctionEnd)
     Winner = HBdr,                                  % winner = highestBidder
-    ( Winner \== null ->
+    if (Winner \== null) {
         transfer(this, Bene, HBid, !B),             % beneficiary.receive(highestBid)
         emit(auction_end),                          % event(new AuctionEnd(winner, highestBid))
         HBdr := null                                % highestBidder = null
-    ; true
-    ).
+    }.
 
 % --- Test: auction of 100 ms; alice bids 100, bob bids 200, end ---
 % Expected: [bob, 1000, 800, 200, 0] = winner bob, alice refunded, beneficiary 200.

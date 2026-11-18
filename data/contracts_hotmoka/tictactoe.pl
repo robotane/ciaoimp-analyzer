@@ -7,7 +7,7 @@
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [play/17, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- regtype cells/1.
 cells([]).
@@ -27,43 +27,43 @@ play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :
     Idx is (Y - 1) * 3 + X - 1,
     arr_get(Idx, Board, Cell),                      % require(at(x, y) == EMPTY): board.get
     Cell =:= 0,
-    ( Turn =:= 1 ->                                 % if (turn == CROSS)
-        ( Cross == null ->
+    if (Turn =:= 1) {                               % if (turn == CROSS)
+        if (Cross == null) {
             Amount >= 100,                          % require(amount >= MINIMUM_BET)
             Cross := Caller                         % crossPlayer = player
-        ;
+        } else {
             Caller == Cross                         % require(player == crossPlayer)
-        )
-    ;
-        ( Circle == null ->
+        }
+    } else {
+        if (Circle == null) {
             Caller \== Cross,                       % require(crossPlayer != player)
             balance(this, B, Bal),                  % balance()
             Prev is Bal - Amount,                   % previousBet
             Amount >= Prev,                         % require(amount >= previousBet)
             Circle := Caller                        % circlePlayer = player
-        ;
+        } else {
             Caller == Circle                        % require(player == circlePlayer)
-        )
-    ),
+        }
+    },
     arr_set(Idx, Turn, !Board),                     % set(x, y, turn): board.set
     game_over(X, Y, Turn, Board, Over1),            % isGameOver(x, y)
     Over := Over1,                                  % gameOver = ...
-    ( Over1 =:= 1 ->
+    if (Over1 =:= 1) {
         balance(this, B, Bal1),                     % balance()
         Win is Bal1 * 9 // 10,                      % 90% goes to the winner
         transfer(this, Caller, Win, !B),            % player.receive(...)
         balance(this, B, Bal2),                     % balance()
         transfer(this, Creator, Bal2, !B)           % creator.receive(balance())
-    ;
+    } else {
         is_full(Board, Full),                       % isDraw()
-        ( Full =:= 1 ->
+        if (Full =:= 1) {
             balance(this, B, Bal3),                 % balance()
             transfer(this, Creator, Bal3, !B)       % creator.receive(balance())
-        ;
+        } else {
             NT is 3 - Turn,
             Turn := NT                              % turn = turn.nextTurn()
-        )
-    ).
+        }
+    }.
 
 % isGameOver(x, y). Java evaluates its tests with short-circuit (at most 12 reads of the board);
 % the 12 reads are all done here (an upper bound of every path: CiaoPP does not charge the reads
@@ -73,12 +73,11 @@ game_over(X, Y, T, B, Over) :-
     at(1, Y, B, R1), at(2, Y, B, R2), at(3, Y, B, R3),            % row y
     at(1, 1, B, D1), at(2, 2, B, D2), at(3, 3, B, D3),            % first diagonal
     at(1, 3, B, E1), at(2, 2, B, E2), at(3, 1, B, E3),            % second diagonal
-    ( A1 =:= T, A2 =:= T, A3 =:= T -> Over = 1
-    ; R1 =:= T, R2 =:= T, R3 =:= T -> Over = 1
-    ; X =:= Y, D1 =:= T, D2 =:= T, D3 =:= T -> Over = 1
-    ; X + Y =:= 4, E1 =:= T, E2 =:= T, E3 =:= T -> Over = 1
-    ;   Over = 0
-    ).
+    if ((A1 =:= T, A2 =:= T, A3 =:= T)) { Over = 1 }
+    else if ((R1 =:= T, R2 =:= T, R3 =:= T)) { Over = 1 }
+    else if ((X =:= Y, D1 =:= T, D2 =:= T, D3 =:= T)) { Over = 1 }
+    else if ((X + Y =:= 4, E1 =:= T, E2 =:= T, E3 =:= T)) { Over = 1 }
+    else { Over = 0 }.
 
 % at(x, y)
 at(X, Y, Board, V) :-
@@ -91,10 +90,9 @@ is_full(B, Full) :-
     arr_get(0, B, V0), arr_get(1, B, V1), arr_get(2, B, V2),
     arr_get(3, B, V3), arr_get(4, B, V4), arr_get(5, B, V5),
     arr_get(6, B, V6), arr_get(7, B, V7), arr_get(8, B, V8),
-    ( V0 =\= 0, V1 =\= 0, V2 =\= 0, V3 =\= 0, V4 =\= 0, V5 =\= 0, V6 =\= 0, V7 =\= 0, V8 =\= 0 ->
+    if ((V0 =\= 0, V1 =\= 0, V2 =\= 0, V3 =\= 0, V4 =\= 0, V5 =\= 0, V6 =\= 0, V7 =\= 0, V8 =\= 0)) {
         Full = 1
-    ;   Full = 0
-    ).
+    } else { Full = 0 }.
 
 % --- Test: alice (cross) bets 100, bob (circle) 100; alice plays (1,1), bob (2,1),
 % alice (2,2), bob (3,1), alice (3,3): the diagonal ---

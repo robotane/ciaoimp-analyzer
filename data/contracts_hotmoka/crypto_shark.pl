@@ -2,7 +2,7 @@
 % The owner mints tokens; token owners approve and transfer.
 
 :- module(_, [mint/8, approve/8, set_approval_for_all/7, transfer_from/12, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- entry mint(Caller, Owner, To, TokenId, TO0, TO, NB0, NB) :
     (atm(Caller), atm(Owner), atm(To), int(TokenId), map(TO0), var(TO), map(NB0), var(NB)).
@@ -24,10 +24,11 @@ approve(Caller, To, TokenId, TO, !Ap, OO, Op) :-
     map_get(TokenId, TO, none, O),                  % Contract owner = ownerOf(tokenId)
     O \== none,
     To \== O,                                       % require(to != owner)
-    ( Caller == O -> true                           % require(caller() == owner
-    ; map_get(O, OO, none, _),                      %   || isApprovedForAll(owner, caller()))
-      map_get(op(O, Caller), Op, 0, V), V =:= 1
-    ),
+    if (Caller == O) { true }                       % require(caller() == owner
+    else {                                          %   || isApprovedForAll(owner, caller()))
+        map_get(O, OO, none, _),
+        map_get(op(O, Caller), Op, 0, V), V =:= 1
+    },
     map_put(TokenId, To, !Ap),                      % tokenApprovals.put(tokenId, to)
     emit(approval).                                 % event(new Approval(owner, to, tokenId))
 
@@ -35,11 +36,10 @@ approve(Caller, To, TokenId, TO, !Ap, OO, Op) :-
 set_approval_for_all(Caller, To, Approved, !OO, !Op) :-
     To \== Caller,                                  % require(to != caller())
     map_get(Caller, OO, none, O1),                  % operatorApprovals.computeIfAbsent(caller(), ...): outer get
-    ( O1 == none ->
+    if (O1 == none) {
         new_obj(inner_map),                         % new StorageTreeMap<>() for a new owner
         map_put(Caller, 1, !OO)                     % and its put in the outer map
-    ; true
-    ),
+    },
     map_put(op(Caller, To), Approved, !Op),         % .put(to, approved): inner map
     emit(approval_for_all).                         % event(new ApprovalForAll(caller(), to, approved))
 
@@ -72,11 +72,12 @@ mint_(To, TokenId, !TO, !NB) :-
 
 % _isApprovedOrOwner(spender, tokenId), Owner = ownerOf(tokenId) already read
 approved_or_owner(Spender, Owner, TokenId, Ap, OO, Op) :-
-    ( Spender == Owner -> true
-    ; map_get(TokenId, Ap, none, A), A == Spender -> true       % getApproved(tokenId) == spender
-    ; map_get(Owner, OO, none, _),                              % isApprovedForAll(owner, spender):
-      map_get(op(Owner, Spender), Op, 0, V), V =:= 1            %   operatorApprovals.get(owner).getOrDefault(spender)
-    ).
+    if (Spender == Owner) { true }
+    else if ((map_get(TokenId, Ap, none, A), A == Spender)) { true }     % getApproved(tokenId) == spender
+    else {
+        map_get(Owner, OO, none, _),                            % isApprovedForAll(owner, spender):
+        map_get(op(Owner, Spender), Op, 0, V), V =:= 1          %   operatorApprovals.get(owner).getOrDefault(spender)
+    }.
 
 % transferFrom(from, to, tokenId)
 transfer_from_(Caller, From, To, TokenId, !TO, !NB, !Ap, OO, Op) :-

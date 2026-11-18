@@ -10,7 +10,7 @@
 % (totalSupply is reassigned in _mint and _burn; balances is only a map).
 
 :- module(_, [token_transfer/5, mint/8, burn/8, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- entry token_transfer(Caller, To, Amount, Bal0, Bal) :
     (atm(Caller), atm(To), int(Amount), map(Bal0), var(Bal)).

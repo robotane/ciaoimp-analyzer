@@ -11,7 +11,7 @@
 % Only the measured operations are written (the constructor, mint and burn are not).
 
 :- module(_, [token_transfer/5, approve/7, transfer_from/10, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- entry token_transfer(Caller, To, Amount, Bal0, Bal) :
     (atm(Caller), atm(To), int(Amount), map(Bal0), var(Bal)).
@@ -55,11 +55,10 @@ transfer_(Sender, To, Amount, !Bal) :-
 % _approve(owner, spender, value)
 approve_(Owner, Spender, Value, !Own, !Al) :-
     map_get(Owner, Own, none, O1),                  % allowances.computeIfAbsent(owner, ...): outer get
-    ( O1 == none ->
+    if (O1 == none) {
         new_obj(inner_map),                         % new StorageTreeMap<>() for a new owner
         map_put(Owner, 1, !Own)                     % and its put in the outer map
-    ; true
-    ),
+    },
     map_put(al(Owner, Spender), Value, !Al),        % .put(spender, value): inner map
     emit(approval).                                 % event(new Approval(owner, spender, value))
 

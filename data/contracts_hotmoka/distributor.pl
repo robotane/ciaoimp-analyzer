@@ -6,7 +6,7 @@
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [add_as_payee/3, distribute/6, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- regtype addrs/1.
 addrs([]).
@@ -26,20 +26,15 @@ add_as_payee(Caller, !Payees) :-
 % @FromContract distribute(amount)
 distribute(Caller, Amount, Owner, Payees, !B) :-
     list_size(Payees, N),                           % int size = payees.size()
-    ( N > 0 ->                                      % if (size > 0)
+    if (N > 0) {                                    % if (size > 0)
         Each is Amount // N,                        % eachGets = amount / size
-        pay_all(Payees, Each, !B),                  % payees.forEach(payee -> payee.receive(eachGets))
+        for (P in list(Payees)) {                   % payees.forEach(payee -> payee.receive(eachGets))
+            load(P),                                % the node of the list
+            transfer(this, P, Each, !B)             % payee.receive(each)
+        },
         balance(this, B, Rest),                     % balance()
         transfer(this, Owner, Rest, !B)             % owner.receive(balance())
-    ; true
-    ).
-
-% payees.forEach(payee -> payee.receive(each)): one node load and one payment per payee.
-pay_all([], _, !B).
-pay_all([P|T], Each, !B) :-
-    load(P),                                        % the node of the list
-    transfer(this, P, Each, !B),                    % payee.receive(each)
-    pay_all(T, Each, !B).
+    }.
 
 % --- Test: alice and bob register; carol distributes 300; the owner gets the rest (0) ---
 % Expected: [alice, bob, carol, owner, this] = [1150, 1150, 700, 1000, 0].

@@ -6,7 +6,7 @@
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [init/3, invest/8, goal/1],
-          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, .(hotmoka_gas)]).
+          [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- regtype addrs/1.
 addrs([]).
@@ -28,16 +28,12 @@ invest(Caller, Amount, !Inv, !Prev, !B) :-
     Amount >= Min,                                  % require(amount >= minimumInvestment)
     list_size(Inv, N),                              % investors.size()
     Each is Amount // N,                            % eachInvestorGets = amount / investors.size()
-    pay_all(Inv, Each, !B),                         % investors.forEach(investor -> investor.receive(each))
+    for (P in list(Inv)) {                          % investors.forEach(investor -> investor.receive(each))
+        load(P),                                    % the node of the list
+        transfer(this, P, Each, !B)                 % investor.receive(each)
+    },
     list_add(Caller, !Inv),                         % investors.addFirst(caller()): one new list node
     Prev := Amount.                                 % previousInvestment = amount
-
-% investors.forEach(investor -> investor.receive(each)): one node load and one payment per investor.
-pay_all([], _, !B).
-pay_all([P|T], Each, !B) :-
-    load(P),                                        % the node of the list
-    transfer(this, P, Each, !B),                    % investor.receive(each)
-    pay_all(T, Each, !B).
 
 % --- Test: alice creates the pyramid; bob invests 1100, carol invests 1210 ---
 % Expected: [alice, bob, carol, this] = [2000 + 1100 + 605, 2000 - 1100 + 605, 2000 - 1210, 0]
