@@ -18,25 +18,23 @@
 
 % @FromContract mint(account, tokenId)
 mint(Caller, Owner, To, TokenId, !TO, !NB) :-
-    Caller == Owner,                                % require(caller() == owner)
+    require(Caller == Owner),                       % require(caller() == owner)
     mint_(To, TokenId, !TO, !NB).
 
 % ERC721.approve(to, tokenId)
 approve(Caller, To, TokenId, TO, !Ap, OO, Op) :-
     O = ~map_get(TokenId, TO, none),                % Contract owner = ownerOf(tokenId)
     O \== none,
-    To \== O,                                       % require(to != owner)
-    if (Caller == O) { true }                       % require(caller() == owner
-    else {                                          %   || isApprovedForAll(owner, caller()))
-        map_get(O, OO, none, _),
-        V = ~map_get(op(O, Caller), Op, 0), V =:= 1
-    },
+    require(To \== O),                              % require(to != owner)
+    require((Caller == O                            % require(caller() == owner
+            ; map_get(O, OO, none, _),              %   || isApprovedForAll(owner, caller()))
+              V = ~map_get(op(O, Caller), Op, 0), V =:= 1)),
     map_put(TokenId, To, !Ap),                      % tokenApprovals.put(tokenId, to)
     emit(approval).                                 % event(new Approval(owner, to, tokenId))
 
 % ERC721.setApprovalForAll(to, approved)
 set_approval_for_all(Caller, To, Approved, !OO, !Op) :-
-    To \== Caller,                                  % require(to != caller())
+    require(To \== Caller),                         % require(to != caller())
     O1 = ~map_get(Caller, OO, none),                % operatorApprovals.computeIfAbsent(caller(), ...): outer get
     if (O1 == none) {
         new_obj(inner_map),                         % new StorageTreeMap<>() for a new owner
@@ -63,8 +61,8 @@ transfer_from(Caller, From, To, TokenId, !TO, !NB, !Ap, OO, Op) :-
 
 % _mint(to, tokenId)
 mint_(To, TokenId, !TO, !NB) :-
-    E = ~map_get(TokenId, TO, none),                % require(!_exists(tokenId)): tokenOwners.get
-    E == none,
+    E = ~map_get(TokenId, TO, none),                % _exists(tokenId): tokenOwners.get
+    require(E == none),                             % require(!_exists(tokenId))
     map_put(TokenId, To, !TO),                      % tokenOwners.put(tokenId, to)
     C = ~map_get(To, NB, 0),                        % ownedTokensCount.getOrDefault(to, ZERO)
     C1 = ~ubi_add(C, 1),                            % .add(ONE)
@@ -84,9 +82,9 @@ approved_or_owner(Spender, Owner, TokenId, Ap, OO, Op) :-
 transfer_from_(Caller, From, To, TokenId, !TO, !NB, !Ap, OO, Op) :-
     O = ~map_get(TokenId, TO, none),                % ownerOf(tokenId) in _isApprovedOrOwner
     O \== none,
-    approved_or_owner(Caller, O, TokenId, Ap, OO, Op),   % require(_isApprovedOrOwner(caller(), tokenId))
-    O2 = ~map_get(TokenId, TO, none),               % require(ownerOf(tokenId) == from) in _transferFrom
-    O2 == From,
+    require(approved_or_owner(Caller, O, TokenId, Ap, OO, Op)),  % require(_isApprovedOrOwner(caller(), tokenId))
+    O2 = ~map_get(TokenId, TO, none),               % ownerOf(tokenId) in _transferFrom
+    require(O2 == From),                            % require(ownerOf(tokenId) == from)
     map_remove(TokenId, !Ap),                       % _clearApproval(tokenId)
     C1 = ~map_get(From, NB, 0),                     % ownedTokensCount.get(from)
     C1n = ~ubi_sub(C1, 1),                          % .subtract(ONE)

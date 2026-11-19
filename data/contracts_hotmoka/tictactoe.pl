@@ -22,27 +22,27 @@ cells([C|T]) :- int(C), cells(T).
 
 % @FromContract play(amount, x, y)
 play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :-
-    Over =:= 0,                                     % require(!gameOver)
-    X >= 1, X =< 3, Y >= 1, Y =< 3,                 % require(1 <= x && x <= 3 && 1 <= y && y <= 3)
+    require(Over =:= 0),                            % require(!gameOver)
+    require((X >= 1, X =< 3, Y >= 1, Y =< 3)),      % require(1 <= x && x <= 3 && 1 <= y && y <= 3)
     Idx is (Y - 1) * 3 + X - 1,
-    Cell = ~arr_get(Idx, Board),                    % require(at(x, y) == EMPTY): board.get
-    Cell =:= 0,
+    Cell = ~arr_get(Idx, Board),                    % at(x, y): board.get
+    require(Cell =:= 0),                            % require(at(x, y) == EMPTY)
     if (Turn =:= 1) {                               % if (turn == CROSS)
         if (Cross == null) {
-            Amount >= 100,                          % require(amount >= MINIMUM_BET)
+            require(Amount >= 100),                 % require(amount >= MINIMUM_BET)
             Cross := Caller                         % crossPlayer = player
         } else {
-            Caller == Cross                         % require(player == crossPlayer)
+            require(Caller == Cross)                % require(player == crossPlayer)
         }
     } else {
         if (Circle == null) {
-            Caller \== Cross,                       % require(crossPlayer != player)
+            require(Caller \== Cross),              % require(crossPlayer != player)
             Bal = ~balance(this, B),                % balance()
             Prev is Bal - Amount,                   % previousBet
-            Amount >= Prev,                         % require(amount >= previousBet)
+            require(Amount >= Prev),                % require(amount >= previousBet)
             Circle := Caller                        % circlePlayer = player
         } else {
-            Caller == Circle                        % require(player == circlePlayer)
+            require(Caller == Circle)               % require(player == circlePlayer)
         }
     },
     arr_set(Idx, Turn, !Board),                     % set(x, y, turn): board.set

@@ -48,15 +48,15 @@ init_props([N|T], I, [proposal(I, N, 0)|RT]) :-
 
 % @FromContract giveRightToVote(to)
 give_right(Caller, Chair, To, !Pa) :-
-    Caller == Chair,                                % require(caller() == chairperson)
+    require(Caller == Chair),                       % require(caller() == chairperson)
     P0 = ~map_get(To, Pa, none),                    % papers.computeIfAbsent(to, VotingPaper::new): tree get
     if (P0 == none) {
         new_obj(paper),                             % new VotingPaper() (not yet in the tree)
         map_put(To, paper(1, 0, null, -1), !Pa)     % computeIfAbsent puts the new key; giveRightToVote(): weight = 1
     } else {
         paper_fields(P0, W, HV, _, _),
-        HV =:= 0,                                   % require(!paper.hasVoted())
-        W =:= 0,                                    % require(!paper.hasRightToVote())
+        require(HV =:= 0),                          % require(!paper.hasVoted())
+        require(W =:= 0),                           % require(!paper.hasRightToVote())
         P0[weight] := 1,                            % paper.giveRightToVote(): weight = 1 (in place)
         set_paper(To, P0, !Pa)                      % (the paper is mutated in place in Java)
     }.
@@ -65,8 +65,8 @@ give_right(Caller, Chair, To, !Pa) :-
 vote(Caller, Index, !Pa, !Pr) :-
     P = ~map_get(Caller, Pa, none),                 % getVotingPaperFor(caller()): papers.get(caller)
     paper_fields(P, W, HV, _, _),
-    HV =:= 0,                                       % require(!paper.hasVoted())
-    W > 0,                                          % require(paper.hasRightToVote())
+    require(HV =:= 0),                              % require(!paper.hasVoted())
+    require(W > 0),                                 % require(paper.hasRightToVote())
     Prop = ~get_proposal(Index, Pr),                % proposals.get(index): walk
     Prop = proposal(_, _, Cnt),
     Cnt1 = Cnt + W,
@@ -80,12 +80,12 @@ vote(Caller, Index, !Pa, !Pr) :-
 delegate(To, Caller, !Pa, !Pr) :-
     PTo = ~map_get(To, Pa, none),                   % papers.get(to)
     paper_fields(PTo, WTo0, _, _, _),
-    WTo0 > 0,                                       % require(delegatedPaper.hasRightToVote())
+    require(WTo0 > 0),                              % require(delegatedPaper.hasRightToVote())
     PC = ~map_get(Caller, Pa, none),                % getVotingPaperFor(caller()): papers.get(caller)
     paper_fields(PC, W, HV, _, _),
-    HV =:= 0,                                       % require(!paper.hasVoted())
-    W > 0,                                          % require(paper.hasRightToVote())
-    To \== Caller,                                  % require(delegate != payer)
+    require(HV =:= 0),                              % require(!paper.hasVoted())
+    require(W > 0),                                 % require(paper.hasRightToVote())
+    require(To \== Caller),                         % require(delegate != payer)
                                                     % seen = new StorageTreeSet<>(): temporary, its cost is in tmp_get/tmp_put
     From = ~map_get(To, Pa, none),                  % from = papers.get(delegate)
     paper_fields(From, _, _, Del, _),
@@ -121,7 +121,7 @@ follow([], _, _, _, Last, Last).                    % never reached (a chain vis
 follow([_|Rest], Del, Pa, Seen, _, Final) :-
     differ(Del, null),                              % while (from.delegate != null)
     InSeen = ~tmp_get(Del, Seen, 0),                % seen.contains(delegate)
-    InSeen =:= 0,                                   % require(!seen.contains(delegate))
+    require(InSeen =:= 0),                          % require(!seen.contains(delegate))
     tmp_put(Del, 1, Seen, Seen1),                   % seen.add(delegate)
     From = ~map_get(Del, Pa, none),                 % from = papers.get(delegate)
     paper_fields(From, _, _, Del1, _),

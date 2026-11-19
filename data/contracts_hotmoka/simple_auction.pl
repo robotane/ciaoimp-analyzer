@@ -25,8 +25,8 @@ init(BiddingTime, Now, End, Bidder) :-
 
 % @FromContract bid(amount)
 bid(Caller, Amount, Now, End, !HBid, !HBdr, !B) :-
-    Now < End,                                      % require(now() < auctionEnd)
-    Amount > HBid,                                  % require(amount > highestBid)
+    require(Now < End),                             % require(now() < auctionEnd)
+    require(Amount > HBid),                         % require(amount > highestBid)
     if (HBdr \== null) {
         transfer(this, HBdr, HBid, !B)              % highestBidder.receive(highestBid)
     },
@@ -36,7 +36,7 @@ bid(Caller, Amount, Now, End, !HBid, !HBdr, !B) :-
 
 % auctionEnd()
 auction_end(Bene, Now, End, HBid, !HBdr, !B, Winner) :-
-    Now >= End,                                     % require(now() >= auctionEnd)
+    require(Now >= End),                            % require(now() >= auctionEnd)
     Winner = HBdr,                                  % winner = highestBidder
     if (Winner \== null) {
         transfer(this, Bene, HBid, !B),             % beneficiary.receive(highestBid)

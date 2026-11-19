@@ -17,7 +17,7 @@ init(null, 0).
 
 % @FromContract invest(amount)
 invest(Caller, Value, !Last, !Amt, !B) :-
-    Value > Amt * 11 // 10,                     % require(amount > 110% of current)
+    require(Value > Amt * 11 // 10),            % require(amount > 110% of current)
     if (Last \== null) {
         transfer(this, Last, Value, !B)         % currentInvestor.receive(amount)
     },

@@ -7,7 +7,7 @@
 %        snapshot/2 creates the view object).
 % B: coin balances, list of bal(Address, Amount).
 
-:- module(_, [place/10, accept/12, goal/1],
+:- module(_, [place/10, accept/11, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
@@ -18,20 +18,21 @@ offer(offer(Seller, Cost, N, Ongoing)) :- atm(Seller), int(Cost), int(N), int(On
 :- entry place(Caller, Amount, Offer, Sh, Of0, Of, SnapO0, SnapO, B0, B) :
     (atm(Caller), int(Amount), offer(Offer), map(Sh), map(Of0), var(Of),
      atm(SnapO0), var(SnapO), balances(B0), var(B)).
-:- entry accept(Caller, Amount, Offer, Sh0, Sh, Of0, Of, SnapS0, SnapS, B0, B, Ok) :
+:- entry accept(Caller, Amount, Offer, Sh0, Sh, Of0, Of, SnapS0, SnapS, B0, B) :
     (atm(Caller), int(Amount), offer(Offer), map(Sh0), var(Sh), map(Of0), var(Of),
-     atm(SnapS0), var(SnapS), balances(B0), var(B), var(Ok)).
+     atm(SnapS0), var(SnapS), balances(B0), var(B)).
 
 :- payable(place).                             % @Payable: the amount sent is received first
 
 % @FromContract place(amount, offer)
 place(Caller, Amount, Offer, Sh, !Of, !SnapO, !B) :-
     Offer = offer(Seller, _, N, _),
-    Seller == Caller,                               % require(offer.seller == seller)
-    Mine = ~map_get(Seller, Sh, 0), Mine > 0,       % require(shares.containsKey(seller))
+    require(Seller == Caller),                      % require(offer.seller == seller)
+    Mine = ~map_get(Seller, Sh, 0),                 % shares.containsKey(seller)
+    require(Mine > 0),                              % require(shares.containsKey(seller))
     Shares = ~map_get(Seller, Sh, 0),               % sharesOf(seller)
     OnSale = ~on_sale(Of, Seller),                    % sharesOnSaleOf(seller): scan of the offers
-    Shares - OnSale >= N,
+    require(Shares - OnSale >= N),                  % require(sharesOf(seller) - sharesOnSaleOf(seller) >= offer.sharesOnSale)
     clean_up(Of, none, !Of),                        % cleanUpOffers(null): scan of the offers
     map_put(Offer, 1, !Of),                         % offers.add(offer)
     SnapO := ~snapshot(Of),                         % snapshotOfOffers = offers.snapshot()
@@ -40,19 +41,19 @@ place(Caller, Amount, Offer, Sh, !Of, !SnapO, !B) :-
 :- payable(accept).                             % @Payable: the amount sent is received first
 
 % @FromContract accept(amount, offer)
-% Ok = 1 when the offer is accepted (the Java call fails otherwise).
-accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B, Ok) :-
-    Known = ~map_get(Offer, Of, 0),                 % require(offers.contains(offer))
+% A failed require is a failed transaction (Java exception): the call fails.
+accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B) :-
+    Known = ~map_get(Offer, Of, 0),                 % offers.contains(offer)
+    require(Known =:= 1, 'unknown offer'),
     Offer = offer(Seller, Cost, N, Ongoing),
-    if ((Known =:= 1, Ongoing =:= 1, Cost =< Amount)) {
-        clean_up(Of, Offer, !Of),                   % cleanUpOffers(offer): scan of the offers
-        remove_shares(Seller, N, !Sh),
-        add_shares(Caller, N, !Sh),
-        transfer(this, Seller, Cost, !B),           % offer.seller.receive(offer.cost)
-        SnapS := ~snapshot(Sh),                     % snapshotOfShares = shares.snapshot()
-        emit(offer_accepted),                       % event(new OfferAccepted(buyer, offer))
-        Ok = 1
-    } else { Ok = 0 }.
+    require(Ongoing =:= 1, 'the sale offer is not ongoing anymore'),       % offer.isOngoing()
+    require(Cost =< Amount, 'not enough money to accept the offer'),
+    clean_up(Of, Offer, !Of),                       % cleanUpOffers(offer): scan of the offers
+    remove_shares(Seller, N, !Sh),
+    add_shares(Caller, N, !Sh),
+    transfer(this, Seller, Cost, !B),               % offer.seller.receive(offer.cost)
+    SnapS := ~snapshot(Sh),                         % snapshotOfShares = shares.snapshot()
+    emit(offer_accepted).                           % event(new OfferAccepted(buyer, offer))
 
 % sharesOnSaleOf(seller): sum of the shares of the ongoing offers of Seller.
 % (no accumulator: CiaoPP then measures the recursion on the list only)
@@ -98,6 +99,6 @@ goal([Sh, A, C]) :-
     B0 = [bal(alice, 1000), bal(bob, 1000), bal(charlie, 1000), bal(this, 0)],
     O = offer(alice, 200, 10, 1),
     place(alice, 0, O, Sh0, [], Of1, none, _, B0, B1),
-    accept(charlie, 200, O, Sh0, Sh, Of1, _, none, _, B1, B2, 1),
+    accept(charlie, 200, O, Sh0, Sh, Of1, _, none, _, B1, B2),
     balance(alice, B2, A),
     balance(charlie, B2, C).

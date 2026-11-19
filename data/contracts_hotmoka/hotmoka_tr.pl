@@ -40,6 +40,18 @@
 %    amount and whose last state variable is the coin balances, starts with
 %        transfer(Caller, this, Amount, !Balances).
 %
+%  - Guards. The contract writes the require of the Java as the Java does,
+%        require(Cond)  or  require(Cond, Message)
+%    and the translation replaces it by Cond itself, at compile time: no
+%    predicate is called, so neither the gas bound nor the number of resolution
+%    steps counted by CasLog changes (a failed require is a failed transaction,
+%    as the Java exception). The message is dropped. A disjunction in Cond is
+%    the short-circuit || of the Java: (A ; B) becomes (A -> true ; B), with no
+%    choice point left (an unprotected ; would make CiaoPP count B even when A
+%    succeeds and multiply what follows by the number of solutions). A
+%    conjunction in Cond is spliced into the body, as if written without
+%    require.
+%
 %  - Loops over a list. The contract writes the loop of the Ciao loops package,
 %        for (X in list(L)) { Body }
 %    Ciao expands it into a helper whose clauses take the list apart in their
@@ -103,6 +115,11 @@ memberv(X, [_|T]) :- memberv(X, T).
 
 % Every field write, anywhere in the body.
 body(G, _, _, G) :- var(G), !.
+body((R, B), SV, Mod, G) :- nonvar(R), require_cond(R, C), !,
+    conj_append(C, B, G0),
+    body(G0, SV, Mod, G).
+body(R, SV, Mod, G) :- require_cond(R, C), !,
+    body(C, SV, Mod, G).
 body(':='(X, V), SV, _, (store(field), ':='(X, V))) :- var(X), memberv(X, SV), !.
 body(set_field(O0, F, V, O), _, Mod, (store(field), O0 = T0, O = T)) :- !,
     field_terms(Mod, F, V, T0, T).
@@ -120,6 +137,19 @@ body(G, SV, Mod, G2) :-
 body(G, _, _, G).
 body_list([], _, _, []).
 body_list([A|As], SV, Mod, [A2|As2]) :- body(A, SV, Mod, A2), body_list(As, SV, Mod, As2).
+
+% require(Cond) and require(Cond, Message): the condition, unfolded.
+require_cond(require(C), C1) :- req_goal(C, C1).
+require_cond(require(C, _), C1) :- req_goal(C, C1).
+
+req_goal(C, C) :- var(C), !.
+req_goal((A ; B), (A -> true ; B1)) :- !, req_goal(B, B1).
+req_goal(C, C).
+
+% (A, B) with the conjunction A spliced: the body stays a flat conjunction.
+conj_append(A, B, (A, B)) :- var(A), !.
+conj_append((X, Y), B, (X, YB)) :- !, conj_append(Y, B, YB).
+conj_append(A, B, (A, B)).
 
 % T0 and T: the object before and after the write of field F with value V.
 field_terms(Mod, F, V, T0, T) :-

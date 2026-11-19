@@ -34,16 +34,16 @@ init(Creator, Cotis, Creator, Cotis, [], [], 0).
 
 % @FromContract rejoindre(amount)
 rejoindre(Caller, Amount, Cotis, !Soldes, !Membres, !B) :-
-    Amount =:= Cotis,                               % require(compareTo(amount, cotisation) == 0)
-    S0 = ~map_get(Caller, Soldes, none),            % require(!soldes.containsKey(membre))
-    S0 == none,
+    require(Amount =:= Cotis),                      % require(compareTo(amount, cotisation) == 0)
+    S0 = ~map_get(Caller, Soldes, none),            % soldes.containsKey(membre)
+    require(S0 == none),                            % require(!soldes.containsKey(membre))
     map_put(Caller, 0, !Soldes),                    % soldes.put(membre, ZERO): new key
     list_add(Caller, !Membres),                     % membres.add(membre): one new list node
     emit(adhesion).                                 % event(new Adhesion(membre))
 
 % @FromContract distribuer()
 distribuer(Caller, Createur, Cotis, !Soldes, !Membres, !Tour) :-
-    Caller == Createur,                             % require(caller() == createur)
+    require(Caller == Createur),                    % require(caller() == createur)
     list_remove_first(Ben, Membres, Rest),          % beneficiaire = membres.removeFirst()
     Membres := Rest,
     list_add(Ben, !Membres),                        % membres.add(beneficiaire)
@@ -56,14 +56,14 @@ distribuer(Caller, Createur, Cotis, !Soldes, !Membres, !Tour) :-
 % @FromContract retrait()
 retrait(Caller, !Soldes, !B) :-
     S = ~map_get(Caller, Soldes, 0),                % soldes.getOrDefault(membre, ZERO)
-    S > 0,                                          % require(solde > 0)
+    require(S > 0),                                 % require(solde > 0)
     map_put(Caller, 0, !Soldes),                    % soldes.put(membre, ZERO)
     transfer(this, Caller, S, !B),                  % membre.receive(solde)
     emit(retrait).                                  % event(new Retrait(membre, solde))
 
 % @FromContract rembourserTous()
 rembourser_tous(Caller, Createur, Membres, !Soldes, !B) :-
-    Caller == Createur,                             % require(caller() == createur)
+    require(Caller == Createur),                    % require(caller() == createur)
     for (M in list(Membres)) {                      % membres.forEach(membre -> ...)
         S = ~map_get(M, Soldes, 0),                 % soldes.getOrDefault(membre, ZERO)
         map_put(M, 0, !Soldes),                     % soldes.put(membre, ZERO)

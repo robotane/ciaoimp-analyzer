@@ -104,7 +104,16 @@ strip((A;Bs), (A1;B1)) :- !, strip(A, A1), strip(Bs, B1).
 strip((A->Bs), (A1->B1)) :- !, strip(A, A1), strip(Bs, B1).
 strip(\+ A, \+ A1) :- !, strip(A, A1).
 strip(M:G, G1) :- atom(M), !, strip(G, G1).
+strip(require(C), G1) :- !, req_cond(C, C1), strip(C1, G1).
+strip(require(C, _), G1) :- !, req_cond(C, C1), strip(C1, G1).
 strip(G, G).
+
+% require(Cond[, Message]) is unfolded into Cond by hotmoka_tr.pl at compile
+% time; a require left in a clause (a contract loaded without the hotmoka_gas
+% package) is unfolded the same way, so that it costs no CasLog step of its own.
+req_cond(C, C) :- var(C), !.
+req_cond((A ; B), (A -> true ; B1)) :- !, req_cond(B, B1).
+req_cond(C, C).
 
 % regtype/prop predicates, goal/N and goal_chain/N are not part of the analysis
 keep_preds([], []).

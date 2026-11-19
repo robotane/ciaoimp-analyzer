@@ -36,14 +36,14 @@ transfer_from(Caller, Sender, To, Amount, !Bal, !Own, !Al) :-
     transfer_(Sender, To, Amount, !Bal),            % _transfer(sender, recipient, amount)
     map_get(Sender, Own, none, _),                  % allowance(sender, caller()): allowances.get(owner)
     A = ~map_get(al(Sender, Caller), Al, 0),        %   .getOrDefault(spender)
-    A >= Amount,                                    % require of subtract: no negative result
+    require(A >= Amount),                           % require of subtract: no negative result
     An = ~ubi_sub(A, Amount),                       % .subtract(amount)
     approve_(Sender, Caller, An, !Own, !Al).        % _approve(sender, caller(), ...)
 
 % _transfer(sender, recipient, amount)
 transfer_(Sender, To, Amount, !Bal) :-
     B1 = ~map_get(Sender, Bal, 0),                  % balanceOf(sender)
-    B1 >= Amount,                                   % require of subtract: no negative result
+    require(B1 >= Amount),                          % require of subtract: no negative result
     B1n = ~ubi_sub(B1, Amount),                     % .subtract(amount)
     map_put(Sender, B1n, !Bal),                     % balances.put(sender, ...)
     B2 = ~map_get(To, Bal, 0),                      % balanceOf(recipient)

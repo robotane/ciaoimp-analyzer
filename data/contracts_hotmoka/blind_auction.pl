@@ -52,7 +52,7 @@ init(BiddingTime, Now, BEnd, HBdr) :-
 
 % @FromContract bid(amount, hash)
 bid(Caller, Amount, Now, BEnd, Hash, !Bids, !B) :-
-    Now =< BEnd,                                    % onlyBefore(biddingEnd)
+    require(Now =< BEnd),                           % onlyBefore(biddingEnd)
     L0 = ~map_get(Caller, Bids, none),              % bids.computeIfAbsent(caller, ...): tree get
     if (L0 == none) {
         new_obj(list),                              % new StorageLinkedList (bidder not yet in the tree)
@@ -64,10 +64,11 @@ bid(Caller, Amount, Now, BEnd, Hash, !Bids, !B) :-
 
 % @FromContract reveal(revealed)
 reveal(Caller, Now, BEnd, REnd, Revealed, !Bids, !HBdr, !HBid, !B) :-
-    Now >= BEnd,                                    % onlyAfter(biddingEnd)
-    Now =< REnd,                                    % onlyBefore(revealEnd)
+    require(Now >= BEnd),                           % onlyAfter(biddingEnd)
+    require(Now =< REnd),                           % onlyBefore(revealEnd)
     L = ~map_get(Caller, Bids, none),               % this.bids.get(bidder)
-    list_remove_first(Bid, L, Rest),                % require(bids != null && bids.size() > 0), bids.removeFirst()
+    require((L \== none, ~list_size(L) > 0), 'No bids to reveal'),   % bids.size(): reads the size field
+    list_remove_first(Bid, L, Rest),                % bids.removeFirst()
     map_put(Caller, Rest, !Bids),                   % (Java mutates the list in place, no tree put)
     % refundFor(bidder, bid, revealed, digest), bid.matches(revealed, digest):
     Value = Revealed[value],                        % revealed.value
@@ -96,7 +97,7 @@ place_bid(Bidder, Value, !HBdr, !HBid, !B) :-
 
 % auctionEnd()
 auction_end(Bene, Now, REnd, HBid, !HBdr, !B, Winner) :-
-    Now >= REnd,                                    % onlyAfter(revealEnd)
+    require(Now >= REnd),                           % onlyAfter(revealEnd)
     Winner = HBdr,                                  % winner = highestBidder
     if (Winner \== null) {
         transfer(this, Bene, HBid, !B),             % beneficiary.receive(highestBid)

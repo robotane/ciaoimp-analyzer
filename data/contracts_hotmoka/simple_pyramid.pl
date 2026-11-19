@@ -27,7 +27,7 @@ init(Creator, Inv, 1000) :-                      % previousInvestment = 1000
 % @FromContract invest(amount)
 invest(Caller, Amount, !Inv, !Prev, !B) :-
     Min = Prev * 11 // 10,                          % minimumInvestment = previousInvestment * 11 / 10
-    Amount >= Min,                                  % require(amount >= minimumInvestment)
+    require(Amount >= Min),                         % require(amount >= minimumInvestment)
     N = ~list_size(Inv),                            % investors.size()
     Each = Amount // N,                             % eachInvestorGets = amount / investors.size()
     for (P in list(Inv)) {                          % investors.forEach(investor -> investor.receive(each))

@@ -24,7 +24,7 @@
 % ERC20.transfer(recipient, amount) = _transfer(caller(), recipient, amount)
 token_transfer(Caller, To, Amount, !Bal) :-
     B1 = ~map_get(Caller, Bal, 0),                  % balanceOf(sender)
-    B1 >= Amount,                                   % require of subtract: no negative result
+    require(B1 >= Amount),                          % require of subtract: no negative result
     B1n = ~ubi_sub(B1, Amount),                     % .subtract(amount)
     map_put(Caller, B1n, !Bal),                     % balances.put(sender, ...)
     B2 = ~map_get(To, Bal, 0),                      % balanceOf(recipient)
@@ -34,7 +34,7 @@ token_transfer(Caller, To, Amount, !Bal) :-
 
 % @FromContract mint(account, amount)
 mint(Caller, Owner, Account, Amount, !Bal, !Total) :-
-    Caller == Owner,                                % require(caller() == owner)
+    require(Caller == Owner),                       % require(caller() == owner)
     Tn = ~ubi_add(Total, Amount),                   % totalSupply.add(amount)
     Total := Tn,                                    % lib: totalSupply = totalSupply.add/subtract(amount)
     B0 = ~map_get(Account, Bal, 0),                 % balanceOf(account)
@@ -44,11 +44,11 @@ mint(Caller, Owner, Account, Amount, !Bal, !Total) :-
 
 % @FromContract burn(account, amount)
 burn(Caller, Owner, Account, Amount, !Bal, !Total) :-
-    Caller == Owner,                                % require(caller() == owner)
+    require(Caller == Owner),                       % require(caller() == owner)
     Tn = ~ubi_sub(Total, Amount),                   % totalSupply.subtract(amount)
     Total := Tn,                                    % lib: totalSupply = totalSupply.add/subtract(amount)
     B0 = ~map_get(Account, Bal, 0),                 % balanceOf(account)
-    B0 >= Amount,                                   % require of subtract: no negative result
+    require(B0 >= Amount),                          % require of subtract: no negative result
     B1 = ~ubi_sub(B0, Amount),                      % .subtract(amount)
     map_put(Account, B1, !Bal),                     % balances.put(account, ...)
     emit(transfer).                                 % event(new Transfer(account, null, amount))

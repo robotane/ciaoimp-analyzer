@@ -10,6 +10,9 @@ un fichier prêt pour CasLog :
 3. les clauses développées (comme `clean_print.pl`), où les unifications `X = Y` sont
    éliminées par liaison quand c'est sûr.
 
+Un `require(Cond)` / `require(Cond, Message)` est déplié en `Cond` par `hotmoka_tr.pl` avant
+l'analyse ; `strip/2` déplie de même un `require` resté dans une clause : aucun pas CasLog de plus.
+
 Sont exclus : les regtypes/props (`balances/1`, `addrs/1`...), `goal/N`, `goal_chain/N`.
 
 ## Commande
@@ -78,7 +81,7 @@ Les 14 contrats passent CasLog sans erreur. Fonctions de temps des méthodes pub
 | simple_auction | oui | `bid/10` `[8*$9+15]`<br> `auction_end/9` `[4*$7+9]`<br> |
 | simple_ponzi | oui | `invest/8` `[8*$7+14]`<br> |
 | simple_pyramid | oui | `invest/8` `[4*($7*$3)+4*$7+9*$3+10]`<br> |
-| simple_shared_entity | oui | `place/10` `[exp($5,2)+4*$9+9*$5+2*$4+15]`<br> `accept/12` `[exp($6,2)+8*$10+6*$6+6*$4+34]`<br> |
+| simple_shared_entity | oui | `place/10` `[exp($5,2)+4*$9+9*$5+2*$4+15]`<br> `accept/11` `[exp($6,2)+8*$10+6*$6+6*$4+33]`<br> |
 | tictactoe | oui | `play/17` `[20*$16+23*$14+70]`<br> |
 
 ## Limites (les `inf`)
