@@ -27,8 +27,11 @@
 %        A = Campaign[amount]
 %    which becomes  load(Campaign), Campaign = campaign(_, _, _, A, _).
 %    Hotmoka loads a storage object once in a transaction, at its first use: only
-%    the first read of an object in a clause adds load(Obj); the other reads of
-%    the same object in the clause are the unification alone.
+%    the first read of an object on each execution path of a clause adds
+%    load(Obj); the other reads of the same object on that path are the
+%    unification alone. Each branch of an if/else or of a disjunction is a path
+%    of its own: a branch that reads Obj has its load(Obj), even when another
+%    branch read it already (see first_reads below).
 %
 %  - Payable method. Before a @Payable method runs, Hotmoka moves the amount
 %    sent from the caller to the contract. The contract declares
@@ -133,7 +136,15 @@ replace([F1|Fs], F, [_|Xs], V, [V|Xs]) :- F1 == F, !, Fs = Fs.
 replace([_|Fs], F, [X|Xs], V, [X|Ys]) :- replace(Fs, F, Xs, V, Ys).
 
 % First read of an object in a clause: '$hm_read'(O) becomes load(O) the first
-% time O is read (left to right), and disappears after.
+% time O is read on an execution path, and disappears after.
+% reads(G, L0, L, G1): L0 = the objects surely read before G, L = after G.
+% A conjunction threads the set left to right. Every branch of a choice
+% (if/else, A ; B, C -> T ; E) starts from the set before the choice, so each
+% branch that reads O has its own load(O); after the choice, an object counts
+% as read only if every branch read it (intersection). The condition of an
+% if counts for its then branch only. What runs zero or several times, or
+% may stop part way (\+ G, while, findall, catch, any other goal with goal
+% arguments), starts from the set before it and adds nothing after it.
 first_reads([], []).
 first_reads([(H :- B)|Cs], [(H :- B1)|Cs1]) :- !,
     reads(B, [], _, B0),
@@ -148,15 +159,54 @@ reads((A, B), L0, L, G) :- !,
     reads(A, L0, L1, A1),
     reads(B, L1, L, B1),
     ( A1 == '$hm_none' -> G = B1 ; B1 == '$hm_none' -> G = A1 ; G = (A1, B1) ).
-reads(G, L0, L, G1) :-
+% Imperative syntax of the loops package (still unexpanded at priority 600):
+%   if (C) { T }              = if('\6\postfix_block'(C, {T}))
+%   if (C) { T } else Else    = else(if(...), Else), Else = {E}, if(...) or else(...)
+reads(else(if(PB), E), L0, L, else(if(PB1), E1)) :- !,
+    reads_then(PB, L0, Lt, PB1),
+    reads_branch(E, L0, Le, E1),
+    keep_vars(Lt, Le, L).
+reads(if(PB), L0, L0, if(PB1)) :- !,
+    reads_then(PB, L0, _, PB1).
+reads('{}'(A), L0, L, '{}'(A1)) :- !,
+    reads_branch(A, L0, L, A1).
+% Prolog control: C -> T ; E, C *-> T ; E, A ; B, C -> T, \+ G.
+reads((C -> T ; E), L0, L, (C1 -> T1 ; E1)) :- !,
+    reads_branch(C, L0, Lc, C1), reads_branch(T, Lc, Lt, T1),
+    reads_branch(E, L0, Le, E1),
+    keep_vars(Lt, Le, L).
+reads(';'('*->'(C, T), E), L0, L, ';'('*->'(C1, T1), E1)) :- !,
+    reads_branch(C, L0, Lc, C1), reads_branch(T, Lc, Lt, T1),
+    reads_branch(E, L0, Le, E1),
+    keep_vars(Lt, Le, L).
+reads((A ; B), L0, L, (A1 ; B1)) :- !,
+    reads_branch(A, L0, La, A1),
+    reads_branch(B, L0, Lb, B1),
+    keep_vars(La, Lb, L).
+reads((C -> T), L0, L0, (C1 -> T1)) :- !,
+    reads_branch(C, L0, Lc, C1), reads_branch(T, Lc, _, T1).
+% Any other goal (\+, while, findall, ...): each argument starts from L0,
+% nothing is added after it.
+reads(G, L0, L0, G1) :-
     functor(G, F, Ar), Ar > 0, !,
     G =.. [F|As],
-    reads_list(As, L0, L, As1),
+    reads_list(As, L0, As1),
     G1 =.. [F|As1].
 reads(G, L, L, G).
-reads_list([], L, L, []).
-reads_list([A|As], L0, L, [A2|As1]) :-
-    reads(A, L0, L1, A1), none_true(A1, A2), reads_list(As, L1, L, As1).
+reads_list([], _, []).
+reads_list([A|As], L0, [A1|As1]) :-
+    reads_branch(A, L0, _, A1), reads_list(As, L0, As1).
+
+% A branch, '$hm_none' replaced by true.
+reads_branch(A, L0, L, A2) :- reads(A, L0, L, A1), none_true(A1, A2).
+
+% The condition and the then branch of an if: C, then T.
+reads_then(PB, L0, Lt, '\6\postfix_block'(C1, '{}'(T1))) :-
+    nonvar(PB), PB = '\6\postfix_block'(C, B), nonvar(B), B = '{}'(T), !,
+    reads_branch(C, L0, Lc, C1),
+    reads_branch(T, Lc, Lt, T1).
+reads_then(PB, L0, L0, PB1) :-              % unknown form: conservative
+    reads_branch(PB, L0, _, PB1).
 
 none_true(G, true) :- G == '$hm_none', !.
 none_true(G, G).
