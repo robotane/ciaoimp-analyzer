@@ -6,12 +6,12 @@
 %             kv(Voter, paper(Weight, HasVoted, Delegate, VotedProposal))
 %             (Delegate = null or an address, VotedProposal = -1 or the index of a proposal);
 %        Pr = proposals, StorageLinkedList<Proposal>, list of proposal(Index, Name, VoteCount)
-%             (Index = position in the list: it only serves to stop the walk of
-%             proposals.get(i) without a numeric counter; it is not a field of Proposal).
+%             (Index = position in the list: it only serves to find, without gas, the
+%             proposal that a paper references (votedProposal); it is not a field of Proposal).
 % Fields of the storage objects (a paper, a proposal) are read and written as in Java,
 % V = Obj[field] and Obj[field] := V (see hotmoka_tr.pl: the first read of a paper on a path
-% loads it); the re-insertion of the object in the map/list (set_paper) costs only its
-% resolution steps, no tree access.
+% loads it); the object is mutated in place in Java, its re-insertion in the Prolog map/list
+% is map_set/list_set (no gas: no tree or list access).
 
 :- module(_, [init/4, give_right/5, vote/6, delegate/6, winner/2, goal/1, goal_chain/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
@@ -31,6 +31,8 @@ paper_obj(paper(W, HV, D, VP)) :- int(W), int(HV), atm(D), int(VP).
 % present (Java would stop on a NullPointerException otherwise). A union type with an atom
 % (none) for the default makes the non-failure analysis of CiaoPP run for minutes.
 :- trust success map_get(_, _, _, P) => paper_obj(P).
+% proposals.get(i) returns a Proposal.
+:- trust success list_get(_, _, P) => proposal(P).
 
 :- regtype props/1.
 props([]).
@@ -71,7 +73,7 @@ give_right(Caller, Chair, To, !Pa) :-
         W = P0[weight],
         require(W =:= 0),                           % require(!paper.hasRightToVote())
         P0[weight] := 1,                            % paper.giveRightToVote(): weight = 1 (in place)
-        set_paper(To, P0, !Pa)                      % (the paper is mutated in place in Java)
+        map_set(To, P0, !Pa)                        % (the paper is mutated in place in Java)
     }.
 
 % @FromContract voteFor(proposalIndex)
@@ -81,14 +83,14 @@ vote(Caller, Index, !Pa, !Pr) :-
     require(HV =:= 0),                              % require(!paper.hasVoted())
     W = P[weight],
     require(W > 0),                                 % require(paper.hasRightToVote())
-    Prop = ~get_proposal(Index, Pr),                % proposals.get(index): walk
-    Prop = proposal(_, _, Cnt),
+    Prop = ~list_get(Index, Pr),                    % proposals.get(index): walk
+    Cnt = Prop[voteCount],                          % proposal.voteCount: loads the Proposal
     Cnt1 = Cnt + W,
     Prop[voteCount] := Cnt1,                        % proposal.voteCount += weight
     P[hasVoted] := 1,                               % hasVoted = true
     P[votedProposal] := Index,                      % votedProposal = proposal
-    put_proposal(Index, Prop, !Pr),                 % (the proposal is mutated in place in Java)
-    set_paper(Caller, P, !Pa).                     % (the paper is mutated in place in Java)
+    list_set(Index, Prop, !Pr),                     % (the proposal is mutated in place in Java)
+    map_set(Caller, P, !Pa).                        % (the paper is mutated in place in Java)
 
 % @FromContract delegate(to)
 delegate(To, Caller, !Pa, !Pr) :-
@@ -105,8 +107,7 @@ delegate(To, Caller, !Pa, !Pr) :-
     PTo = ~map_get(To, Pa, none),                   % from = papers.get(delegate): a tree get, and the
     Del = PTo[delegate],                            % same paper as delegatedPaper (already loaded)
     Fin = ~follow(Pa, Del, Pa, [], To),             % computeFinalDelegate: the walk, at most one hop per paper
-    % The papers are rebuilt (set_paper, no cost) only after the costly goals: CiaoPP does not
-    % see that set_paper has a single solution and would multiply what follows by length(Pa).
+    % The papers are rebuilt (map_set, no gas) after the costly goals.
     % Reading the paper of Fin before rebuilding the paper of Caller is the same (Fin \== Caller).
     PF = ~map_get(Fin, Pa, none),                   % paperOfDelegate = papers.get(delegate)
     PF = paper(WF, HVF, _, VPF),                    % no load: this paper is already loaded, either
@@ -116,11 +117,11 @@ delegate(To, Caller, !Pa, !Pr) :-
     } else {
         WF1 = WF + W,
         PF[weight] := WF1,                          % paperOfDelegate.weight += weight
-        set_paper(Fin, PF, !Pa)                     % (the paper is mutated in place in Java)
+        map_set(Fin, PF, !Pa)                       % (the paper is mutated in place in Java)
     },
     PC[hasVoted] := 1,                              % this.hasVoted = true
     PC[delegate] := Fin,                            % this.delegate = delegate
-    set_paper(Caller, PC, !Pa).                    % (the paper is mutated in place in Java)
+    map_set(Caller, PC, !Pa).                       % (the paper is mutated in place in Java)
 
 % computeFinalDelegate. Java: from = papers.get(delegate); while (from.delegate != null) {
 % delegate = from.delegate; require(delegate != payer); require(!seen.contains(delegate));
@@ -168,27 +169,6 @@ best([P|T], Name, Count) :-
     else if (C =< C1) { Name = N, Count = C }
     else { Name = N1, Count = C1 }.
 
-% proposals.get(index): the walk loads one node per step; the Proposal is returned.
-get_proposal(I0, [P|_], P) :-
-    P = proposal(I, _, _),
-    I =:= I0,
-    load(P),                                        % the node
-    load(P).                                        % the Proposal
-get_proposal(I0, [P|T], X) :-
-    P = proposal(I, _, _),
-    I =\= I0,
-    load(P),                                        % the node
-    X = ~get_proposal(I0, T).
-
-% The functional update of the proposal I0 (no cost of its own besides the steps).
-put_proposal(I0, V, [P|T], [V|T]) :-
-    P = proposal(I, _, _),
-    I =:= I0.
-put_proposal(I0, V, [P|T], [P|T1]) :-
-    P = proposal(I, _, _),
-    I =\= I0,
-    put_proposal(I0, V, T, T1).
-
 % votedProposal.voteCount += weight: the Proposal is reached through a reference (the walk on
 % the index I0 only finds it in the Prolog list: no cost of its own besides the steps).
 set_proposal(I0, W, [P|T], [P1|T]) :-
@@ -202,13 +182,6 @@ set_proposal(I0, W, [P|T], [P|T1]) :-
     P = proposal(I, _, _),
     I =\= I0,
     set_proposal(I0, W, T, T1).
-
-% In-place mutation of a paper: rebuild of the map (no tree access).
-set_paper(K, V, [kv(K1, _)|T], [kv(K1, V)|T]) :-
-    K == K1.
-set_paper(K, V, [kv(K1, V1)|T], [kv(K1, V1)|T1]) :-
-    K \== K1,
-    set_paper(K, V, T, T1).
 
 % --- Test: admin creates [prop_a, prop_b, prop_c]; alice, bob, charlie get the right
 % to vote; alice votes prop_a (0); bob delegates to alice (alice then has weight 2 only

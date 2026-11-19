@@ -71,6 +71,16 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
        cost(lb, gas, 19782+31740*log2(length(M0)+1)),
        cost(ub, gas, 19782+31740*log2(length(M0)+1)+27179) ).
 
+% The value of a key already in the map is an object that the Java mutates in place
+% (paper.weight = 1, bids.removeFirst(), ...): no access to the tree. The writes of the
+% fields of that object are counted where they are written (store, list_remove_first).
+% map_set and list_set declare their result ground without condition: the state of a
+% contract is ground data, and with a call condition CiaoPP does not use their size
+% (the bound of ballot.vote became inf).
+:- trust pred map_set(K, V, M0, M)
+   => ( ground(M), map(M), size(lb, M, length(M0)), size(ub, M, length(M0)) )
+   + ( not_fails, is_det, cost(lb, gas, 0), cost(ub, gas, 0) ).
+
 % remove of a persistent (Snapshottable) tree: top-down moveRed* + balance on each level.
 :- trust pred map_remove(K, M0, M)
    => ( map(M), size(lb, M, 0), size(ub, M, length(M0)) )
@@ -99,9 +109,25 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
    => ( size(lb, N, length(L)), size(ub, N, length(L)) )
    + ( not_fails, is_det, cost(lb, gas, 803), cost(ub, gas, 803) ).
 
+% StorageLinkedList.removeFirst(): reads the head node (first.element, first.next) and writes
+% the fields of the list: first and size, and last too when the list becomes empty.
 :- trust pred list_remove_first(X, L0, L)
    => ( size(lb, L, length(L0)-1), size(ub, L, length(L0)-1) )
-   + ( is_det, cost(lb, gas, 844), cost(ub, gas, 844) ).
+   + ( is_det, cost(lb, gas, 844+2*7044), cost(ub, gas, 844+3*7044) ).
+
+% StorageLinkedList.get(i): reads the size field (index check), then walks from the head,
+% one node per step, up to the node i (i+1 nodes, i < size). The element returned is a
+% storage object of its own, loaded by its first field read (Obj[f]). Its groundness is a
+% separate assertion: with the call condition on the cost assertion, the cost is not used.
+:- trust pred list_get(I, L, X) : ground(L) => ground(X).
+:- trust pred list_get(I, L, X)
+   + ( is_det, cost(lb, gas, 803+844), cost(ub, gas, 803+844*length(L)) ).
+
+% The element i is an object that the Java mutates in place: no access to the list
+% (ground result: see map_set).
+:- trust pred list_set(I, V, L0, L)
+   => ( ground(L), list(L), size(lb, L, length(L0)), size(ub, L, length(L0)) )
+   + ( not_fails, is_det, cost(lb, gas, 0), cost(ub, gas, 0) ).
 
 :- trust pred arr_get(I, A, X)
    + ( not_fails, is_det, cost(lb, gas, 1273), cost(ub, gas, 1273) ).

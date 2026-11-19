@@ -11,6 +11,8 @@
 :- measure(map_get/4, [void, length, void, void]).
 :- mode(map_put/4, [+, +, +, -]).
 :- measure(map_put/4, [void, void, length, length]).
+:- mode(map_set/4, [+, +, +, -]).
+:- measure(map_set/4, [void, void, length, length]).
 :- mode(map_remove/3, [+, +, -]).
 :- measure(map_remove/3, [void, length, length]).
 :- mode(tmp_get/4, [+, +, +, -]).
@@ -23,6 +25,10 @@
 :- measure(list_size/2, [length, int]).
 :- mode(list_remove_first/3, [-, +, -]).
 :- measure(list_remove_first/3, [void, length, length]).
+:- mode(list_get/3, [+, +, -]).
+:- measure(list_get/3, [void, length, void]).
+:- mode(list_set/4, [+, +, +, -]).
+:- measure(list_set/4, [void, void, length, length]).
 :- mode(ubi_add/3, [+, +, -]).
 :- measure(ubi_add/3, [int, int, int]).
 :- mode(ubi_sub/3, [+, +, -]).
@@ -63,6 +69,8 @@ map_get(K, [_|T], D, R) :- map_get(K, T, D, R).
 map_put(K, V, [], [kv(K, V)]).
 map_put(K, V, [kv(K1, _)|T], [kv(K, V)|T]) :- K == K1, !.
 map_put(K, V, [X|T], [X|M1]) :- map_put(K, V, T, M1).
+map_set(K, V, [kv(K1, _)|T], [kv(K, V)|T]) :- K == K1, !.
+map_set(K, V, [X|T], [X|M1]) :- map_set(K, V, T, M1).
 map_remove(_, [], []).
 map_remove(K, [kv(K1, _)|T], T) :- K == K1, !.
 map_remove(K, [X|T], [X|M1]) :- map_remove(K, T, M1).
@@ -73,6 +81,10 @@ list_add(X, [Y|T], [Y|T1]) :- list_add(X, T, T1).
 list_size([], 0).
 list_size([_|T], N) :- list_size(T, N0), N is N0 + 1.
 list_remove_first(X, [X|T], T).
+list_get(I, [X|_], X) :- I =:= 0, !.
+list_get(I, [_|T], X) :- I1 is I - 1, list_get(I1, T, X).
+list_set(I, V, [_|T], [V|T]) :- I =:= 0, !.
+list_set(I, V, [X|T], [X|T1]) :- I1 is I - 1, list_set(I1, V, T, T1).
 ubi_add(A, B, C) :- C is A + B.
 ubi_sub(A, B, C) :- C is A - B.
 snapshot(_, snapshot).
@@ -85,7 +97,7 @@ load(_).
 new_obj(_).
 emit(_).
 store(_).
-% (arrays: the test I =:= 0 instead of the constant 0, so that CasLog measures the list)
+% (arrays, list_get/list_set: the test I =:= 0 instead of the constant 0, so that CasLog measures the list)
 % type tests of the helpers (paper_fields...): one step each
 atom(_).
 integer(_).

@@ -60,7 +60,13 @@ bid(Caller, Amount, Now, BEnd, Hash, !Bids, !B) :-
     } else { L = L0 },
     new_obj(bid),                                   % new Bid(hash, amount)
     L1 = ~list_add(bid(Hash, Amount), L),           % .add(bid): one new list node
-    map_put(Caller, L1, !Bids).                     % new key: tree put (an existing list is mutated in place in Java)
+    % (two tests on L0 rather than one if with the add in each branch: CiaoPP adds up
+    % the costs of both branches of that if, here 2*C_NEW too much)
+    if (L0 == none) {
+        map_put(Caller, L1, !Bids)                  % computeIfAbsent puts the new key: tree put
+    } else {
+        map_set(Caller, L1, !Bids)                  % the list is mutated in place: no tree access
+    }.
 
 % @FromContract reveal(revealed)
 reveal(Caller, Now, BEnd, REnd, Revealed, !Bids, !HBdr, !HBid, !B) :-
@@ -69,7 +75,8 @@ reveal(Caller, Now, BEnd, REnd, Revealed, !Bids, !HBdr, !HBid, !B) :-
     L = ~map_get(Caller, Bids, none),               % this.bids.get(bidder)
     require((L \== none, ~list_size(L) > 0), 'No bids to reveal'),   % bids.size(): reads the size field
     list_remove_first(Bid, L, Rest),                % bids.removeFirst()
-    map_put(Caller, Rest, !Bids),                   % (Java mutates the list in place, no tree put)
+    map_set(Caller, Rest, !Bids),                   % the list is mutated in place: no tree access
+                                                    % (its fields first/size/last: in list_remove_first)
     % refundFor(bidder, bid, revealed, digest), bid.matches(revealed, digest):
     Value = Revealed[value],                        % revealed.value
     Fake = Revealed[fake],                          % revealed.fake

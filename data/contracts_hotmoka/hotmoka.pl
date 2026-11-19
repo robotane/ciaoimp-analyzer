@@ -8,10 +8,18 @@
 %   coins        transfer/5 (a payment, or the amount a @Payable call receives)
 %                balance/3  (read the balance of an account)
 %   tree maps    map_get/4, map_put/4, map_remove/3 (StorageTreeMap, StorageTreeSet)
+%                map_set/4 (the value of a key already in the map is an object
+%                mutated in place by the Java: no tree access, no gas; the Prolog
+%                map is rebuilt)
 %   linked lists list_add/3 (StorageLinkedList.add: one new node)
 %                list_size/2 (StorageLinkedList.size: reads its size field)
 %                list_remove_first/3 (StorageLinkedList.removeFirst: reads the
-%                head node; fails on an empty list)
+%                head node, writes the fields first, last, size of the list;
+%                fails on an empty list)
+%                list_get/3 (StorageLinkedList.get(i): reads the size field, then
+%                one node per step up to i; index from 0; fails out of range)
+%                list_set/4 (the element i is an object mutated in place by the
+%                Java: no gas; the Prolog list is rebuilt)
 %   arrays       arr_get/3, arr_set/4 (StorageTreeArray of fixed size)
 %   big integers ubi_add/3, ubi_sub/3 (UnsignedBigInteger.add/subtract: the
 %                result is a new storage object)
@@ -27,8 +35,9 @@
 % Maps are lists of kv(Key, Value); an absent key reads as the given default.
 
 :- module(hotmoka, [transfer/5, balance/3,
-                    map_get/4, map_put/4, map_remove/3, tmp_get/4, tmp_put/4,
-                    list_add/3, list_size/2, list_remove_first/3, arr_get/3, arr_set/4,
+                    map_get/4, map_put/4, map_remove/3, map_set/4, tmp_get/4, tmp_put/4,
+                    list_add/3, list_size/2, list_remove_first/3, list_get/3, list_set/4,
+                    arr_get/3, arr_set/4,
                     ubi_add/3, ubi_sub/3, snapshot/2, to_array/2,
                     load/1, new_obj/1, emit/1, store/1], []).
 
@@ -61,6 +70,10 @@ map_put(K, V, [], [kv(K, V)]).
 map_put(K, V, [kv(K1, V1)|T], M) :-
     ( K == K1 -> M = [kv(K, V)|T] ; M = [kv(K1, V1)|M1], map_put(K, V, T, M1) ).
 
+% The key is in the map (the Java mutates its value in place).
+map_set(K, V, [kv(K1, V1)|T], M) :-
+    ( K == K1 -> M = [kv(K, V)|T] ; M = [kv(K1, V1)|M1], map_set(K, V, T, M1) ).
+
 map_remove(_, [], []).
 map_remove(K, [kv(K1, V1)|T], M) :-
     ( K == K1 -> M = T ; M = [kv(K1, V1)|M1], map_remove(K, T, M1) ).
@@ -79,6 +92,18 @@ list_size([], 0).
 list_size([_|T], N) :- list_size(T, N0), N is N0 + 1.
 
 list_remove_first(X, [X|T], T).
+
+list_get(0, [X|_], X) :- !.
+list_get(I, [_|T], X) :-
+    I > 0,
+    I1 is I - 1,
+    list_get(I1, T, X).
+
+list_set(0, V, [_|T], [V|T]) :- !.
+list_set(I, V, [X|T], [X|T1]) :-
+    I > 0,
+    I1 is I - 1,
+    list_set(I1, V, T, T1).
 
 % --- Arrays: list of cells, index from 0 ---
 
