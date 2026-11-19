@@ -15,9 +15,10 @@ Pour chaque contrat (ou la liste passee en argument) :
 Usage : tools/pipeline/run_pipeline.py [options] [contrat ...]
   --out DIR          dossier parent des sorties (defaut build/pipeline)
   --moka CSV         gaz mesure (defaut $HOTMOKA_BENCH/results/bench_moka.csv)
-  --constants JSON   constantes (defaut $HOTMOKA_BENCH/costmodel/constants_moka.json)
-  --reference JSON   bounds.json de reference (defaut
-                     $HOTMOKA_BENCH/costmodel/final_moka_ciaopp_reveal/bounds.json) ; ecarts signales
+  --constants JSON   constantes (defaut $HOTMOKA_BENCH/costmodel/constants_moka_sur.json : constantes
+                     sures, cout de l'arbre au pire cas)
+  --reference JSON   bounds.json de reference (defaut tools/pipeline/reference_bounds.json : bornes
+                     CiaoPP des 14 contrats et de tontine avec ces constantes) ; ecarts signales
   --skip-caslog      ne lance pas CasLog
   --remesurer        relance d'abord moka/mesurer.sh (docker --memory=2g, JVM -Xmx1g) dans un
                      nouveau CSV <sortie>/<horodatage>/bench_moka.csv utilise a la place de --moka.
@@ -60,8 +61,8 @@ if "-h" in sys.argv or "--help" in sys.argv:
     print(__doc__); sys.exit(0)
 OUTBASE = Path(opt("--out", ROOT / "build" / "pipeline"))
 MOKA = Path(opt("--moka", BENCH / "results" / "bench_moka.csv"))
-CONSTS = Path(opt("--constants", BENCH / "costmodel" / "constants_moka.json"))
-REF = Path(opt("--reference", BENCH / "costmodel" / "final_moka_ciaopp_reveal" / "bounds.json"))
+CONSTS = Path(opt("--constants", BENCH / "costmodel" / "constants_moka_sur.json"))
+REF = Path(opt("--reference", ROOT / "tools" / "pipeline" / "reference_bounds.json"))
 SKIP_CASLOG = opt("--skip-caslog", flag=True)
 REMESURER = opt("--remesurer", flag=True)
 names = sys.argv[1:] or sorted(p.stem for p in SRC.glob("*.pl") if p.stem not in LIB)

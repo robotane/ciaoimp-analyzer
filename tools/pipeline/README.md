@@ -12,7 +12,7 @@ tools/pipeline/run_pipeline.py --help
 attend, par pas de 30 s, qu'aucun autre processus d'analyse ne tourne) :
 
 1. régénération de `data/contracts_hotmoka/hotmoka_gas.pl` (`hotmoka-bench/costmodel/gen_model.py`,
-   constantes `constants_moka.json`) ;
+   constantes sûres `constants_moka_sur.json`, coût de l'arbre au pire cas) ;
 2. CiaoPP, borne de gaz (`rerun_ciaopp_moka.py` : `ulimit -v 3000000`, `CIAOPP_COST_MAX_MB=2800`,
    `timeout 900`) ;
 3. CasLog (`tools/caslog_prep/run.sh`) : fonction de temps du point d'entrée, classe déduite ;
@@ -30,21 +30,25 @@ borne/mesuré, verdict (`OK`, `VIOLATION`, `NON BORNE (inf)`, `SANS MESURE`, `ER
 
 - `ciaopp` et `ciaosh` dans le `PATH` (`export PATH="$HOME/ciao/build/bin:$PATH"`) ; `gprolog` ;
 - CasLog : `CASLOG=/chemin/vers/caslog.gprolog` (défaut : chemin de la machine de l'auteur) ;
-- `hotmoka-bench` cloné à côté de `ciaoimp-analyzer` (branche `exp/recalage-moka`) ou `HOTMOKA_BENCH` ;
-- python3 avec `numpy` et `scipy` ;
+- `hotmoka-bench` cloné à côté de `ciaoimp-analyzer` (branche `exp/arbre-pire-cas`, qui contient
+  `constants_moka_sur.json`) ou `HOTMOKA_BENCH` ;
+- python3 avec `numpy` et `matplotlib` (importé par `costmodel/compare.py`) ;
 - pour `--remesurer` seulement : docker et l'image `hotmoka/mokamint-node:1.12.3`, JDK 21, Maven hors
   ligne, et le jar des contrats, à construire d'abord (voir `hotmoka-bench/moka/README.md`) :
   `cd hotmoka-bench/contracts && JAVA_HOME=$HOME/.sdkman/candidates/java/21-tem mvn -o -T1 package`.
 
 Avec le gaz de référence (`results/bench_moka.csv`) : 0 point au-dessus des bornes et `bounds.json`
-identique à la référence. Avec `--remesurer`, le gaz change un peu d'un nœud à l'autre
+identique à la référence (`tools/pipeline/reference_bounds.json`). Le contrat témoin `tontine` se
+mesure à part (`results/bench_tontine.csv` de la branche `exp/contrat-temoin` de hotmoka-bench) :
+`--moka …/bench_tontine.csv tontine`. Avec `--remesurer`, le gaz change un peu d'un nœud à l'autre
 (adresses de comptes aléatoires) : quelques points peuvent dépasser une borne (voir la section
 « Reproductibilité du gaz » du README de moka).
 
 ## Options
 
-- `--out DIR` dossier parent des sorties ; `--moka CSV` gaz mesuré ; `--constants JSON` ;
-  `--reference JSON` (défaut `costmodel/final_moka_ciaopp_reveal/bounds.json`, écarts signalés) ;
+- `--out DIR` dossier parent des sorties ; `--moka CSV` gaz mesuré ; `--constants JSON` (défaut
+  `costmodel/constants_moka_sur.json` de hotmoka-bench) ;
+  `--reference JSON` (défaut `tools/pipeline/reference_bounds.json`, écarts signalés) ;
   `--skip-caslog`.
 - `--remesurer` : relance d'abord `hotmoka-bench/moka/mesurer.sh` (nœud moka sous docker
   `--memory=2g`, pilote JVM `-Xmx1g`) pour les contrats choisis, dans un nouveau CSV
