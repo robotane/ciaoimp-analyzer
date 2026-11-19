@@ -144,15 +144,23 @@ def shape_of(xs, ys):
 
 
 def caslog_class(f):
+    """Classe d'une fonction de temps CasLog. CasLog ecrit une puissance exp(Base, Exposant) :
+    exp($5,2) est un carre (polynome), exp(2,$5) une exponentielle."""
     if f is None:
         return "-"
     if "inf" in f:
         return "inf"
+    if re.search(r"exp\(\s*[^,()]*\$\d+[^,()]*,\s*[^,()]*\$\d+", f) or \
+            re.search(r"exp\(\s*\d+\s*,\s*[^)]*\$\d+", f):
+        return "exp"
+    degs = [int(k) for k in re.findall(r"exp\(\s*[^,()]*\$\d+[^,()]*,\s*(\d+)\s*\)", f)]
+    if re.search(r"\$\d+\s*\*\s*\(?\s*\$\d+|\^|\*\*", f):
+        degs.append(2)
+    if degs and max(degs) >= 2:
+        return "quad" if max(degs) == 2 else f"poly{max(degs)}"
     if "log" in f:
         return "log"
     args = re.findall(r"\$\d+", f)
-    if re.search(r"\$\d+\s*\*\s*\$\d+|\^|\*\*", f):
-        return "quad"
     return "lin" if args else "const"
 
 
