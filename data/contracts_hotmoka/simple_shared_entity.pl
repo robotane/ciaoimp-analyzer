@@ -3,6 +3,8 @@
 % State: Sh = shares, tree map kv(Shareholder, Number);
 %        Of = offers, tree set kv(offer(Seller, Cost, Number, Ongoing), 1)
 %             (Ongoing = 1 while the offer is ongoing, 0 once expired);
+%        an offer is a storage object: its fields are read as in Java, V = Offer[field]
+%        (see hotmoka_tr.pl: the first read of an offer on a path loads it);
 %        SnapO = snapshotOfOffers, SnapS = snapshotOfShares (the last snapshots taken, or none;
 %        snapshot/2 creates the view object).
 % B: coin balances, list of bal(Address, Amount).
@@ -11,6 +13,8 @@
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
 :- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+
+:- class(offer(seller, cost, sharesOnSale, ongoing)).
 
 :- regtype offer/1.
 offer(offer(Seller, Cost, N, Ongoing)) :- atm(Seller), int(Cost), int(N), int(Ongoing).
@@ -26,14 +30,15 @@ offer(offer(Seller, Cost, N, Ongoing)) :- atm(Seller), int(Cost), int(N), int(On
 
 % @FromContract place(amount, offer)
 place(Caller, Amount, Offer, Sh, !Of, !SnapO, !B) :-
-    Offer = offer(Seller, _, N, _),
+    Seller = Offer[seller],                         % offer.seller: loads the offer
     require(Seller == Caller),                      % require(offer.seller == seller)
     Mine = ~map_get(Seller, Sh, 0),                 % shares.containsKey(seller)
     require(Mine > 0),                              % require(shares.containsKey(seller))
     Shares = ~map_get(Seller, Sh, 0),               % sharesOf(seller)
     OnSale = ~on_sale(Of, Seller),                    % sharesOnSaleOf(seller): scan of the offers
+    N = Offer[sharesOnSale],
     require(Shares - OnSale >= N),                  % require(sharesOf(seller) - sharesOnSaleOf(seller) >= offer.sharesOnSale)
-    clean_up(Of, none, !Of),                        % cleanUpOffers(null): scan of the offers
+    clean_up_loaded(Of, !Of),                       % cleanUpOffers(null): scan of the offers (already loaded)
     map_put(Offer, 1, !Of),                         % offers.add(offer)
     SnapO := ~snapshot(Of),                         % snapshotOfOffers = offers.snapshot()
     emit(offer_placed).                             % event(new OfferPlaced(offer))
@@ -45,9 +50,12 @@ place(Caller, Amount, Offer, Sh, !Of, !SnapO, !B) :-
 accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B) :-
     Known = ~map_get(Offer, Of, 0),                 % offers.contains(offer)
     require(Known =:= 1, 'unknown offer'),
-    Offer = offer(Seller, Cost, N, Ongoing),
-    require(Ongoing =:= 1, 'the sale offer is not ongoing anymore'),       % offer.isOngoing()
+    Ongoing = Offer[ongoing],                       % offer.isOngoing(): loads the offer
+    require(Ongoing =:= 1, 'the sale offer is not ongoing anymore'),
+    Cost = Offer[cost],
     require(Cost =< Amount, 'not enough money to accept the offer'),
+    Seller = Offer[seller],
+    N = Offer[sharesOnSale],
     clean_up(Of, Offer, !Of),                       % cleanUpOffers(offer): scan of the offers
     remove_shares(Seller, N, !Sh),
     add_shares(Caller, N, !Sh),
@@ -57,23 +65,39 @@ accept(Caller, Amount, Offer, !Sh, !Of, !SnapS, !B) :-
 
 % sharesOnSaleOf(seller): sum of the shares of the ongoing offers of Seller.
 % (no accumulator: CiaoPP then measures the recursion on the list only)
+% Java loads each node of the tree set and each offer. Here each offer is loaded by its
+% first read; the node of each offer is loaded by the scan of cleanUpOffers that follows in
+% place (a for loop: one load per node), and Java loads a node once in a transaction.
 on_sale([], _, 0).
 on_sale([kv(O, _)|T], Seller, S) :-
     S1 = ~on_sale(T, Seller),
-    load(O),
-    O = offer(Sel, _, N, Ongoing),
+    Sel = O[seller],                                % offer.seller: loads the offer
+    Ongoing = O[ongoing],                           % offer.isOngoing()
+    N = O[sharesOnSale],                            % offer.sharesOnSale (read here: no gas, already loaded)
     if ((Sel == Seller, Ongoing =:= 1)) { S = S1 + N } else { S = S1 }.
 
 % cleanUpOffers(toRemove): removes toRemove and the offers no longer ongoing.
-% It scans the offers of the call (first argument) and removes from !Of.
+% It scans the offers of the call (first argument) and removes from !Of: one node loaded
+% per offer (for loop).
+% In place (toRemove = null), the offers are already loaded by sharesOnSaleOf: no load.
+clean_up_loaded(Offers, !Of) :-
+    for (E in list(Offers)) {
+        E = kv(O, _),
+        if (expired(O)) { map_remove(O, !Of) }      % !offer.isOngoing()
+    }.
+
+expired(offer(_, _, _, 0)).
+
+% In accept, each offer other than toRemove is loaded by its first read.
 clean_up(Offers, ToRemove, !Of) :-
     for (E in list(Offers)) {
         E = kv(O, _),
         if (to_remove(O, ToRemove)) { map_remove(O, !Of) }
     }.
 
-to_remove(O, O) :- !.
-to_remove(offer(_, _, _, 0), _).
+% offer == offerToRemove || !offer.isOngoing()
+to_remove(O, R) :- O == R, !.                       % (short-circuit: the offer is not read)
+to_remove(O, _) :- Ongoing = O[ongoing], Ongoing =:= 0.   % loads the offer
 
 % removeShares: shares.update (get + put); the entry goes when it reaches 0.
 remove_shares(Holder, N, !Sh) :-

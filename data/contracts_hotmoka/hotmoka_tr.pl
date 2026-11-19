@@ -121,12 +121,12 @@ body((R, B), SV, Mod, G) :- nonvar(R), require_cond(R, C), !,
 body(R, SV, Mod, G) :- require_cond(R, C), !,
     body(C, SV, Mod, G).
 body(':='(X, V), SV, _, (store(field), ':='(X, V))) :- var(X), memberv(X, SV), !.
-body(set_field(O0, F, V, O), _, Mod, (store(field), O0 = T0, O = T)) :- !,
+body(set_field(O0, F, V, O), _, Mod, (store(field), '$hm_obj'(O0, T0), O = T)) :- !,
     field_terms(Mod, F, V, T0, T).
-body(':='('\6\postfix_block'(O, [F]), V), _, Mod, (store(field), O = T0, ':='(O, T))) :-
+body(':='('\6\postfix_block'(O, [F]), V), _, Mod, (store(field), '$hm_obj'(O, T0), ':='(O, T))) :-
     var(O), atom(F), !,
     field_terms(Mod, F, V, T0, T).
-body('='(V, '\6\postfix_block'(O, [F])), _, Mod, ('$hm_read'(O), O = T)) :-
+body('='(V, '\6\postfix_block'(O, [F])), _, Mod, '$hm_read'(O, T, V)) :-
     var(O), atom(F), !,
     field_terms(Mod, F, V, _, T).
 body(G, SV, Mod, G2) :-
@@ -165,16 +165,26 @@ field_terms(Mod, F, _, _, _) :-
 replace([F1|Fs], F, [_|Xs], V, [V|Xs]) :- F1 == F, !, Fs = Fs.
 replace([_|Fs], F, [X|Xs], V, [X|Ys]) :- replace(Fs, F, Xs, V, Ys).
 
-% First read of an object in a clause: '$hm_read'(O) becomes load(O) the first
-% time O is read on an execution path, and disappears after.
-% reads(G, L0, L, G1): L0 = the objects surely read before G, L = after G.
+% First read of an object in a clause: '$hm_read'(O, T, V) (V = O[f], T the
+% term of the class with V at the place of f) becomes load(O) the first time O
+% is read on an execution path, and no load after.
+% The shape of O is unified once per version of O on a path: the first read or
+% write of O gives O = c(X1,...,Xn); a later read of field f on the same path
+% is V = Xf, a later write reuses X1..Xn (no new O = c(...)); O := T (a write)
+% makes T the known shape of the new version. This is the same Prolog, with
+% one unification of O with a structure instead of one per access: the
+% non-failure analysis of CiaoPP takes minutes on a clause that unifies the
+% same object with a structure several times (ballot.vote).
+% reads(G, L0, L, G1): L0 = what is surely known before G, L = after G, as a
+% list of r(O) (O loaded) and k(O, T) (O = T).
 % A conjunction threads the set left to right. Every branch of a choice
 % (if/else, A ; B, C -> T ; E) starts from the set before the choice, so each
 % branch that reads O has its own load(O); after the choice, an object counts
-% as read only if every branch read it (intersection). The condition of an
-% if counts for its then branch only. What runs zero or several times, or
-% may stop part way (\+ G, while, findall, catch, any other goal with goal
-% arguments), starts from the set before it and adds nothing after it.
+% as read only if every branch read it, a shape is known only if every branch
+% left the same term (intersection). The condition of an if counts for its
+% then branch only. What runs zero or several times, or may stop part way
+% (\+ G, while, findall, catch, any other goal with goal arguments), starts
+% from the set before it and adds nothing after it.
 first_reads([], []).
 first_reads([(H :- B)|Cs], [(H :- B1)|Cs1]) :- !,
     reads(B, [], _, B0),
@@ -183,8 +193,22 @@ first_reads([(H :- B)|Cs], [(H :- B1)|Cs1]) :- !,
 first_reads([C|Cs], [C|Cs1]) :- first_reads(Cs, Cs1).
 
 reads(G, L, L, G) :- var(G), !.
-reads('$hm_read'(O), L, L, '$hm_none') :- memberv(O, L), !.
-reads('$hm_read'(O), L, [O|L], load(O)) :- !.
+reads('$hm_read'(O, T, V), L0, L, G) :- !,
+    (   known(O, L0, T0), same_class(T, T0)
+    ->  field_of(T, T0, V, X), G1 = (V = X), L1 = L0
+    ;   G1 = (O = T), L1 = [k(O, T)|L0]
+    ),
+    (   loaded(O, L1)
+    ->  G = G1, L = L1
+    ;   G = (load(O), G1), L = [r(O)|L1]
+    ).
+reads('$hm_obj'(O, T0), L0, L, G) :- !,
+    (   known(O, L0, T1), same_class(T0, T1)
+    ->  T0 = T1, G = '$hm_none', L = L0
+    ;   G = (O = T0), L = [k(O, T0)|L0]
+    ).
+reads(':='(O, T), L0, [k(O, T)|L1], ':='(O, T)) :- var(O), !,
+    forget(O, L0, L1).
 reads((A, B), L0, L, G) :- !,
     reads(A, L0, L1, A1),
     reads(B, L1, L, B1),
@@ -195,7 +219,7 @@ reads((A, B), L0, L, G) :- !,
 reads(else(if(PB), E), L0, L, else(if(PB1), E1)) :- !,
     reads_then(PB, L0, Lt, PB1),
     reads_branch(E, L0, Le, E1),
-    keep_vars(Lt, Le, L).
+    meet(Lt, Le, L).
 reads(if(PB), L0, L0, if(PB1)) :- !,
     reads_then(PB, L0, _, PB1).
 reads('{}'(A), L0, L, '{}'(A1)) :- !,
@@ -204,15 +228,15 @@ reads('{}'(A), L0, L, '{}'(A1)) :- !,
 reads((C -> T ; E), L0, L, (C1 -> T1 ; E1)) :- !,
     reads_branch(C, L0, Lc, C1), reads_branch(T, Lc, Lt, T1),
     reads_branch(E, L0, Le, E1),
-    keep_vars(Lt, Le, L).
+    meet(Lt, Le, L).
 reads(';'('*->'(C, T), E), L0, L, ';'('*->'(C1, T1), E1)) :- !,
     reads_branch(C, L0, Lc, C1), reads_branch(T, Lc, Lt, T1),
     reads_branch(E, L0, Le, E1),
-    keep_vars(Lt, Le, L).
+    meet(Lt, Le, L).
 reads((A ; B), L0, L, (A1 ; B1)) :- !,
     reads_branch(A, L0, La, A1),
     reads_branch(B, L0, Lb, B1),
-    keep_vars(La, Lb, L).
+    meet(La, Lb, L).
 reads((C -> T), L0, L0, (C1 -> T1)) :- !,
     reads_branch(C, L0, Lc, C1), reads_branch(T, Lc, _, T1).
 % Any other goal (\+, while, findall, ...): each argument starts from L0,
@@ -240,6 +264,31 @@ reads_then(PB, L0, L0, PB1) :-              % unknown form: conservative
 
 none_true(G, true) :- G == '$hm_none', !.
 none_true(G, G).
+
+loaded(O, [E|Es]) :- ( nonvar(E), E = r(X), X == O -> true ; loaded(O, Es) ).
+known(O, [E|Es], T) :- ( nonvar(E), E = k(X, T0), X == O -> T = T0 ; known(O, Es, T) ).
+forget(_, [], []).
+forget(O, [E|Es], R) :- E = k(X, _), X == O, !, forget(O, Es, R).
+forget(O, [E|Es], [E|R]) :- forget(O, Es, R).
+
+same_class(T, T0) :- nonvar(T), nonvar(T0), functor(T, C, N), functor(T0, C, N).
+
+% V = O[f] with O = T0 known: the other places of T (fresh variables) are bound to
+% those of T0; X is the place of f in T0.
+field_of(T, T0, V, X) :-
+    T =.. [_|Ys], T0 =.. [_|Xs],
+    field_of_(Ys, Xs, V, X).
+field_of_([Y|Ys], [X0|Xs], V, X) :-
+    ( Y == V -> X = X0 ; Y = X0 ),
+    field_of_(Ys, Xs, V, X).
+field_of_([], [], _, _).
+
+% What is known after a choice: what every branch knows.
+meet([], _, []).
+meet([E|Es], S, [E|R]) :- in_both(E, S), !, meet(Es, S, R).
+meet([_|Es], S, R) :- meet(Es, S, R).
+in_both(r(O), S) :- loaded(O, S).
+in_both(k(O, T), S) :- known(O, S, T1), T1 == T.
 
 payable_prefix(H, SV, Mod, B, (transfer(Caller, this, Amount, '!'(Bal)), B)) :-
     functor(H, N, _),

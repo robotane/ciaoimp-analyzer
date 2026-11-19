@@ -45,7 +45,8 @@ new_campaign(Ben, Goal, !Cs, Id) :-
 % @FromContract contribute(amount, campaignID)
 contribute(Caller, Amount, Id, !Cs, !B) :-
     Camp = ~nth_campaign(Id, Cs), % campaigns.get(campaignID): walk
-    Camp = campaign(CId, Ben, Goal, Amt, Funders),
+    Funders = Camp[funders],                        % campaign.funders: loads the campaign
+    CId = Camp[id], Ben = Camp[beneficiary], Goal = Camp[goal], Amt = Camp[amount],
     new_obj(funder),                                % new Funder(caller(), amount)
     list_add(funder(Caller, Amount), Funders, _),   % campaign.funders.add(funder): one new list node
     Camp := campaign(CId, Ben, Goal, Amt, [funder(Caller, Amount)|Funders]),  % (the list is mutated in place: no field write)
@@ -56,7 +57,9 @@ contribute(Caller, Amount, Id, !Cs, !B) :-
 % checkGoalReached(campaignID)
 check_goal_reached(Id, !Cs, !B, Reached) :-
     Camp = ~nth_campaign(Id, Cs), % campaigns.get(campaignID): walk
-    Camp = campaign(_, Ben, Goal, Amt, _),
+    Amt = Camp[amount],                             % campaign.amount: loads the campaign
+    Goal = Camp[goal],
+    Ben = Camp[beneficiary],
     if (Amt < Goal) {                               % compareTo(campaign.amount, campaign.fundingGoal) < 0
         Reached = 0                                 % return false
     } else {
@@ -66,7 +69,8 @@ check_goal_reached(Id, !Cs, !B, Reached) :-
         Reached = 1                                 % return true
     }.
 
-% StorageLinkedList.get(i): the walk loads one node per step, up to the index.
+% StorageLinkedList.get(i): the walk loads one node per step, up to the index. The campaign
+% returned is a storage object of its own: the caller loads it at its first field read.
 nth_campaign(Id0, [C|_], X) :-
     C = campaign(Id, _, _, _, _),
     Id =:= Id0,

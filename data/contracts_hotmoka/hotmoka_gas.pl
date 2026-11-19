@@ -58,7 +58,9 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
 :- trust pred balance(A, B, V)
    + ( not_fails, is_det, cost(lb, gas, 803), cost(ub, gas, 803) ).
 
-:- trust pred map_get(K, M, D, V)
+% The value read in a ground map with a ground default is ground (the fields of an object
+% read with Obj[f] are then known to the sharing analysis).
+:- trust pred map_get(K, M, D, V) : (ground(M), ground(D)) => ground(V)
    + ( not_fails, is_det,
        cost(lb, gas, 1364+1246*log2(length(M)+1)),
        cost(ub, gas, 1364+1246*log2(length(M)+1)) ).

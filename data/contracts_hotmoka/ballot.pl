@@ -8,9 +8,10 @@
 %        Pr = proposals, StorageLinkedList<Proposal>, list of proposal(Index, Name, VoteCount)
 %             (Index = position in the list: it only serves to stop the walk of
 %             proposals.get(i) without a numeric counter; it is not a field of Proposal).
-% Fields of the storage objects (a paper, a proposal) are written as in Java, Obj[field] := V
-% (see hotmoka_tr.pl); the re-insertion of the object in the map/list (set_paper) costs only
-% its resolution steps, no tree access.
+% Fields of the storage objects (a paper, a proposal) are read and written as in Java,
+% V = Obj[field] and Obj[field] := V (see hotmoka_tr.pl: the first read of a paper on a path
+% loads it); the re-insertion of the object in the map/list (set_paper) costs only its
+% resolution steps, no tree access.
 
 :- module(_, [init/4, give_right/5, vote/6, delegate/6, winner/2, goal/1, goal_chain/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
@@ -19,6 +20,17 @@
 
 :- class(paper(weight, hasVoted, delegate, votedProposal)).
 :- class(proposal(index, name, voteCount)).
+
+:- regtype paper_obj/1.                         % a VotingPaper
+paper_obj(paper(W, HV, D, VP)) :- int(W), int(HV), atm(D), int(VP).
+
+% papers.get returns a VotingPaper: reading its fields (P[weight]...) has a known type (this
+% replaces the type tests of the former paper_fields/5; the groundness of the paper comes from
+% map_get, see hotmoka_gas.pl). The default of give_right is itself a
+% paper (a sentinel of weight -1 for an absent key); in vote, delegate and follow the key is
+% present (Java would stop on a NullPointerException otherwise). A union type with an atom
+% (none) for the default makes the non-failure analysis of CiaoPP run for minutes.
+:- trust success map_get(_, _, _, P) => paper_obj(P).
 
 :- regtype props/1.
 props([]).
@@ -49,13 +61,14 @@ init_props([N|T], I, [proposal(I, N, 0)|RT]) :-
 % @FromContract giveRightToVote(to)
 give_right(Caller, Chair, To, !Pa) :-
     require(Caller == Chair),                       % require(caller() == chairperson)
-    P0 = ~map_get(To, Pa, none),                    % papers.computeIfAbsent(to, VotingPaper::new): tree get
-    if (P0 == none) {
+    P0 = ~map_get(To, Pa, paper(-1, 0, null, -1)),  % papers.computeIfAbsent(to, VotingPaper::new): tree get
+    if (P0 == paper(-1, 0, null, -1)) {             % absent key (sentinel default)
         new_obj(paper),                             % new VotingPaper() (not yet in the tree)
         map_put(To, paper(1, 0, null, -1), !Pa)     % computeIfAbsent puts the new key; giveRightToVote(): weight = 1
     } else {
-        paper_fields(P0, W, HV, _, _),
+        HV = P0[hasVoted],                          % paper.hasVoted(): loads the paper
         require(HV =:= 0),                          % require(!paper.hasVoted())
+        W = P0[weight],
         require(W =:= 0),                           % require(!paper.hasRightToVote())
         P0[weight] := 1,                            % paper.giveRightToVote(): weight = 1 (in place)
         set_paper(To, P0, !Pa)                      % (the paper is mutated in place in Java)
@@ -64,8 +77,9 @@ give_right(Caller, Chair, To, !Pa) :-
 % @FromContract voteFor(proposalIndex)
 vote(Caller, Index, !Pa, !Pr) :-
     P = ~map_get(Caller, Pa, none),                 % getVotingPaperFor(caller()): papers.get(caller)
-    paper_fields(P, W, HV, _, _),
+    HV = P[hasVoted],                               % paper.hasVoted(): loads the paper
     require(HV =:= 0),                              % require(!paper.hasVoted())
+    W = P[weight],
     require(W > 0),                                 % require(paper.hasRightToVote())
     Prop = ~get_proposal(Index, Pr),                % proposals.get(index): walk
     Prop = proposal(_, _, Cnt),
@@ -78,23 +92,25 @@ vote(Caller, Index, !Pa, !Pr) :-
 
 % @FromContract delegate(to)
 delegate(To, Caller, !Pa, !Pr) :-
-    PTo = ~map_get(To, Pa, none),                   % papers.get(to)
-    paper_fields(PTo, WTo0, _, _, _),
+    PTo = ~map_get(To, Pa, none),                   % delegatedPaper = papers.get(to)
+    WTo0 = PTo[weight],                             % delegatedPaper.hasRightToVote(): loads it
     require(WTo0 > 0),                              % require(delegatedPaper.hasRightToVote())
     PC = ~map_get(Caller, Pa, none),                % getVotingPaperFor(caller()): papers.get(caller)
-    paper_fields(PC, W, HV, _, _),
+    HV = PC[hasVoted],                              % paper.hasVoted(): loads it
     require(HV =:= 0),                              % require(!paper.hasVoted())
+    W = PC[weight],
     require(W > 0),                                 % require(paper.hasRightToVote())
     require(To \== Caller),                         % require(delegate != payer)
                                                     % seen = new StorageTreeSet<>(): temporary, its cost is in tmp_get/tmp_put
-    From = ~map_get(To, Pa, none),                  % from = papers.get(delegate)
-    paper_fields(From, _, _, Del, _),
+    PTo = ~map_get(To, Pa, none),                   % from = papers.get(delegate): a tree get, and the
+    Del = PTo[delegate],                            % same paper as delegatedPaper (already loaded)
     Fin = ~follow(Pa, Del, Pa, [], To),             % computeFinalDelegate: the walk, at most one hop per paper
     % The papers are rebuilt (set_paper, no cost) only after the costly goals: CiaoPP does not
     % see that set_paper has a single solution and would multiply what follows by length(Pa).
     % Reading the paper of Fin before rebuilding the paper of Caller is the same (Fin \== Caller).
     PF = ~map_get(Fin, Pa, none),                   % paperOfDelegate = papers.get(delegate)
-    paper_fields(PF, WF, HVF, _, VPF),
+    PF = paper(WF, HVF, _, VPF),                    % no load: this paper is already loaded, either
+                                                    % delegatedPaper (no hop) or the last paper read by follow
     if (HVF =:= 1) {                                % if (paperOfDelegate.hasVoted())
         set_proposal(VPF, W, !Pr)                   % votedProposal.voteCount += weight
     } else {
@@ -124,15 +140,17 @@ follow([_|Rest], Del, Pa, Seen, _, Final) :-
     require(InSeen =:= 0),                          % require(!seen.contains(delegate))
     tmp_put(Del, 1, Seen, Seen1),                   % seen.add(delegate)
     From = ~map_get(Del, Pa, none),                 % from = papers.get(delegate)
-    paper_fields(From, _, _, Del1, _),
+    Del1 = ~delegate_of(From),                      % from.delegate: loads the paper
     Final = ~follow(Rest, Del1, Pa, Seen1, Del).    % delegate = from.delegate
 follow([_|_], null, _, _, Last, Last).              % from.delegate == null: the walk ends
 
 differ(A, B) :- A \== B.
 
-% The fields of a VotingPaper and their types (the tests give CiaoPP the types of what the tree returns).
-paper_fields(paper(W, HV, D, VP), W, HV, D, VP) :-
-    integer(W), integer(HV), atom(D), integer(VP).
+% from.delegate, read in a predicate of its own: written in the body of follow, the
+% unification of From (whose size CiaoPP does not know: map_get gives none) makes the size
+% analysis of follow fail (bound inf).
+delegate_of(P, D) :-
+    D = P[delegate].
 
 % winnerName(): proposals.forEach, one node and one Proposal loaded per element.
 % Java keeps the first proposal with the fewest votes (min == -1 || voteCount < min).
