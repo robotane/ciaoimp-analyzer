@@ -26,6 +26,21 @@ CasLog, classe mesurée, points, points au-dessus de la borne, ratio médian et 
 borne/mesuré, verdict (`OK`, `VIOLATION`, `NON BORNE (inf)`, `SANS MESURE`, `ERREUR CiaoPP`),
 égalité avec la borne de référence. Une borne `inf` s'affiche sans faire échouer le script.
 
+## Prérequis d'un clone neuf
+
+- `ciaopp` et `ciaosh` dans le `PATH` (`export PATH="$HOME/ciao/build/bin:$PATH"`) ; `gprolog` ;
+- CasLog : `CASLOG=/chemin/vers/caslog.gprolog` (défaut : chemin de la machine de l'auteur) ;
+- `hotmoka-bench` cloné à côté de `ciaoimp-analyzer` (branche `exp/recalage-moka`) ou `HOTMOKA_BENCH` ;
+- python3 avec `numpy` et `scipy` ;
+- pour `--remesurer` seulement : docker et l'image `hotmoka/mokamint-node:1.12.3`, JDK 21, Maven hors
+  ligne, et le jar des contrats, à construire d'abord (voir `hotmoka-bench/moka/README.md`) :
+  `cd hotmoka-bench/contracts && JAVA_HOME=$HOME/.sdkman/candidates/java/21-tem mvn -o -T1 package`.
+
+Avec le gaz de référence (`results/bench_moka.csv`) : 0 point au-dessus des bornes et `bounds.json`
+identique à la référence. Avec `--remesurer`, le gaz change un peu d'un nœud à l'autre
+(adresses de comptes aléatoires) : quelques points peuvent dépasser une borne (voir la section
+« Reproductibilité du gaz » du README de moka).
+
 ## Options
 
 - `--out DIR` dossier parent des sorties ; `--moka CSV` gaz mesuré ; `--constants JSON` ;
