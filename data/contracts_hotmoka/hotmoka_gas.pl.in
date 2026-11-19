@@ -43,6 +43,13 @@ map([X|T]) :- kvpair(X), map(T).
 kvpair(kv(K, V)) :- gnd(K), gnd(V).
 
 % --- Gas of the primitives ---
+%
+% Tree maps/sets (StorageTreeMap, SnapshottableStorageTreeMap/Set, StorageTreeSet): the
+% C_TREE*, C_TREEW*, C_TREER*, C_TMP* constants are worst-case values derived from the
+% instrumented Takamaka code (hotmoka-bench/costmodel/arbre_pire_cas.md): a left-leaning
+% red-black tree of n keys has black height bh <= log2(n+1); a search path has <= 2*bh nodes;
+% a put copies or modifies <= 2*bh+1 nodes, a remove <= 2*(2*bh+1). The slope of log2(n+1)
+% therefore already holds the factor 2 of the height, whatever the order of the keys.
 
 :- trust pred transfer(From, To, Amount, B0, B)
    => ( balances(B), size(lb, B, length(B0)), size(ub, B, length(B0)) )
@@ -62,11 +69,12 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
        cost(lb, gas, @C_TREEW0@+@C_TREEW1@*log2(length(M0)+1)),
        cost(ub, gas, @C_TREEW0@+@C_TREEW1@*log2(length(M0)+1)+@C_NEW@) ).
 
+% remove of a persistent (Snapshottable) tree: top-down moveRed* + balance on each level.
 :- trust pred map_remove(K, M0, M)
    => ( map(M), size(lb, M, 0), size(ub, M, length(M0)) )
    + ( not_fails, is_det,
-       cost(lb, gas, @C_TREEW0@+@C_TREEW1@*log2(length(M0)+1)),
-       cost(ub, gas, @C_TREEW0@+@C_TREEW1@*log2(length(M0)+1)) ).
+       cost(lb, gas, @C_TREER0@+@C_TREER1@*log2(length(M0)+1)),
+       cost(ub, gas, @C_TREER0@+@C_TREER1@*log2(length(M0)+1)) ).
 
 % Temporary tree map/set (created in the transaction, never stored), e.g. the
 % StorageTreeSet seen of Ballot.computeFinalDelegate.

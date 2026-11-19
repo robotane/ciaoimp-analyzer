@@ -43,6 +43,13 @@ map([X|T]) :- kvpair(X), map(T).
 kvpair(kv(K, V)) :- gnd(K), gnd(V).
 
 % --- Gas of the primitives ---
+%
+% Tree maps/sets (StorageTreeMap, SnapshottableStorageTreeMap/Set, StorageTreeSet): the
+% C_TREE*, C_TREEW*, C_TREER*, C_TMP* constants are worst-case values derived from the
+% instrumented Takamaka code (hotmoka-bench/costmodel/arbre_pire_cas.md): a left-leaning
+% red-black tree of n keys has black height bh <= log2(n+1); a search path has <= 2*bh nodes;
+% a put copies or modifies <= 2*bh+1 nodes, a remove <= 2*(2*bh+1). The slope of log2(n+1)
+% therefore already holds the factor 2 of the height, whatever the order of the keys.
 
 :- trust pred transfer(From, To, Amount, B0, B)
    => ( balances(B), size(lb, B, length(B0)), size(ub, B, length(B0)) )
@@ -53,33 +60,34 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
 
 :- trust pred map_get(K, M, D, V)
    + ( not_fails, is_det,
-       cost(lb, gas, 1364+243*log2(length(M)+1)),
-       cost(ub, gas, 1364+243*log2(length(M)+1)) ).
+       cost(lb, gas, 1364+1246*log2(length(M)+1)),
+       cost(ub, gas, 1364+1246*log2(length(M)+1)) ).
 
 :- trust pred map_put(K, V, M0, M)
    => ( map(M), size(lb, M, length(M0)), size(ub, M, length(M0)+1) )
    + ( not_fails, is_det,
-       cost(lb, gas, 1775+11603*log2(length(M0)+1)),
-       cost(ub, gas, 1775+11603*log2(length(M0)+1)+27179) ).
+       cost(lb, gas, 19782+31740*log2(length(M0)+1)),
+       cost(ub, gas, 19782+31740*log2(length(M0)+1)+27179) ).
 
+% remove of a persistent (Snapshottable) tree: top-down moveRed* + balance on each level.
 :- trust pred map_remove(K, M0, M)
    => ( map(M), size(lb, M, 0), size(ub, M, length(M0)) )
    + ( not_fails, is_det,
-       cost(lb, gas, 1775+11603*log2(length(M0)+1)),
-       cost(ub, gas, 1775+11603*log2(length(M0)+1)) ).
+       cost(lb, gas, 67680+69864*log2(length(M0)+1)),
+       cost(ub, gas, 67680+69864*log2(length(M0)+1)) ).
 
 % Temporary tree map/set (created in the transaction, never stored), e.g. the
 % StorageTreeSet seen of Ballot.computeFinalDelegate.
 :- trust pred tmp_get(K, M, D, V)
    + ( not_fails, is_det,
-       cost(lb, gas, 465+991*log2(length(M)+1)),
-       cost(ub, gas, 465+991*log2(length(M)+1)) ).
+       cost(lb, gas, 2906+5132*log2(length(M)+1)),
+       cost(ub, gas, 2906+5132*log2(length(M)+1)) ).
 
 :- trust pred tmp_put(K, V, M0, M)
    => ( map(M), size(lb, M, length(M0)), size(ub, M, length(M0)+1) )
    + ( not_fails, is_det,
-       cost(lb, gas, 465+991*log2(length(M0)+1)),
-       cost(ub, gas, 465+991*log2(length(M0)+1)) ).
+       cost(lb, gas, 2906+5132*log2(length(M0)+1)),
+       cost(ub, gas, 2906+5132*log2(length(M0)+1)) ).
 
 :- trust pred list_add(X, L0, L)
    => ( size(lb, L, length(L0)+1), size(ub, L, length(L0)+1) )
