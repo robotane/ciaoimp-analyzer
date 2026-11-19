@@ -21,6 +21,13 @@
 :- regtype revealed_bid/1.
 revealed_bid(revealed_bid(Value, Fake, Salt)) :- int(Value), int(Fake), gnd(Salt).
 
+:- regtype bid_obj/1.                          % a Bid of the StorageList of a bidder
+bid_obj(bid(Hash, Deposit)) :- gnd(Hash), int(Deposit).
+
+% removeFirst() returns a Bid: its shape is known, so that reading its fields
+% (Bid[hash], Bid[deposit]) cannot fail and has a bounded cost.
+:- trust success list_remove_first(Bid, _, _) => bid_obj(Bid).
+
 :- regtype opt/1.
 opt(null).
 opt(X) :- int(X).
