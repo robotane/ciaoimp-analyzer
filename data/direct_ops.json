@@ -1,0 +1,260 @@
+{
+ "simple_ponzi.invest.n": {
+  "pred": "invest",
+  "lengths": {}
+ },
+ "simple_shared_entity.place_offer.S": {
+  "pred": "place",
+  "lengths": {
+   "Sh": "n",
+   "Of0": "0"
+  }
+ },
+ "simple_shared_entity.place_offer.F": {
+  "pred": "place",
+  "lengths": {
+   "Sh": "1",
+   "Of0": "n"
+  }
+ },
+ "simple_shared_entity.accept.S": {
+  "pred": "accept",
+  "lengths": {
+   "Sh0": "n",
+   "Of0": "1"
+  }
+ },
+ "simple_shared_entity.accept.F": {
+  "pred": "accept",
+  "lengths": {
+   "Sh0": "2",
+   "Of0": "n"
+  }
+ },
+ "simple_auction.bid.b": {
+  "pred": "bid",
+  "lengths": {}
+ },
+ "simple_auction.auction_end.b": {
+  "pred": "auction_end",
+  "lengths": {}
+ },
+ "blind_auction.bid.b": {
+  "pred": "bid",
+  "lengths": {
+   "Bids0": "n"
+  }
+ },
+ "blind_auction.bid.k": {
+  "pred": "bid",
+  "lengths": {
+   "Bids0": "101"
+  }
+ },
+ "blind_auction.reveal.b": {
+  "pred": "reveal",
+  "lengths": {
+   "Bids0": "101"
+  }
+ },
+ "blind_auction.reveal.k": {
+  "pred": "reveal",
+  "lengths": {
+   "Bids0": "101"
+  }
+ },
+ "blind_auction.auction_end.b": {
+  "pred": "auction_end",
+  "lengths": {}
+ },
+ "crowdfunding.new_campaign.C": {
+  "pred": "new_campaign",
+  "lengths": {
+   "Cs0": "n"
+  }
+ },
+ "crowdfunding.contribute.C": {
+  "pred": "contribute",
+  "lengths": {
+   "Cs0": "n"
+  }
+ },
+ "crowdfunding.check_goal_reached.C": {
+  "pred": "check_goal_reached",
+  "lengths": {
+   "Cs0": "n"
+  }
+ },
+ "simple_pyramid.invest.I": {
+  "pred": "invest",
+  "lengths": {
+   "Inv0": "n"
+  }
+ },
+ "gradual_ponzi.invest.I": {
+  "pred": "invest",
+  "lengths": {
+   "Inv0": "n"
+  }
+ },
+ "distributor.add_as_payee.P": {
+  "pred": "add_as_payee",
+  "lengths": {
+   "Payees0": "n"
+  }
+ },
+ "distributor.distribute.P": {
+  "pred": "distribute",
+  "lengths": {
+   "Payees": "n"
+  }
+ },
+ "ballot.give_right.V": {
+  "pred": "give_right",
+  "lengths": {
+   "Pa0": "n+1"
+  }
+ },
+ "ballot.vote.V": {
+  "pred": "vote",
+  "lengths": {
+   "Pa0": "n+1",
+   "Pr0": "3"
+  }
+ },
+ "ballot.delegate.L": {
+  "pred": "delegate",
+  "lengths": {
+   "Pa0": "201",
+   "Pr0": "3"
+  }
+ },
+ "ballot.winner.P": {
+  "pred": "winner",
+  "lengths": {
+   "Pr": "n"
+  }
+ },
+ "example_coin.token_transfer.T": {
+  "pred": "token_transfer",
+  "lengths": {
+   "Bal0": "n+1"
+  }
+ },
+ "example_coin.mint.T": {
+  "pred": "mint",
+  "lengths": {
+   "Bal0": "n+1"
+  }
+ },
+ "example_coin.burn.T": {
+  "pred": "burn",
+  "lengths": {
+   "Bal0": "n+1"
+  }
+ },
+ "crypto_buddy.token_transfer.T": {
+  "pred": "token_transfer",
+  "lengths": {
+   "Bal0": "n+1"
+  }
+ },
+ "crypto_buddy.approve.T": {
+  "pred": "approve",
+  "lengths": {
+   "Own0": "1",
+   "Al0": "n"
+  }
+ },
+ "crypto_buddy.transferFrom.T": {
+  "pred": "transfer_from",
+  "lengths": {
+   "Bal0": "n+1",
+   "Own0": "1",
+   "Al0": "n"
+  }
+ },
+ "example_erc721.mint.O": {
+  "pred": "mint",
+  "lengths": {
+   "TO0": "n",
+   "NB0": "n"
+  }
+ },
+ "example_erc721.transferFrom.O": {
+  "pred": "transfer_from",
+  "lengths": {
+   "TO0": "n",
+   "NB0": "n+1",
+   "Ap0": "0",
+   "OO": "0",
+   "Op": "0"
+  }
+ },
+ "crypto_shark.mint.O": {
+  "pred": "mint",
+  "lengths": {
+   "TO0": "n",
+   "NB0": "n"
+  }
+ },
+ "crypto_shark.approve.O": {
+  "pred": "approve",
+  "lengths": {
+   "TO": "n",
+   "Ap0": "0",
+   "OO": "n-1",
+   "Op": "n-1"
+  }
+ },
+ "crypto_shark.setApprovalForAll.O": {
+  "pred": "set_approval_for_all",
+  "lengths": {
+   "OO0": "n-1",
+   "Op0": "n-1"
+  }
+ },
+ "crypto_shark.transferFrom.O": {
+  "pred": "transfer_from",
+  "lengths": {
+   "TO0": "n",
+   "NB0": "n+1",
+   "Ap0": "1",
+   "OO": "n",
+   "Op": "n"
+  }
+ },
+ "tictactoe.play.moves": {
+  "pred": "play",
+  "lengths": {
+   "Board0": "9"
+  }
+ },
+ "tontine.rejoindre.n": {
+  "pred": "rejoindre",
+  "lengths": {
+   "Soldes0": "n",
+   "Membres0": "n"
+  }
+ },
+ "tontine.distribuer.n": {
+  "pred": "distribuer",
+  "lengths": {
+   "Soldes0": "n",
+   "Membres0": "n"
+  }
+ },
+ "tontine.retrait.n": {
+  "pred": "retrait",
+  "lengths": {
+   "Soldes0": "n"
+  }
+ },
+ "tontine.rembourser_tous.n": {
+  "pred": "rembourser_tous",
+  "lengths": {
+   "Membres": "n",
+   "Soldes0": "n"
+  }
+ }
+}

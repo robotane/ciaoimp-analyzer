@@ -1,1 +1,0 @@
-time swipl -s tnf.pro -g "run_orig('progs/$1.pro'),halt"

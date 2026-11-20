@@ -1,5 +1,0 @@
-rm -f tnf
-gcc -O3 -o tnf -lgc -lm *.c
-time tnf
-
-

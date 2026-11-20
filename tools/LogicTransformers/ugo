@@ -1,3 +1,0 @@
-rm -f out/tnf_asm.*
-swipl -s tnf_u.pro -g "run('progs/$1.pro'),halt"
-time python3 tnf_u.py

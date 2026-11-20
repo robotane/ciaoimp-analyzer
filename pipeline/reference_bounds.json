@@ -1,0 +1,68 @@
+{
+ "ballot": {
+  "delegate": "10264*log(2,prod($(i),0,length(Pa0)-1,$(i)+1))+4984*log(2,length(Pa0)+1)+1246*(length(Pa0)*log(2,length(Pa0)+1))+8020*length(Pa0)+29120",
+  "give_right": "32986*log(2,length(Pa0)+1)+83392",
+  "vote": "1246*log(2,length(Pa0)+1)+844*length(Pr0)+24987",
+  "winner": "1688*length(Pr)"
+ },
+ "blind_auction": {
+  "auction_end": "28823",
+  "bid": "32986*log(2,length(Bids0)+1)+139460",
+  "reveal": "1246*log(2,length(Bids0)+1)+72984"
+ },
+ "crowdfunding": {
+  "check_goal_reached": "844*length(Cs0)+18289",
+  "contribute": "844*length(Cs0)+72647",
+  "new_campaign": "82340"
+ },
+ "crypto_buddy": {
+  "approve": "31740*log(2,length(Al0)+1)+32986*log(2,length(Own0)+1)+134646",
+  "token_transfer": "32986*log(2,length(Bal0)+2)+32986*log(2,length(Bal0)+1)+163189",
+  "transfer_from": "32986*log(2,length(Al0)+1)+34232*log(2,length(Own0)+1)+32986*log(2,length(Bal0)+2)+32986*log(2,length(Bal0)+1)+327742"
+ },
+ "crypto_shark": {
+  "approve": "1246*log(2,length(Op)+1)+1246*log(2,length(OO)+1)+31740*log(2,length(Ap0)+1)+1246*log(2,length(TO)+1)+63234",
+  "mint": "32986*log(2,length(NB0)+1)+32986*log(2,length(TO0)+1)+136010",
+  "set_approval_for_all": "31740*log(2,length(Op0)+1)+32986*log(2,length(OO0)+1)+134646",
+  "transfer_from": "1246*log(2,length(Op)+1)+1246*log(2,length(OO)+1)+71110*log(2,length(Ap0)+1)+32986*log(2,length(NB0)+2)+32986*log(2,length(NB0)+1)+34232*log(2,length(TO0)+1)+284650"
+ },
+ "distributor": {
+  "add_as_payee": "27179",
+  "distribute": "10442*length(Payees)+20802"
+ },
+ "example_coin": {
+  "burn": "32986*log(2,length(Bal0)+1)+121908",
+  "mint": "32986*log(2,length(Bal0)+1)+121908",
+  "token_transfer": "32986*log(2,length(Bal0)+2)+32986*log(2,length(Bal0)+1)+163189"
+ },
+ "example_erc721": {
+  "mint": "32986*log(2,length(NB0)+1)+32986*log(2,length(TO0)+1)+136010",
+  "transfer_from": "1246*log(2,length(Op)+1)+1246*log(2,length(OO)+1)+71110*log(2,length(Ap0)+1)+32986*log(2,length(NB0)+2)+32986*log(2,length(NB0)+1)+34232*log(2,length(TO0)+1)+284650"
+ },
+ "gradual_ponzi": {
+  "invest": "2*log(2,int(length(Inv0))+1)+8*log(2,int(Amount)+1)+3*(length(Inv0)*log(2,2*int(Amount)+1))+5*(length(Inv0)*log(2,int(Amount)+1))+10450*length(Inv0)+37603.967226258836"
+ },
+ "simple_auction": {
+  "auction_end": "28823",
+  "bid": "45465"
+ },
+ "simple_ponzi": {
+  "invest": "3*log(2,11*int(Amt0)+1)+3*log(2,int(Amt0)+int(Value)+1)+2*log(2,int(Amt0)+1)+11*log(2,int(Value)+1)+33324.08878823872"
+ },
+ "simple_pyramid": {
+  "invest": "10442*length(Inv0)+44624"
+ },
+ "simple_shared_entity": {
+  "accept": "1246*log(2,length(Of0)+1)+104096*log(2,length(Sh0)+2)+32986*log(2,length(Sh0)+1)+69864*(length(Of0)*log(2,length(Of0)+1))+69368*length(Of0)+257864",
+  "place": "31740*log(2,length(Of0)+1)+2492*log(2,length(Sh)+1)+69864*(length(Of0)*log(2,length(Of0)+1))+69368*length(Of0)+106535"
+ },
+ "tictactoe": {
+  "play": "70162"
+ },
+ "tontine": {
+  "distribuer": "32986*log(2,length(Soldes0)+1)+123749",
+  "rejoindre": "32986*log(2,length(Soldes0)+1)+97283",
+  "rembourser_tous": "32986*log(2,prod($(i),0,length(Membres)-1,length(Soldes0)+ $(i)+1))+58767*length(Membres)+12181",
+  "retrait": "32986*log(2,length(Soldes0)+1)+70104"
+ }
+}

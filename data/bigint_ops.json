@@ -1,0 +1,5 @@
+{
+ "_comment": "Integer sizes (int(X) of the CiaoPP bounds of the BigInteger size model) as a function of the parameter n of the measured operation. amount(k) = k-th amount of the moka bench (1000, then x11/10+1). Only the contracts that use the big_* primitives (hotmoka_gas.pl.in) appear here.",
+ "simple_ponzi.invest.n": {"Value": "amount(n)", "Amt0": "(amount(n-1) if n > 0 else 0)"},
+ "gradual_ponzi.invest.I": {"Amount": "1000"}
+}

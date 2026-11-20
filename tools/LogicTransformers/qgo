@@ -1,3 +1,0 @@
-rm -f out/eq_asm.*
-time swipl -s bineq.pro -g "go('progs/$1.pro'),halt"
-time python3 -O bineq.py

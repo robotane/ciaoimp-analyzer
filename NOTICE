@@ -1,0 +1,20 @@
+hotmoka-gas-bounds
+Copyright 2026 The hotmoka-gas-bounds authors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product includes software derived from the example and tutorial smart contracts of
+Hotmoka / Takamaka (https://github.com/Hotmoka/hotmoka), Copyright 2021 Fausto Spoto,
+licensed under the Apache License, Version 2.0. The derived files are the Java sources under
+bench/contracts/src/main/java/io/hotmoka/examples/ (except the packages tontine and micro) and
+bench/contracts/src/main/java/io/hotmoka/tutorial/examples/. Their original license headers
+are kept; these files may have been modified for the benchmark (scenarios, sizes, events).
+
+The DSL contracts of dsl/ are Prolog models of these Java contracts, written for this product.
+
+Third-party tools used but not distributed with this product:
+- Ciao Prolog and CiaoPP (https://ciao-lang.org), GNU LGPL / GPL;
+- CasLog (Debray and Lin), GNU Prolog port; not redistributed;
+- GNU Prolog (http://www.gprolog.org);
+- Hotmoka 1.12.3 and Takamaka 1.8.1, through the Docker image hotmoka/mokamint-node:1.12.3
+  and Maven artifacts, Apache License 2.0.

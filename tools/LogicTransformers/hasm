@@ -1,3 +1,0 @@
-rm -f out/hasm.txt
-swipl -s tnf.pro -g "hasm('progs/$1.pro','out/hasm.txt'),halt"
-#time python3 -O hnf.py

@@ -1,2 +1,0 @@
-"""Portable CiaoImp pipeline orchestration."""
-

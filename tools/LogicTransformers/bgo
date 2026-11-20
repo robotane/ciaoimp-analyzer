@@ -1,2 +1,0 @@
-swipl -s tnf.pro -g "(basm('$1'),halt)"
-time python3 -O bnf.py

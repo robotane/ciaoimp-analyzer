@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "hotmoka-gas-bounds: static gas bounds for Hotmoka smart contracts with CiaoPP and CasLog"
+type: software
+# TODO: authors to be completed before publication
+authors:
+  - name: "The hotmoka-gas-bounds authors"
+license: Apache-2.0
+version: "0.1.0"
+date-released: "2026-11-19"
+keywords:
+  - smart contracts
+  - gas
+  - static analysis
+  - resource analysis
+  - Hotmoka
+  - Ciao Prolog

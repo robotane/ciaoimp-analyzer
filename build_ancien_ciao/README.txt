@@ -1,1 +1,0 @@
-Snapshot of build/ made with the old Ciao (loops expanded to loop_aux_*), taken 2026-11-18 before rebuilding with the current Ciao. executable/crypto_shark.pl is already the new one (the scenario now calls setApprovalForAll).
