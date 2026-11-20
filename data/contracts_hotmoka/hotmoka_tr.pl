@@ -40,6 +40,11 @@
 %    amount and whose last state variable is the coin balances, starts with
 %        transfer(Caller, this, Amount, !Balances).
 %
+%    With the directive  :- bigint_cost.  the payable method also starts with
+%        big_pay(Amount, 0)
+%    (gas of the BigInteger operations of the payment, by size of Amount: see
+%    hotmoka_gas.pl.in); without it, the cost of the payment is the constant of transfer/5.
+%
 %  - Guards. The contract writes the require of the Java as the Java does,
 %        require(Cond)  or  require(Cond, Message)
 %    and the translation replaces it by Cond itself, at compile time: no
@@ -78,12 +83,16 @@
 
 :- data payable_pred/2.   % payable_pred(Module, Name)
 :- data class_def/3.      % class_def(Module, Class, FieldNames)
+:- data bigint_cost/1.    % bigint_cost(Module): the module asks for the cost by size
 :- data loop_count/2.     % loop_count(Module, N): helpers of loops created so far
 
 tr(end_of_file, end_of_file, Mod) :- !,
     retractall_fact(payable_pred(Mod, _)),
     retractall_fact(class_def(Mod, _, _)),
+    retractall_fact(bigint_cost(Mod)),
     retractall_fact(loop_count(Mod, _)).
+tr((:- bigint_cost), [], Mod) :- !,
+    assertz_fact(bigint_cost(Mod)).
 tr((:- payable(Names)), [], Mod) :- !,
     add_payable(Names, Mod).
 tr((:- class(Spec)), [], Mod) :- !,
@@ -290,6 +299,13 @@ meet([_|Es], S, R) :- meet(Es, S, R).
 in_both(r(O), S) :- loaded(O, S).
 in_both(k(O, T), S) :- known(O, S, T1), T1 == T.
 
+payable_prefix(H, SV, Mod, B, (transfer(Caller, this, Amount, '!'(Bal)), P, B)) :-
+    functor(H, N, _),
+    current_fact(payable_pred(Mod, N)),
+    current_fact(bigint_cost(Mod)), !,
+    arg(1, H, Caller), arg(2, H, Amount),
+    last(SV, Bal),
+    P = big_pay(Amount, 0).
 payable_prefix(H, SV, Mod, B, (transfer(Caller, this, Amount, '!'(Bal)), B)) :-
     functor(H, N, _),
     current_fact(payable_pred(Mod, N)), !,

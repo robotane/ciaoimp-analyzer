@@ -23,6 +23,11 @@
 %   arrays       arr_get/3, arr_set/4 (StorageTreeArray of fixed size)
 %   big integers ubi_add/3, ubi_sub/3 (UnsignedBigInteger.add/subtract: the
 %                result is a new storage object)
+%   big integers (cost by size, opt-in) big_add/3, big_sub/3, big_mul/3, big_div/3,
+%                big_mod/3, big_gt/2, big_ge/2, big_pay/2: the BigIntegerSupport operations
+%                of the Takamaka runtime, whose gas depends on the bit length of the
+%                operands (see hotmoka_gas.pl.in). The contracts that do not use them
+%                keep the constant cost of the arithmetic.
 %   snapshots    snapshot/2 (snapshot() of a Snapshottable map/set: a new view object)
 %   bytes        to_array/2 (Bytes32Snapshot.toArray: reads the storage object)
 %   objects      load/1   (read a storage object; added by hotmoka_tr.pl: one per
@@ -38,7 +43,9 @@
                     map_get/4, map_put/4, map_remove/3, map_set/4, tmp_get/4, tmp_put/4,
                     list_add/3, list_size/2, list_remove_first/3, list_get/3, list_set/4,
                     arr_get/3, arr_set/4,
-                    ubi_add/3, ubi_sub/3, snapshot/2, to_array/2,
+                    ubi_add/3, ubi_sub/3,
+                    big_add/3, big_sub/3, big_mul/3, big_div/3, big_mod/3, big_gt/2, big_ge/2, big_pay/2,
+                    snapshot/2, to_array/2,
                     load/1, new_obj/1, emit/1, store/1], []).
 
 % --- Coins: list of bal(Address, Amount) ---
@@ -121,6 +128,21 @@ arr_set(I, V, [X|T], [X|T1]) :-
 
 ubi_add(A, B, C) :- C is A + B.
 ubi_sub(A, B, C) :- C is A - B.
+
+% --- BigIntegerSupport: integers, gas by bit length ---
+% The result of the operation is the arithmetic itself; big_gt/big_ge are the comparisons
+% (they fail when false); big_pay(Paid, Held) is the gas of the three BigInteger operations of
+% Contract.pay (compareTo, subtract, add) and has no effect on the Prolog state (the money moves
+% with transfer/5).
+
+big_add(A, B, C) :- C is A + B.
+big_sub(A, B, C) :- C is A - B.
+big_mul(A, B, C) :- C is A * B.
+big_div(A, B, C) :- C is A // B.
+big_mod(A, B, C) :- C is A mod B.
+big_gt(A, B) :- A > B.
+big_ge(A, B) :- A >= B.
+big_pay(_, _).
 
 % --- Snapshot (the view is not modelled) and bytes (the term itself) ---
 

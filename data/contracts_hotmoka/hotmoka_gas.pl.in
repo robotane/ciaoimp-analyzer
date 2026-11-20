@@ -146,6 +146,62 @@ kvpair(kv(K, V)) :- gnd(K), gnd(V).
    => num(C)
    + ( not_fails, is_det, cost(lb, gas, @C_NEW@), cost(ub, gas, @C_NEW@) ).
 
+% --- BigIntegerSupport: gas by bit length (opt-in primitives of hotmoka.pl) ---
+%
+% Rule of io.takamaka.code.math.BigIntegerSupport (takamaka-code 1.8.1), read in the class file:
+%   add, subtract, multiply, divide, mod, divideAndRemainder: gas for CPU += bl(a)+bl(b) and gas for
+%   RAM += bl(a)+bl(b), in addition to the constant cost of the call (already in the constants);
+%   compareTo, equals: CPU += bl(a)+bl(b) only.
+% bl(x) = bitLength = floor(log2 x)+1 (0 for x = 0). The size of an integer is its value, and
+%   log2(int(x)+1) <= bl(x) <= log2(int(x)+1)+1 for x >= 0: the upper bound uses log2(int(x)+1)+1, the lower
+%   bound log2(int(x)+1). The cost of an arithmetic operation is 2*(bl(a)+bl(b)), that of a comparison
+%   bl(a)+bl(b). The constant part of the call (C_*) is not repeated here.
+% Contract.pay(payer, amount) = compareTo(payer.balance, amount) + subtract(payer.balance, amount)
+%   + add(payee.balance, amount): 3*bl(payer.balance) + 2*bl(payee.balance) + 5*bl(amount).
+%   big_pay(Paid, Held) charges 5*bl(Paid) + 3*bl(Held), Held being a bound of the payer balance
+%   given by the contract (hypothesis written in the contract). The balance of the payee, and that
+%   of a payer that is a user account, are those of the calibration of C_PAY (accounts of 10^15).
+% The sizes of the results are those of the exact arithmetic (non-negative integers): A+B, A*B,
+%   at most A for a difference or a quotient by B >= 1, below B for A mod B.
+
+:- trust pred big_add(A, B, C)
+   => ( int(C), size(lb, C, int(A)+int(B)), size(ub, C, int(A)+int(B)) )
+   + ( not_fails, is_det,
+       cost(lb, gas, 2*(log2(int(A)+1)+log2(int(B)+1))), cost(ub, gas, 2*(log2(int(A)+1)+log2(int(B)+1)+2)) ).
+
+:- trust pred big_sub(A, B, C)
+   => ( int(C), size(lb, C, 0), size(ub, C, int(A)) )
+   + ( is_det,
+       cost(lb, gas, 2*(log2(int(A)+1)+log2(int(B)+1))), cost(ub, gas, 2*(log2(int(A)+1)+log2(int(B)+1)+2)) ).
+
+:- trust pred big_mul(A, B, C)
+   => ( int(C), size(lb, C, int(A)*int(B)), size(ub, C, int(A)*int(B)) )
+   + ( not_fails, is_det,
+       cost(lb, gas, 2*(log2(int(A)+1)+log2(int(B)+1))), cost(ub, gas, 2*(log2(int(A)+1)+log2(int(B)+1)+2)) ).
+
+:- trust pred big_div(A, B, C)
+   => ( int(C), size(lb, C, 0), size(ub, C, int(A)) )
+   + ( is_det,
+       cost(lb, gas, 2*(log2(int(A)+1)+log2(int(B)+1))), cost(ub, gas, 2*(log2(int(A)+1)+log2(int(B)+1)+2)) ).
+
+:- trust pred big_mod(A, B, C)
+   => ( int(C), size(lb, C, 0), size(ub, C, int(B)) )
+   + ( is_det,
+       cost(lb, gas, 2*(log2(int(A)+1)+log2(int(B)+1))), cost(ub, gas, 2*(log2(int(A)+1)+log2(int(B)+1)+2)) ).
+
+:- trust pred big_gt(A, B)
+   + ( is_det,
+       cost(lb, gas, log2(int(A)+1)+log2(int(B)+1)), cost(ub, gas, log2(int(A)+1)+log2(int(B)+1)+2) ).
+
+:- trust pred big_ge(A, B)
+   + ( is_det,
+       cost(lb, gas, log2(int(A)+1)+log2(int(B)+1)), cost(ub, gas, log2(int(A)+1)+log2(int(B)+1)+2) ).
+
+% A payer holds at least what it pays: bl(payer.balance) >= bl(Paid), whence the lower bound.
+:- trust pred big_pay(Paid, Held)
+   + ( not_fails, is_det,
+       cost(lb, gas, 8*log2(int(Paid)+1)), cost(ub, gas, 5*(log2(int(Paid)+1)+1)+3*(log2(int(Held)+1)+1)) ).
+
 % snapshot() of a Snapshottable map/set: a new view object.
 :- trust pred snapshot(M, S)
    + ( not_fails, is_det, cost(lb, gas, @C_NEW@), cost(ub, gas, @C_NEW@) ).
