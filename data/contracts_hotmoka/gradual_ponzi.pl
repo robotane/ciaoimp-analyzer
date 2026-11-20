@@ -7,7 +7,7 @@
 :- module(_, [init/2, invest/6, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
-:- fun_eval(arith(true)).                       % Amount // N is computed, as in Java
+:- fun_eval(arith(true)).
 
 :- regtype addrs/1.
 addrs([]).
@@ -21,15 +21,19 @@ addrs([A|T]) :- atm(A), addrs(T).
 init(Creator, Inv) :-
     Inv = ~list_add(Creator, []).                   % investors.add(caller())
 
+:- bigint_cost.                                  % gas of the BigInteger operations by bit length
+
 :- payable(invest).                             % @Payable: the amount sent is received first
 
 % @FromContract invest(amount)
 invest(Caller, Amount, !Inv, !B) :-
-    require(Amount >= 1000),                        % require(amount >= MINIMUM_INVESTMENT)
+    require(big_ge(Amount, 1000)),                  % require(compareTo(amount, MINIMUM_INVESTMENT) >= 0)
     N = ~list_size(Inv),                            % investors.size()
-    Each = Amount // N,                             % eachInvestorGets = amount / investors.size()
+    big_div(Amount, N, Each),                       % eachInvestorGets = divide(amount, valueOf(size))
+    Held is Amount + Amount,                        % the contract holds the amount received plus its rests (< Amount)
     for (P in list(Inv)) {                          % investors.forEach(investor -> ...)
-        transfer(this, P, Each, !B)                 % investor.receive(each)
+        transfer(this, P, Each, !B),                % investor.receive(each)
+        big_pay(Each, Held)                         % its BigInteger operations (compareTo, subtract, add)
     },
     list_add(Caller, !Inv).                         % investors.add(caller()): one new list node
 

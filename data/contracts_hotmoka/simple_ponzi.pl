@@ -13,13 +13,19 @@
 
 init(null, 0).
 
+:- bigint_cost.                                  % gas of the BigInteger operations by bit length
+
 :- payable(invest).                             % @Payable: the amount sent is received first
 
 % @FromContract invest(amount)
 invest(Caller, Value, !Last, !Amt, !B) :-
-    require(Value > Amt * 11 // 10),            % require(amount > 110% of current)
+    big_mul(Amt, 11, Prod),                     % multiply(currentInvestment, _11)
+    big_div(Prod, 10, Min),                     % divide(., _10) = minimumInvestment
+    require(big_gt(Value, Min)),                % require(compareTo(amount, minimumInvestment) > 0)
     if (Last \== null) {
-        transfer(this, Last, Value, !B)         % currentInvestor.receive(amount)
+        Held is Value + Amt,                    % the contract holds the first investment (<= Amt) and Value
+        transfer(this, Last, Value, !B),        % currentInvestor.receive(amount)
+        big_pay(Value, Held)                    % its BigInteger operations (compareTo, subtract, add)
     },
     Last := Caller,                             % currentInvestor = caller()
     Amt := Value.                               % currentInvestment = amount
