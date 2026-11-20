@@ -20,6 +20,8 @@ Usage : tools/pipeline/run_pipeline.py [options] [contrat ...]
   --reference JSON   bounds.json de reference (defaut tools/pipeline/reference_bounds.json : bornes
                      CiaoPP des 14 contrats et de tontine avec ces constantes) ; ecarts signales
   --skip-caslog      ne lance pas CasLog
+  Les bornes des contrats qui utilisent les primitives big_* contiennent des termes log(2, int(X)+1)
+  (gaz des BigInteger selon leur taille) : tools/pipeline/bigint_ops.json donne X pour chaque point mesure.
   --remesurer        relance d'abord moka/mesurer.sh (docker --memory=2g, JVM -Xmx1g) dans un
                      nouveau CSV <sortie>/<horodatage>/bench_moka.csv utilise a la place de --moka.
                      DESACTIVE par defaut (long : docker + JVM).
@@ -165,6 +167,28 @@ def caslog_class(f):
     return "lin" if args else "const"
 
 
+BIGINT = json.loads((ROOT / "tools" / "pipeline" / "bigint_ops.json").read_text())
+BIGINT.pop("_commentaire", None)
+
+
+def amount(k):
+    """k-ieme montant du banc moka (simple_ponzi) : 1000, puis x11/10 + 1."""
+    a = 1000
+    for _ in range(k):
+        a = a * 11 // 10 + 1
+    return a
+
+
+def formula_class(ub):
+    """Classe lue sur la formule quand elle depend de la taille d'un entier (terme log(2, int(X)+1)),
+    sinon None (classe alors donnee par la forme de la courbe)."""
+    if not re.search(r"int\((?!length)[A-Za-z_]\w*\)", ub):
+        return None
+    if re.search(r"length\(\w+\)\*log\(|log\([^()]*(?:\([^()]*\)[^()]*)*\)\*length\(", ub):
+        return "O(l*log m)"
+    return "O(l+log m)" if "length(" in ub else "O(log m)"
+
+
 C = json.loads(CONSTS.read_text())
 ops = json.loads((BENCH / "costmodel" / "direct_ops.json").read_text())
 data = load([MOKA])
@@ -196,8 +220,15 @@ for key, spec in ops.items():
         row["verdict"] = "SANS MESURE"
     else:
         lengths = {v: (lambda e: (lambda m: max(0, eval(e, {"n": m}))))(e) for v, e in spec["lengths"].items()}
+        ints = BIGINT.get(key, {})
+
+        def with_ints(n, ub=ub, ints=ints):
+            e = ub
+            for v, x in ints.items():                # int(Value) -> valeur de la taille entiere au point n
+                e = e.replace(f"int({v})", str(eval(x, {"amount": amount, "n": n})))
+            return e
         try:
-            ps = [evaluate(ub, lengths, n) for n in ns]
+            ps = [evaluate(with_ints(n), lengths, n) for n in ns]
         except Exception as e:                           # noqa: BLE001
             ps = [None]; row["verdict"] = f"ERREUR evaluation ({e})"
         if None in ps:
@@ -207,7 +238,7 @@ for key, spec in ops.items():
             bd = [round(p + C["C_TX"]) for p in ps]
             gm = [max(d[n]["gas"]) for n in ns]
             ratios = [b / g for b, g in zip(bd, gm)]
-            row["classe_ciaopp"] = shape_of(ns, bd)
+            row["classe_ciaopp"] = formula_class(ub) or shape_of(ns, bd)
             row["au_dessus"] = sum(b < g for b, g in zip(bd, gm))
             row["ratio_median"] = round(float(np.median(ratios)), 3)
             row["ratio_max"] = round(max(ratios), 3)

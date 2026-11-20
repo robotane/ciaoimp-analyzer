@@ -101,3 +101,14 @@ Les 14 contrats passent CasLog sans erreur. Fonctions de temps des méthodes pub
   des soldes ici contre une constante en gas. `simple_shared_entity` est quadratique ici et
   produit/log côté gas.
 - Les tests de type des helpers (`atom/1`, `integer/1`) sont modélisés par un pas chacun.
+
+## Primitives `big_*` (coût des BigInteger selon leur taille)
+
+`hotmoka_caslog_prims.pl` définit `big_add/3` ... `big_pay/2` comme l'arithmétique elle-même (un pas
+chacune). Le terme en log(montant) du modèle de gaz de CiaoPP n'apparaît donc pas dans la fonction de
+temps de CasLog : sa fonction de temps ne change que d'une constante (`simple_ponzi` `8*$7+14` →
+`8*$7+19`). Raison : une boucle qui compte les bits (`bl(N) :- N > 1, N1 is N // 2, bl(N1)`) reçoit
+`[inf]`, quelle que soit l'écriture de la division (`//`, `/`, `* 0.5`) ; l'analyse de taille de CasLog
+sait suivre `N-1`, pas `N/2`, alors qu'un `N-1` donne bien `$1+1`. Par ailleurs `C is A // B` avec deux
+arguments entiers variables fait planter son analyse (`type_error(evaluable,($)/2)`) : `big_div` est
+modélisé par `C is A` (le quotient est majoré par le dividende) et `big_mod` par `C is B`.

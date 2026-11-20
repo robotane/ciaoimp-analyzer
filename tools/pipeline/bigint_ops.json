@@ -1,0 +1,5 @@
+{
+ "_commentaire": "Tailles entieres (int(X) des bornes CiaoPP du modele par taille des BigInteger) en fonction du parametre n de l'operation mesuree. amount(k) = k-ieme montant du banc moka (1000, puis x11/10+1). Seuls les contrats qui utilisent les primitives big_* (hotmoka_gas.pl.in) y figurent.",
+ "simple_ponzi.invest.n": {"Value": "amount(n)", "Amt0": "(amount(n-1) if n > 0 else 0)"},
+ "gradual_ponzi.invest.I": {"Amount": "1000"}
+}

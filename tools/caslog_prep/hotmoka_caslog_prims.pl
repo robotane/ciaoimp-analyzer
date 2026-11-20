@@ -33,6 +33,22 @@
 :- measure(ubi_add/3, [int, int, int]).
 :- mode(ubi_sub/3, [+, +, -]).
 :- measure(ubi_sub/3, [int, int, int]).
+:- mode(big_add/3, [+, +, -]).
+:- measure(big_add/3, [int, int, int]).
+:- mode(big_sub/3, [+, +, -]).
+:- measure(big_sub/3, [int, int, int]).
+:- mode(big_mul/3, [+, +, -]).
+:- measure(big_mul/3, [int, int, int]).
+:- mode(big_div/3, [+, +, -]).
+:- measure(big_div/3, [int, int, int]).
+:- mode(big_mod/3, [+, +, -]).
+:- measure(big_mod/3, [int, int, int]).
+:- mode(big_gt/2, [+, +]).
+:- measure(big_gt/2, [int, int]).
+:- mode(big_ge/2, [+, +]).
+:- measure(big_ge/2, [int, int]).
+:- mode(big_pay/2, [+, +]).
+:- measure(big_pay/2, [int, int]).
 :- mode(snapshot/2, [+, -]).
 :- measure(snapshot/2, [void, void]).
 :- mode(to_array/2, [+, -]).
@@ -87,6 +103,21 @@ list_set(I, V, [_|T], [V|T]) :- I =:= 0, !.
 list_set(I, V, [X|T], [X|T1]) :- I1 is I - 1, list_set(I1, V, T, T1).
 ubi_add(A, B, C) :- C is A + B.
 ubi_sub(A, B, C) :- C is A - B.
+% BigIntegerSupport (opt-in primitives big_*): the arithmetic itself, one step like `is` and the
+% comparisons. CasLog cannot count the bit length of the operands (log2 of their value): its size
+% analysis has no model of N//2 (a halving loop `bl(N) :- N > 1, N1 is N//2, bl(N1)` gets [inf]),
+% so the log(amount) term of hotmoka_gas.pl.in does not appear in the CasLog function: the
+% class is that of the constant-cost model.
+big_add(A, B, C) :- C is A + B.
+big_sub(A, B, C) :- C is A - B.
+big_mul(A, B, C) :- C is A * B.
+% (a quotient by a variable crashes the size analysis of CasLog, [$ evaluable in >/2]: the
+% quotient is bounded by the dividend A, the remainder by the divisor B)
+big_div(A, _, C) :- C is A.
+big_mod(_, B, C) :- C is B.
+big_gt(A, B) :- A > B.
+big_ge(A, B) :- A >= B.
+big_pay(_, _).
 snapshot(_, snapshot).
 to_array(X, X).
 arr_get(I, [X|_], X) :- I =:= 0, !.

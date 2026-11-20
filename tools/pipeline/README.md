@@ -61,3 +61,19 @@ mesure à part (`results/bench_tontine.csv` de la branche `exp/contrat-temoin` d
   Il doit contenir le commit de `gen_model.py`/`rerun_ciaopp_moka.py` acceptant `CIAOIMP_ROOT`
   (le pipeline la fixe sur son propre checkout, donc fonctionne depuis un worktree).
 - `CASLOG` : exécutable CasLog.
+
+## Gaz des BigInteger selon leur taille (branche exp/bigint-log)
+
+Par défaut, l'arithmétique sur les montants est comptée à coût constant et les bornes de
+`reference_bounds.json` ne changent pas. Un contrat peut demander le coût selon la taille des
+nombres avec les primitives `big_add/3`, `big_sub/3`, `big_mul/3`, `big_div/3`, `big_mod/3`,
+`big_gt/2`, `big_ge/2` et `big_pay/2` de `data/contracts_hotmoka/hotmoka.pl`, et la directive
+`:- bigint_cost.` (le préfixe d'une méthode `payable` compte alors aussi le paiement du montant).
+Le modèle (`hotmoka_gas.pl.in`) reprend la règle de `BigIntegerSupport` (takamaka-code 1.8.1) :
+opération arithmétique : +2·(bl(a)+bl(b)) (CPU et RAM), comparaison : +(bl(a)+bl(b)) (CPU), avec
+bl(x) ≤ log2(x+1)+1. `Contract.pay` (compareTo, subtract, add) coûte 5·bl(montant) + 3·bl(solde du
+payeur) + 2·bl(solde du bénéficiaire) : `big_pay(Montant, Solde)` compte les deux premiers termes, le solde
+du payeur étant une hypothèse écrite dans le contrat (borne `Solde`), les soldes des comptes
+utilisateurs étant ceux de la calibration de `C_PAY`. Seuls `simple_ponzi` et `gradual_ponzi` les utilisent.
+Les bornes contiennent alors des termes `log(2,int(X)+1)` ; `bigint_ops.json` donne la valeur de `X`
+à chaque point mesuré. CasLog ne voit pas ce terme (voir `tools/caslog_prep/README.md`).
