@@ -62,7 +62,7 @@ mesure à part (`results/bench_tontine.csv` de la branche `exp/contrat-temoin` d
   (le pipeline la fixe sur son propre checkout, donc fonctionne depuis un worktree).
 - `CASLOG` : exécutable CasLog.
 
-## Gaz des BigInteger selon leur taille (branche exp/bigint-log)
+## Gaz des BigInteger selon leur taille
 
 Par défaut, l'arithmétique sur les montants est comptée à coût constant et les bornes de
 `reference_bounds.json` ne changent pas. Un contrat peut demander le coût selon la taille des

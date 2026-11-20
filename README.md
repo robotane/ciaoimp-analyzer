@@ -1,94 +1,52 @@
 # ciaoimp-analyzer
 
-Ce dossier contient l'analyseur portable CiaoImp. La documentation suppose une
-racine de projet nommée `ciaoimp-analyzer/`.
+Bornes de gaz statiques pour des contrats intelligents Hotmoka/Takamaka.
 
-Le pipeline prend des contrats dans `data/source/`, les transforme en Prolog
-exploitable, puis produit une branche d'analyse (CasLog) et deux branches d'exécution (TNF et Prolog Cafe).
+Chaque contrat est réécrit dans un petit DSL Ciao impératif (`data/contracts_hotmoka/`).
+Le pipeline en tire trois résultats par opération :
 
-## Flux résumé
+- une **borne de gaz** calculée par CiaoPP (analyse de ressources, modèle de gaz Hotmoka) ;
+- une **classe de complexité** O(·) calculée par CasLog ;
+- une **validation** contre le gaz réellement mesuré sur un nœud Hotmoka 1.12.3.
 
 ```text
-data/source/*.pl
-  -> build/executable/*.pl
-  -> build/normalized/*.pl
-     -> build/annotated/*.pl -> CasLog -> results/caslog_*.txt
-     -> build/tnf_asm/*.txt  -> TNF    -> results/tnf_*.txt
-     -> build/prolog_cafe_classes/ -> Prolog Cafe -> results/prolog_cafe_*.txt
-
-results/stage_diffs.txt compare les étapes publiques générées.
+data/contracts_hotmoka/<contrat>.pl  (DSL : hotmoka.pl, hotmoka_tr.pl)
+  ├─ modèle de gaz (hotmoka_gas.pl, constantes mesurées) ─> CiaoPP ─> borne de gaz
+  ├─ tools/caslog_prep ──────────────────────────────────> CasLog ─> classe O(·)
+  └─ gaz mesuré sur un nœud Hotmoka (results/bench_moka.csv) ─> borne ≥ mesuré ?
 ```
 
-Lecture rapide :
+Résultat de référence : sur les 14 contrats, aucune des 3312 mesures ne dépasse la borne
+calculée ; aucune des 131 mesures du contrat témoin `tontine` non plus.
 
-- `build/executable/` contient la première sortie Prolog stable du pipeline.
-- `build/normalized/` est la forme commune avant bifurcation.
-- `build/annotated/` est la version dérivée pour CasLog.
-- `build/tnf_asm/` contient l'assembleur TNF généré depuis `build/normalized/`.
-- `build/prolog_cafe_classes/` contient le bytecode Java généré par Prolog Cafe.
-- `results/` rassemble les rapports consolidés.
+## Lancer le pipeline
 
-## Commandes rapides
-
-Depuis la racine du projet :
-
-```bash
-# Lancer le pipeline complet pour un contrat
-python3 pipeline.py run blind_auction.pl
-# (Ou plus court)
-python3 pipeline.py blind_auction.pl
-
-# Lancer sans CasLog ni Prolog Cafe
-python3 pipeline.py run --no-caslog --no-prolog-cafe blind_auction.pl
-
-# Relancer uniquement l'étape TNF (sur des contrats déjà normalisés)
-python3 pipeline.py run-tnf blind_auction
-
-# Exécuter directement un fichier ASM avec l'interpréteur TNF
-python3 pipeline.py run-asm data/source/auction_asm.txt
+```sh
+tools/pipeline/run_pipeline.py
+tools/pipeline/run_pipeline.py simple_ponzi example_coin
 ```
 
-Pour lancer le pipeline complet sur tous les contrats :
+Prérequis, options et variables d'environnement : [`tools/pipeline/README.md`](tools/pipeline/README.md).
+Préparation pour CasLog : [`tools/caslog_prep/README.md`](tools/caslog_prep/README.md).
 
-```bash
-python3 pipeline.py
-```
+## Organisation
 
-## Docker
+| Chemin | Contenu |
+|---|---|
+| `data/contracts_hotmoka/` | les 14 contrats et `tontine` en DSL, le DSL (`hotmoka.pl`, `hotmoka_tr.pl`), le modèle de gaz (`hotmoka_gas.pl.in`) |
+| `tools/pipeline/` | pipeline unique CiaoPP + CasLog + gaz mesuré, bornes de référence |
+| `tools/caslog_prep/` | traduction du DSL vers l'entrée de CasLog |
+| `data/ciaopp_cost/`, `src/ciaopp_cost/` | lecture des sorties de CiaoPP |
 
-L'image contient toutes les dépendances (CiaoPP, SWI-Prolog, GNU Prolog,
-JDK 21, Python 3) : rien d'autre à installer que Docker.
+Le DSL propose notamment `require/1,2`, des accès `Obj[f]` comptés comme lectures de stockage,
+les opérations sur les collections Takamaka (arbres rouge-noir, coût au pire cas dérivé de leur
+code) et, en option, le coût des BigInteger selon leur taille (règle de
+`io.takamaka.code.math.BigIntegerSupport`, voir `tools/pipeline/README.md`).
 
-```bash
-docker build -t ciaoimp-analyzer .
+## Ancienne version (xsyntax, TNF, Prolog Cafe)
 
-# Pipeline complet ; build/ et results/ sont écrits sur l'hôte
-docker run --rm -v "$PWD/results:/app/results" -v "$PWD/build:/app/build" ciaoimp-analyzer
-
-# Mêmes options qu'en local, par exemple CasLog seul sur un contrat
-docker run --rm -v "$PWD/results:/app/results" -v "$PWD/build:/app/build" \
-    ciaoimp-analyzer python3 pipeline.py run --no-tnf --no-prolog-cafe simple_ponzi.pl
-```
-
-Le code et les contrats sont copiés dans l'image : après une modification de
-`src/` ou de `data/source/`, relancer `docker build` (quelques secondes, les
-couches Ciao restent en cache).
-
-## Documentation
-
-La source de vérité documentaire est dans `docs/`, avec la configuration
-MkDocs dans `mkdocs.yml`. Le dossier `site/` contient une version HTML générée.
-
-Pour reconstruire la documentation :
-
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -r docs/requirements.txt
-.venv/bin/mkdocs build
-```
-
-Lire ensuite :
-
-- [Installation Ubuntu](INSTALLATION_UBUNTU.md)
-- [Architecture](docs/architecture.md)
-- [Guide pipeline](docs/pipeline-guide.md)
+Le dépôt contient encore le premier pipeline (`pipeline.py`, `src/`, `data/source/`, `docs/`,
+`Dockerfile`) : contrats Prolog en syntaxe impérative (xsyntax) traduits vers CasLog, l'assembleur
+TNF et Prolog Cafe. Il n'est plus maintenu et n'a pas été revérifié depuis le passage au pipeline
+ci-dessus ; il est gardé pour l'historique. L'état du dépôt avant ce passage est marqué par le tag
+`archive/ancien-pipeline-2026-11-19`.
