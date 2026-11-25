@@ -1,9 +1,6 @@
 % Tic tac toe (Java: io.hotmoka.examples.tictactoe.TicTacToe).
-% Two players put crosses and circles on a 3x3 board; bets; the winner gets 90% of the
-% jackpot and the creator the rest; a draw gives everything to the creator.
-% State: Cross, Circle = the players (null while not set); Turn (1 = cross, 2 = circle);
-%        Over = gameOver (0/1); Board = StorageTreeArray<Tile>(9), list of 9 cells
-%        (0 = empty, 1 = cross, 2 = circle); Creator (read only).
+% Two players bet and play on a 3x3 board; the winner gets 90% of the jackpot, the creator the rest.
+% Turn: 1 = cross, 2 = circle; Over: gameOver (0/1); Board: list of 9 cells (0 empty, 1 cross, 2 circle).
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [play/17, goal/1],
@@ -18,61 +15,60 @@ cells([C|T]) :- int(C), cells(T).
      atm(Circle0), var(Circle), int(Turn0), var(Turn), int(Over0), var(Over),
      cells(Board0), var(Board), balances(B0), var(B)).
 
-:- payable(play).                             % @Payable: the amount sent is received first
+:- payable(play).
 
 % @FromContract play(amount, x, y)
 play(Caller, Amount, X, Y, Creator, !Cross, !Circle, !Turn, !Over, !Board, !B) :-
-    require(Over =:= 0),                            % require(!gameOver)
-    require((X >= 1, X =< 3, Y >= 1, Y =< 3)),      % require(1 <= x && x <= 3 && 1 <= y && y <= 3)
+    require(Over =:= 0),
+    require((X >= 1, X =< 3, Y >= 1, Y =< 3)),
     Idx is (Y - 1) * 3 + X - 1,
-    Cell = ~arr_get(Idx, Board),                    % at(x, y): board.get
-    require(Cell =:= 0),                            % require(at(x, y) == EMPTY)
-    if (Turn =:= 1) {                               % if (turn == CROSS)
+    Cell = ~arr_get(Idx, Board),
+    require(Cell =:= 0),
+    if (Turn =:= 1) {
         if (Cross == null) {
-            require(Amount >= 100),                 % require(amount >= MINIMUM_BET)
-            Cross := Caller                         % crossPlayer = player
+            require(Amount >= 100),
+            Cross := Caller
         } else {
-            require(Caller == Cross)                % require(player == crossPlayer)
+            require(Caller == Cross)
         }
     } else {
         if (Circle == null) {
-            require(Caller \== Cross),              % require(crossPlayer != player)
-            Bal = ~balance(this, B),                % balance()
-            Prev is Bal - Amount,                   % previousBet
-            require(Amount >= Prev),                % require(amount >= previousBet)
-            Circle := Caller                        % circlePlayer = player
+            require(Caller \== Cross),
+            Bal = ~balance(this, B),
+            Prev is Bal - Amount,  % previousBet
+            require(Amount >= Prev),
+            Circle := Caller
         } else {
-            require(Caller == Circle)               % require(player == circlePlayer)
+            require(Caller == Circle)
         }
     },
-    arr_set(Idx, Turn, !Board),                     % set(x, y, turn): board.set
-    Over1 = ~game_over(X, Y, Turn, Board),          % isGameOver(x, y)
-    Over := Over1,                                  % gameOver = ...
+    arr_set(Idx, Turn, !Board),
+    Over1 = ~game_over(X, Y, Turn, Board),
+    Over := Over1,
     if (Over1 =:= 1) {
-        Bal1 = ~balance(this, B),                   % balance()
-        Win is Bal1 * 9 // 10,                      % 90% goes to the winner
-        transfer(this, Caller, Win, !B),            % player.receive(...)
-        Bal2 = ~balance(this, B),                   % balance()
-        transfer(this, Creator, Bal2, !B)           % creator.receive(balance())
+        Bal1 = ~balance(this, B),
+        Win is Bal1 * 9 // 10,  % 90%
+        transfer(this, Caller, Win, !B),
+        Bal2 = ~balance(this, B),
+        transfer(this, Creator, Bal2, !B)
     } else {
-        Full = ~is_full(Board),                     % isDraw()
+        Full = ~is_full(Board),
         if (Full =:= 1) {
-            Bal3 = ~balance(this, B),               % balance()
-            transfer(this, Creator, Bal3, !B)       % creator.receive(balance())
+            Bal3 = ~balance(this, B),
+            transfer(this, Creator, Bal3, !B)
         } else {
             NT is 3 - Turn,
-            Turn := NT                              % turn = turn.nextTurn()
+            Turn := NT
         }
     }.
 
-% isGameOver(x, y). Java evaluates its tests with short-circuit (at most 12 reads of the board);
-% the 12 reads are all done here (an upper bound of every path: CiaoPP does not charge the reads
-% of a test that fails half-way), then the tests are evaluated in the order of Java.
+% isGameOver(x, y). Java short-circuits (at most 12 reads); all 12 are done here, an upper bound
+% of every path, then the tests run in Java's order.
 game_over(X, Y, T, B, Over) :-
-    A1 = ~at(X, 1, B), A2 = ~at(X, 2, B), A3 = ~at(X, 3, B),      % column x
-    R1 = ~at(1, Y, B), R2 = ~at(2, Y, B), R3 = ~at(3, Y, B),      % row y
-    D1 = ~at(1, 1, B), D2 = ~at(2, 2, B), D3 = ~at(3, 3, B),      % first diagonal
-    E1 = ~at(1, 3, B), E2 = ~at(2, 2, B), E3 = ~at(3, 1, B),      % second diagonal
+    A1 = ~at(X, 1, B), A2 = ~at(X, 2, B), A3 = ~at(X, 3, B),  % column x
+    R1 = ~at(1, Y, B), R2 = ~at(2, Y, B), R3 = ~at(3, Y, B),  % row y
+    D1 = ~at(1, 1, B), D2 = ~at(2, 2, B), D3 = ~at(3, 3, B),  % first diagonal
+    E1 = ~at(1, 3, B), E2 = ~at(2, 2, B), E3 = ~at(3, 1, B),  % second diagonal
     if ((A1 =:= T, A2 =:= T, A3 =:= T)) { Over = 1 }
     else if ((R1 =:= T, R2 =:= T, R3 =:= T)) { Over = 1 }
     else if ((X =:= Y, D1 =:= T, D2 =:= T, D3 =:= T)) { Over = 1 }
@@ -84,8 +80,7 @@ at(X, Y, Board, V) :-
     I is (Y - 1) * 3 + X - 1,
     V = ~arr_get(I, Board).
 
-% isDraw(): for (tile: board) if (tile == EMPTY) return false; the 9 reads of the loop over the
-% constant-size board are written out, all done (CiaoPP has no bound for numeric loops).
+% isDraw(): the 9 reads of the loop are written out (CiaoPP has no bound for numeric loops).
 is_full(B, Full) :-
     V0 = ~arr_get(0, B), V1 = ~arr_get(1, B), V2 = ~arr_get(2, B),
     V3 = ~arr_get(3, B), V4 = ~arr_get(4, B), V5 = ~arr_get(5, B),
@@ -94,9 +89,7 @@ is_full(B, Full) :-
         Full = 1
     } else { Full = 0 }.
 
-% --- Test: alice (cross) bets 100, bob (circle) 100; alice plays (1,1), bob (2,1),
-% alice (2,2), bob (3,1), alice (3,3): the diagonal ---
-% Expected: [alice, bob, owner, this] = [1080, 900, 20, 0].
+% Test: alice (cross) and bob (circle) bet 100; alice wins on the diagonal. Expected [1080, 900, 20, 0].
 goal([A, Bo, O, T]) :-
     B0 = [bal(alice, 1000), bal(bob, 1000), bal(owner, 0), bal(this, 0)],
     Bd0 = [0, 0, 0, 0, 0, 0, 0, 0, 0],

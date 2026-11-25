@@ -1,5 +1,12 @@
 % Implicit costs of a Hotmoka contract, added at compile time.
 %
+% Pass 0 (before the rest): typed collections and amounts. A contract that
+% declares  :- storage(M, map(amount, 0)).  :- amount(ubi).  may write M[K],
+% M[K] := V, M[K] += A, M[K] -= A; each construction becomes the primitive that
+% the type of M gives (map_get, map_put, ubi_add/ubi_sub, list_get, ...). See
+% "Typed collections and amounts" below. A contract without :- storage is
+% translated as before.
+%
 % The Java programmer does not write these operations: Hotmoka performs them.
 % The contract does not write them either; this translation adds them, before
 % the statevars/fsyntax expansion (priority 600 < 610).
@@ -75,7 +82,7 @@
 %    The node is a distinct object from the element: a field read X[f] in Body
 %    loads the element itself, once more.
 
-:- module(hotmoka_tr, [tr/3], [datafacts]).
+:- module(hotmoka_tr, [tr/4], [datafacts]).
 
 :- use_module(library(aggregates), [findall/3]).
 :- use_module(library(lists), [length/2, append/3]).
@@ -85,31 +92,275 @@
 :- data class_def/3.      % class_def(Module, Class, FieldNames)
 :- data bigint_cost/1.    % bigint_cost(Module): the module asks for the cost by size
 :- data loop_count/2.     % loop_count(Module, N): helpers of loops created so far
+:- data storage_decl/3.   % storage_decl(Module, VarName, Kind): typed collection or amount
+:- data amount_type/2.    % amount_type(Module, ubi|big): the primitives of amount
+:- data fun_arith/1.      % fun_arith(Module): the module has :- fun_eval(arith(true))
 
-tr(end_of_file, end_of_file, Mod) :- !,
+tr(end_of_file, end_of_file, Mod, _) :- !,
     retractall_fact(payable_pred(Mod, _)),
     retractall_fact(class_def(Mod, _, _)),
     retractall_fact(bigint_cost(Mod)),
-    retractall_fact(loop_count(Mod, _)).
-tr((:- bigint_cost), [], Mod) :- !,
+    retractall_fact(loop_count(Mod, _)),
+    retractall_fact(storage_decl(Mod, _, _)),
+    retractall_fact(amount_type(Mod, _)),
+    retractall_fact(fun_arith(Mod)).
+tr((:- fun_eval(A)), (:- fun_eval(A)), Mod, _) :- A == arith(true), !,
+    assertz_fact(fun_arith(Mod)).
+tr((:- bigint_cost), [], Mod, _) :- !,
     assertz_fact(bigint_cost(Mod)).
-tr((:- payable(Names)), [], Mod) :- !,
+tr((:- payable(Names)), [], Mod, _) :- !,
     add_payable(Names, Mod).
-tr((:- class(Spec)), [], Mod) :- !,
+tr((:- class(Spec)), [], Mod, _) :- !,
     Spec =.. [C|Fields],
     assertz_fact(class_def(Mod, C, Fields)).
-tr((H :- B), Clauses, Mod) :- !,
+tr((:- storage(V, Kind)), [], Mod, Dict) :- !,
+    add_storage(V, Kind, Mod, Dict).
+tr((:- amount(T)), [], Mod, _) :- !,
+    (   ( T == ubi ; T == big )
+    ->  retractall_fact(amount_type(Mod, _)), assertz_fact(amount_type(Mod, T))
+    ;   throw(error(hotmoka_tr(bad_amount_type(T)), Mod))
+    ).
+tr((H :- B), Clauses, Mod, Dict) :- !,
+    sugar(B, c(Mod, Dict), B0),
     state_vars(H, SV),
-    body(B, SV, Mod, B1),
+    body(B0, SV, Mod, B1),
     payable_prefix(H, SV, Mod, B1, B2),
     functor(H, Name, _),
     loops((H :- B2), Name, Mod, Clauses0),
     first_reads(Clauses0, Clauses).
-tr(C, C, _).
+tr(C, C, _, _).
 
 add_payable((A, B), Mod) :- !, add_payable(A, Mod), add_payable(B, Mod).
 add_payable(N/_, Mod) :- !, add_payable(N, Mod).
 add_payable(N, Mod) :- atom(N), assertz_fact(payable_pred(Mod, N)).
+
+% --- Typed collections and amounts (pass 0) ------------------------------
+%
+% Declarations. The variable is named as in the clauses (the translation reads
+% the names of the variables of each sentence):
+%   :- storage(M, map(T, D)).  M is a StorageTreeMap whose values have type T,
+%                              read with the default D (getOrDefault)
+%   :- storage(M, map(T)).     same, no declared default: a read gives it, M[K, D]
+%   :- storage(L, list).       L is a StorageLinkedList (its elements are objects)
+%   :- storage(X, amount).     X (a field of the contract) holds an amount
+%   :- amount(ubi).            amounts are UnsignedBigInteger (ubi_*), or
+%   :- amount(big).            BigInteger with the gas by size (big_*)
+% T is amount, int (Java int/long: arithmetic without gas) or object.
+%
+% Constructions, in a clause where the variable has the declared name:
+%   M[K], M[K, D]   (map)   read: map_get(K, M, D, V); V is a fresh variable
+%                   put before the statement. Every read is a get, as in Java: a
+%                   value read once and used twice is bound to a variable
+%                   (B = M[K], then B), as the Java local variable.
+%   L[I]            (list)  read: list_get(I, L, V)
+%   M[K] := E       (map)   map_put(K, E, !M)
+%   M[K] += E, M[K] -= E    read M[K], add/subtract by the type of the values,
+%                   map_put of the result
+%   X += E, X -= E  X := X + E, X - E (amount: ubi_add/ubi_sub or big_add/big_sub;
+%                   other variable: arithmetic)
+%   O[f] += E, O[f] -= E    field of an object: O[f] := O[f] + E (arithmetic)
+%   O[f] in an expression   V = O[f] put before the statement (field read)
+% An index that is an atom on a variable that is not a declared collection is a
+% field (Obj[f], see body/4). Errors at compile time: a declared collection
+% indexed by a field name of a declared class (ambiguous_index), an index on an
+% undeclared variable that is not an atom (not_a_collection), M[K][f] := E
+% (nested_write: the object read from a map is mutated in place, write
+% P = M[K], P[f] := E, map_set(K, P, !M)), L[I] := E on a list (list_write:
+% StorageLinkedList has no set; an element mutated in place is put back with
+% list_set, explicit), a read without default
+% (no_default), += on an object (bad_update), amount without :- amount (no_amount_type).
+% Not covered: temporary maps (tmp_get/tmp_put), arrays (arr_get/arr_set),
+% list_size, list_add, map_remove, map_set: written with the primitives.
+
+add_storage(V, Kind, Mod, Dict) :-
+    var(V), var_name(Dict, V, N), storage_kind(Kind), !,
+    retractall_fact(storage_decl(Mod, N, _)),
+    assertz_fact(storage_decl(Mod, N, Kind)).
+add_storage(V, Kind, Mod, _) :-
+    tr_error(bad_storage(V, Kind), Mod).
+
+storage_kind(K) :- nonvar(K), K = map(T), value_type(T).
+storage_kind(K) :- nonvar(K), K = map(T, _), value_type(T).
+storage_kind(list).
+storage_kind(amount).
+
+value_type(T) :- nonvar(T), ( T == amount ; T == int ; T == object ), !.
+
+var_name([E|Es], V, N) :- ( nonvar(E), E = (N0 = V0), V0 == V -> N = N0 ; var_name(Es, V, N) ).
+
+% The kind of a variable of the clause, if declared.
+storage_of(V, c(Mod, Dict), K) :-
+    var(V), var_name(Dict, V, N), current_fact(storage_decl(Mod, N, K)).
+
+name_of(V, c(_, Dict), N) :- ( var(V), var_name(Dict, V, N0) -> N = N0 ; N = V ).
+
+% M[...] and O[...] (Obj[f] syntax), as read with read_postfix_blocks: Ix is the
+% list in brackets.
+index_term(T, B, Ix) :-
+    nonvar(T), T = '\6\postfix_block'(B, Ix), nonvar(Ix), Ix = [_|R], ( R == [] ; R = [_] ).
+
+% sugar(G, Ctx, G1): the body with the constructions replaced by primitives.
+% Control constructs are walked; every other goal is a statement (leaf/3).
+sugar(G, _, G) :- var(G), !.
+sugar((A, B), C, (A1, B1)) :- !, sugar(A, C, A1), sugar(B, C, B1).
+sugar((A ; B), C, (A1 ; B1)) :- !, sugar(A, C, A1), sugar(B, C, B1).
+sugar((A -> B), C, (A1 -> B1)) :- !, sugar(A, C, A1), sugar(B, C, B1).
+sugar('*->'(A, B), C, '*->'(A1, B1)) :- !, sugar(A, C, A1), sugar(B, C, B1).
+sugar(\+(A), C, \+(A1)) :- !, sugar(A, C, A1).
+sugar(require(A), C, require(A1)) :- !, sugar(A, C, A1).
+sugar(require(A, M), C, require(A1, M)) :- !, sugar(A, C, A1).
+sugar('{}'(A), C, '{}'(A1)) :- !, sugar(A, C, A1).
+sugar(else(A, B), C, else(A1, B1)) :- !, sugar(A, C, A1), sugar(B, C, B1).
+sugar(if(PB), C, if('\6\postfix_block'(Cd1, '{}'(T1)))) :-
+    nonvar(PB), PB = '\6\postfix_block'(Cd, B), nonvar(B), B = '{}'(T), !,
+    sugar(Cd, C, Cd1), sugar(T, C, T1).
+sugar(for(PB), C, for('\6\postfix_block'(In, '{}'(T1)))) :-
+    nonvar(PB), PB = '\6\postfix_block'(In, B), nonvar(B), B = '{}'(T), !,
+    sugar(T, C, T1).
+sugar(G, C, G1) :- leaf(G, C, G1).
+
+% A statement.
+leaf(':='(L, E), C, G) :- index_term(L, B, Ix), !,
+    (   index_term(B, _, _)
+    ->  tr_error(nested_write(L), C)
+    ;   storage_of(B, C, K)
+    ->  coll_kind(K, B, C),
+        ( Ix = [Key] -> true ; tr_error(default_in_write(L), C) ),
+        check_index(Key, B, C),
+        ext(Key, C, Key1, P1, []),
+        ext(E, C, E1, P2, []),
+        catch(write_goal(K, B, Key1, E1, W), list_write(_), (name_of(B, C, N), tr_error(list_write(N), C))),
+        append(P1, P2, P12), append(P12, [W], Gs),
+        seq(Gs, G)
+    ;   ext(E, C, E1, P, []),
+        field_index(B, Ix, C),
+        append(P, [':='(L, E1)], Gs),
+        seq(Gs, G)
+    ).
+leaf(U, C, G) :- nonvar(U), U =.. [Op, L, E], update_op(Op, AOp), !,
+    update(L, AOp, E, C, Gs),
+    seq(Gs, G).
+leaf('='(V, X), C, G) :- var(V), index_term(X, B, Ix), !,
+    (   storage_of(B, C, K), coll_kind(K, B, C)
+    ->  ext_list(Ix, C, Ix1, P, []),
+        Ix1 = [Key|_], check_index(Key, B, C),
+        read_goal(K, B, Ix1, V, C, R),
+        append(P, [R], Gs), seq(Gs, G)
+    ;   index_term(B, _, _)                 % (M[K])[f]: the object, then its field
+    ->  ext(B, C, B1, P, []),
+        append(P, ['='(V, '\6\postfix_block'(B1, Ix))], Gs), seq(Gs, G)
+    ;   field_index(B, Ix, C), G = '='(V, X)
+    ).
+leaf(G, C, G1) :-
+    nonvar(G), functor(G, F, Ar), Ar > 0, !,
+    G =.. [F|As],
+    ext_list(As, C, As1, P, []),
+    (   P == []
+    ->  G1 = G
+    ;   G2 =.. [F|As1], append(P, [G2], Gs), seq(Gs, G1)
+    ).
+leaf(G, _, G).
+
+update_op('+=', add).
+update_op('-=', sub).
+
+coll_kind(K, _, _) :- K \== amount, !.
+coll_kind(_, B, C) :- name_of(B, C, N), tr_error(not_a_collection(N), C).
+
+% An atom that is a field of a declared class does not index a collection.
+check_index(Key, B, c(Mod, Dict)) :-
+    atom(Key), current_fact(class_def(Mod, _, Fs)), memberv(Key, Fs), !,
+    name_of(B, c(Mod, Dict), N),
+    tr_error(ambiguous_index(N, Key), Mod).
+check_index(_, _, _).
+
+% O[f] on a variable that is not a declared collection: f must be an atom (a field).
+field_index(B, [F], _) :- var(B), atom(F), !.
+field_index(B, _, C) :- name_of(B, C, N), tr_error(not_a_collection(N), C).
+
+write_goal(K, B, Key, E, map_put(Key, E, '!'(B))) :- nonvar(K), K = map(_), !.
+write_goal(K, B, Key, E, map_put(Key, E, '!'(B))) :- nonvar(K), K = map(_, _), !.
+write_goal(list, B, _, _, _) :-               % StorageLinkedList has no set: the element is
+    throw(list_write(B)).                       % mutated in place (list_set, explicit)
+
+% The read of a collection, into V.
+read_goal(K, B, [Key], V, _, map_get(Key, B, D, V)) :- nonvar(K), K = map(_, D), !.
+read_goal(K, B, [Key, D], V, _, map_get(Key, B, D, V)) :- nonvar(K), ( K = map(_) ; K = map(_, _) ), !.
+read_goal(K, B, [_], _, C, _) :- nonvar(K), K = map(_), !,
+    name_of(B, C, N), tr_error(no_default(N), C).
+read_goal(list, B, [I], V, _, list_get(I, B, V)) :- !.
+read_goal(K, B, Ix, _, C, _) :-
+    name_of(B, C, N), tr_error(bad_read(N, K, Ix), C).
+
+% M[K] op= E, O[f] op= E, X op= E: the goals.
+update(L, AOp, E, C, Gs) :- index_term(L, B, Ix), storage_of(B, C, K), !,
+    coll_kind(K, B, C),
+    ( Ix = [Key] -> true ; tr_error(default_in_write(L), C) ),
+    check_index(Key, B, C),
+    value_type_of(K, B, C, T),
+    ext(Key, C, Key1, P1, []),
+    ext(E, C, E1, P2, []),
+    read_goal(K, B, [Key1], V0, C, R),
+    arith(T, AOp, V0, E1, V1, C, A),
+    catch(write_goal(K, B, Key1, V1, W), list_write(_), (name_of(B, C, N), tr_error(list_write(N), C))),
+    append(P1, P2, P12), append(P12, [R, A, W], Gs).
+update(L, AOp, E, C, Gs) :- index_term(L, O, [F]), var(O), atom(F), !,
+    ext(E, C, E1, P, []),
+    arith(int, AOp, V0, E1, V1, C, A),
+    append(P, ['='(V0, L), A, ':='('\6\postfix_block'(O, [F]), V1)], Gs).
+update(X, AOp, E, C, Gs) :- var(X), !,
+    ( storage_of(X, C, amount) -> T = amount ; T = int ),
+    ext(E, C, E1, P, []),
+    arith(T, AOp, X, E1, V1, C, A),
+    append(P, [A, ':='(X, V1)], Gs).
+update(L, _, _, C, _) :- tr_error(bad_update(L), C).
+
+value_type_of(K, _, _, T) :- nonvar(K), ( K = map(T) ; K = map(T, _) ), T \== object, !.
+value_type_of(_, B, C, _) :- name_of(B, C, N), tr_error(bad_update(N), C).
+
+arith(amount, Op, A, B, R, c(Mod, _), G) :- !,
+    (   current_fact(amount_type(Mod, T))
+    ->  amount_prim(T, Op, F), G =.. [F, A, B, R]
+    ;   tr_error(no_amount_type, Mod)
+    ).
+% With :- fun_eval(arith(true)), R = A + B (fsyntax makes it R is A + B; an
+% is/2 would have its operands evaluated once more); without it, R is A + B.
+arith(int, Op, A, B, R, c(Mod, _), G) :-
+    ( Op == add -> E = A + B ; E = A - B ),
+    ( current_fact(fun_arith(Mod)) -> G = (R = E) ; G = (R is E) ).
+
+amount_prim(ubi, add, ubi_add).
+amount_prim(ubi, sub, ubi_sub).
+amount_prim(big, add, big_add).
+amount_prim(big, sub, big_sub).
+
+% ext(T, Ctx, T1, Pre, Pre0): T with its reads M[K], L[I], O[f] replaced by fresh
+% variables; the difference list Pre-Pre0 holds the reads, innermost first.
+ext(T, _, T, P, P) :- var(T), !.
+ext('!'(V), _, '!'(V), P, P) :- !.
+ext(T, C, V, P, P0) :- index_term(T, B, Ix), !,
+    ext(B, C, B1, P, P1),
+    ext_list(Ix, C, Ix1, P1, P2),
+    (   storage_of(B1, C, K), coll_kind(K, B1, C)
+    ->  Ix1 = [Key|_], check_index(Key, B1, C),
+        read_goal(K, B1, Ix1, V, C, R)
+    ;   field_index(B1, Ix1, C),
+        R = '='(V, '\6\postfix_block'(B1, Ix1))
+    ),
+    P2 = [R|P0].
+ext(T, C, T1, P, P0) :- nonvar(T), functor(T, _, Ar), Ar > 0, !,
+    T =.. [F|As], ext_list(As, C, As1, P, P0), T1 =.. [F|As1].
+ext(T, _, T, P, P).
+
+ext_list([], _, [], P, P).
+ext_list([A|As], C, [A1|As1], P, P0) :- ext(A, C, A1, P, P1), ext_list(As, C, As1, P1, P0).
+
+% Errors of pass 0: error(hotmoka_tr(E), Module), as field_not_in_one_class.
+tr_error(E, c(Mod, _)) :- !, throw(error(hotmoka_tr(E), Mod)).
+tr_error(E, Mod) :- throw(error(hotmoka_tr(E), Mod)).
+
+seq([G], G) :- !.
+seq([G|Gs], (G, R)) :- seq(Gs, R).
 
 % The state variables of a clause: the V of the arguments !V of its head.
 state_vars(H, SV) :-

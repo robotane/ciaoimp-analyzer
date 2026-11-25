@@ -37,7 +37,7 @@ pipeline/            single command and its modules
   reference_bounds.json   expected CiaoPP bounds (15 contracts)
 dsl/                 the DSL and the contracts
   hotmoka.pl         executable semantics of the Hotmoka primitives
-  hotmoka_tr.pl      translation: implicit costs (load, store, payable), require, field syntax
+  hotmoka_tr.pl      translation: typed collections, implicit costs (load, store, payable), require, field syntax
   hotmoka_gas.pl.in  gas cost model of the primitives (template, constants @C_*@)
   *.pl               14 benchmark contracts + tontine.pl (witness contract)
 caslog_prep/         DSL contract -> CasLog input (mode/measure inferred by CiaoPP)
@@ -194,7 +194,13 @@ function, and the class it gives is that of the constant-cost model.
    module declaration loading the package `.(hotmoka_gas)`, one `:- entry` assertion per public
    method (types of the arguments, state given as lists/maps), the methods written with
    state variables (`!S`, `X := V`), `require(Cond)`, `if`/`for`, `Obj[f]` and the primitives of
-   `dsl/hotmoka.pl`; `:- payable(m)` for `@Payable` methods.
+   `dsl/hotmoka.pl`; `:- payable(m)` for `@Payable` methods. Maps, lists and amounts can be
+   declared once (`:- storage(Bal, map(amount, 0)).`, `:- storage(Cs, list).`,
+   `:- amount(ubi).`) and then written `Bal[K]`, `Bal[K] := V`, `Bal[K] += A`, `Cs[I]`: each
+   construction becomes the primitive given by the declared type (`map_get`, `map_put`,
+   `ubi_add`, `list_get`, ...). Every read `M[K]` is one `get`; a value read once and used
+   twice is bound to a variable (`B = Bal[K]`), as in Java. See `dsl/example_coin.pl` and the
+   header of `dsl/hotmoka_tr.pl`.
 2. Run `pipeline/run_pipeline.py --skip-caslog <name>` to get its CiaoPP bounds, then without
    `--skip-caslog` for CasLog. Add its bounds to `pipeline/reference_bounds.json` once checked.
 3. To compare with measured gas: add the Java contract and a scenario under `bench/`

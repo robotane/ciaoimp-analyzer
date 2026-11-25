@@ -1,17 +1,15 @@
 % Crowdfunding (Java: io.hotmoka.examples.crowdfunding.CrowdFunding).
 % Campaigns collect contributions; when the goal is reached the beneficiary is paid.
-% State: Cs = campaigns, StorageLinkedList<Campaign>, list of
-%             campaign(Beneficiary, Goal, Amount, Funders)
-%        (Funders = list of funder(Who, Amount), the StorageLinkedList of the campaign);
-%        the identifier of a campaign is its index in the list (campaigns.get(id)).
+% Cs: campaigns, list of campaign(Beneficiary, Goal, Amount, Funders); the id is the list index.
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [init/1, new_campaign/5, contribute/7, check_goal_reached/6, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
-:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+:- fun_eval(arith(true)).
 
 :- class(campaign(beneficiary, goal, amount, funders)).
+:- storage(Cs, list).
 
 % campaigns.get(id) returns a Campaign.
 :- trust success list_get(_, _, C) => campaign(C).
@@ -36,49 +34,46 @@ init([]).
 
 % newCampaign(beneficiary, goal)
 new_campaign(Ben, Goal, !Cs, Id) :-
-    N = ~list_size(Cs),                             % campaigns.size()
-    new_obj(campaign),                              % new Campaign(beneficiary, goal)
-    new_obj(funders),                               % its field funders = new StorageLinkedList<>()
-    list_add(campaign(Ben, Goal, 0, []), !Cs),      % campaigns.add(campaign): one new list node
-    Id = N.                                         % return campaigns.size() - 1
+    N = ~list_size(Cs),
+    new_obj(campaign),
+    new_obj(funders),
+    list_add(campaign(Ben, Goal, 0, []), !Cs),
+    Id = N.
 
-:- payable(contribute).                             % @Payable: the amount sent is received first
+:- payable(contribute).
 
 % @FromContract contribute(amount, campaignID)
 contribute(Caller, Amount, Id, !Cs, !B) :-
-    Camp = ~list_get(Id, Cs),                       % campaigns.get(campaignID): walk
-    Funders = Camp[funders],                        % campaign.funders: loads the campaign
+    Camp = Cs[Id],
+    Funders = Camp[funders],
     Ben = Camp[beneficiary], Goal = Camp[goal], Amt = Camp[amount],
-    new_obj(funder),                                % new Funder(caller(), amount)
-    list_add(funder(Caller, Amount), Funders, _),   % campaign.funders.add(funder): one new list node
-    Camp := campaign(Ben, Goal, Amt, [funder(Caller, Amount)|Funders]),  % (the list is mutated in place: no field write)
-    Amt1 = Amt + Amount,
-    Camp[amount] := Amt1,                           % campaign.amount = campaign.amount + amount
-    list_set(Id, Camp, !Cs).                        % (the campaign is mutated in place in Java)
+    new_obj(funder),
+    list_add(funder(Caller, Amount), Funders, _),  % cost only
+    Camp := campaign(Ben, Goal, Amt, [funder(Caller, Amount)|Funders]),  % list mutated in place: no field write
+    Camp[amount] += Amount,
+    list_set(Id, Camp, !Cs).  % in place in Java
 
 % checkGoalReached(campaignID)
 check_goal_reached(Id, !Cs, !B, Reached) :-
-    Camp = ~list_get(Id, Cs),                       % campaigns.get(campaignID): walk
-    Amt = Camp[amount],                             % campaign.amount: loads the campaign
+    Camp = Cs[Id],
+    Amt = Camp[amount],
     Goal = Camp[goal],
     Ben = Camp[beneficiary],
-    if (Amt < Goal) {                               % compareTo(campaign.amount, campaign.fundingGoal) < 0
-        Reached = 0                                 % return false
+    if (Amt < Goal) {
+        Reached = 0
     } else {
-        Camp[amount] := 0,                          % campaign.amount = BigInteger.ZERO
-        list_set(Id, Camp, !Cs),                    % (the campaign is mutated in place in Java)
-        transfer(this, Ben, Amt, !B),               % campaign.beneficiary.receive(amount)
-        Reached = 1                                 % return true
+        Camp[amount] := 0,
+        list_set(Id, Camp, !Cs),
+        transfer(this, Ben, Amt, !B),
+        Reached = 1
     }.
 
-% --- Test: bene creates a campaign (goal 300); alice contributes 200, bob 150;
-% the goal is reached and bene is paid. ---
-% Expected: [alice, bob, bene, this] = [800, 850, 350, 0] and Reached = 1.
+% Test: bene creates a campaign (goal 300); alice gives 200, bob 150; goal reached. Expected [800, 850, 350, 0, 1].
 goal([A, Bo, Be, T, R]) :-
     B0 = [bal(alice, 1000), bal(bob, 1000), bal(bene, 0), bal(this, 0)],
     init(Cs0),
     new_campaign(bene, 300, Cs0, Cs1, 0),
-    Cs1 == [campaign(bene, 300, 0, [])],            % (the literal below keeps the call types of the analysis typed)
+    Cs1 == [campaign(bene, 300, 0, [])],  % literal copy: keeps the call types
     Cs1b = [campaign(bene, 300, 0, [])],
     contribute(alice, 200, 0, Cs1b, Cs2, B0, B1),
     contribute(bob, 150, 0, Cs2, Cs3, B1, B2),

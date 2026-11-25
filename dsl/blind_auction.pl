@@ -1,19 +1,12 @@
 % Blind auction (Java: io.hotmoka.examples.auction.BlindAuction).
-% Bidders place hashed bids with a deposit; later they reveal them; the highest
-% revealed bid wins and the other deposits are refunded.
-% State: Bene (beneficiary), BEnd (biddingEnd), REnd (revealEnd), HBdr (highestBidder,
-%        or null), HBid (highestBid, or null), Bids = tree map, list of
-%        kv(Bidder, [bid(Hash, Deposit), ...]) (StorageTreeMap<Contract, StorageList<Bid>>).
-% The hash of a bid is the term hash(Value, Fake, Salt), the digest of the revealed bid;
-% a revealed bid (RevealedBid) is the term revealed_bid(Value, Fake, Salt).
-% Fields of the storage objects (a bid, a revealed bid) are read as in Java, V = Obj[field]
-% (see hotmoka_tr.pl: the first read of an object loads it).
+% Bidders place hashed bids with a deposit, then reveal them; the highest revealed bid wins.
+% Bids: tree map kv(Bidder, [bid(Hash, Deposit), ...]); a hash is the term hash(Value, Fake, Salt).
 % B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [init/4, bid/9, reveal/13, auction_end/9, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
-:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+:- fun_eval(arith(true)).
 
 :- class(bid(hash, deposit)).
 :- class(revealed_bid(value, fake, salt)).
@@ -21,11 +14,10 @@
 :- regtype revealed_bid/1.
 revealed_bid(revealed_bid(Value, Fake, Salt)) :- int(Value), int(Fake), gnd(Salt).
 
-:- regtype bid_obj/1.                          % a Bid of the StorageList of a bidder
+:- regtype bid_obj/1.
 bid_obj(bid(Hash, Deposit)) :- gnd(Hash), int(Deposit).
 
-% removeFirst() returns a Bid: its shape is known, so that reading its fields
-% (Bid[hash], Bid[deposit]) cannot fail and has a bounded cost.
+% known shape of the Bid: reading its fields cannot fail.
 :- trust success list_remove_first(Bid, _, _) => bid_obj(Bid).
 
 :- regtype opt/1.
@@ -45,76 +37,72 @@ opt(X) :- int(X).
 
 % BlindAuction(biddingTime, revealTime)
 init(BiddingTime, Now, BEnd, HBdr) :-
-    BEnd = Now + BiddingTime,                       % biddingEnd = now() + biddingTime
-    HBdr = null.                                    % no highest bidder yet
+    BEnd = Now + BiddingTime,
+    HBdr = null.
 
-:- payable(bid).                             % @Payable: the amount sent is received first
+:- payable(bid).
 
 % @FromContract bid(amount, hash)
 bid(Caller, Amount, Now, BEnd, Hash, !Bids, !B) :-
-    require(Now =< BEnd),                           % onlyBefore(biddingEnd)
-    L0 = ~map_get(Caller, Bids, none),              % bids.computeIfAbsent(caller, ...): tree get
+    require(Now =< BEnd),
+    L0 = ~map_get(Caller, Bids, none),
     if (L0 == none) {
-        new_obj(list),                              % new StorageLinkedList (bidder not yet in the tree)
+        new_obj(list),
         L = []
     } else { L = L0 },
-    new_obj(bid),                                   % new Bid(hash, amount)
-    L1 = ~list_add(bid(Hash, Amount), L),           % .add(bid): one new list node
-    % (two tests on L0 rather than one if with the add in each branch: CiaoPP adds up
-    % the costs of both branches of that if, here 2*C_NEW too much)
+    new_obj(bid),
+    L1 = ~list_add(bid(Hash, Amount), L),
+    % two ifs on L0: one if with the add in each branch would cost 2*C_NEW too much
     if (L0 == none) {
-        map_put(Caller, L1, !Bids)                  % computeIfAbsent puts the new key: tree put
+        map_put(Caller, L1, !Bids)
     } else {
-        map_set(Caller, L1, !Bids)                  % the list is mutated in place: no tree access
+        map_set(Caller, L1, !Bids)  % list mutated in place
     }.
 
 % @FromContract reveal(revealed)
 reveal(Caller, Now, BEnd, REnd, Revealed, !Bids, !HBdr, !HBid, !B) :-
-    require(Now >= BEnd),                           % onlyAfter(biddingEnd)
-    require(Now =< REnd),                           % onlyBefore(revealEnd)
-    L = ~map_get(Caller, Bids, none),               % this.bids.get(bidder)
-    require((L \== none, ~list_size(L) > 0), 'No bids to reveal'),   % bids.size(): reads the size field
-    list_remove_first(Bid, L, Rest),                % bids.removeFirst()
-    map_set(Caller, Rest, !Bids),                   % the list is mutated in place: no tree access
-                                                    % (its fields first/size/last: in list_remove_first)
+    require(Now >= BEnd),
+    require(Now =< REnd),
+    L = ~map_get(Caller, Bids, none),
+    require((L \== none, ~list_size(L) > 0), 'No bids to reveal'),
+    list_remove_first(Bid, L, Rest),
+    map_set(Caller, Rest, !Bids),
     % refundFor(bidder, bid, revealed, digest), bid.matches(revealed, digest):
-    Value = Revealed[value],                        % revealed.value
-    Fake = Revealed[fake],                          % revealed.fake
+    Value = Revealed[value],
+    Fake = Revealed[fake],
     Salt = Revealed[salt],
-    SaltBytes = ~to_array(Salt),                    % revealed.salt.toArray()
+    SaltBytes = ~to_array(Salt),
     Hash = Bid[hash],
-    HashBytes = ~to_array(Hash),                    % hash.toArray()
-    Deposit = Bid[deposit],                         % bid.deposit
-    if (HashBytes \== hash(Value, Fake, SaltBytes)) {   % !bid.matches(revealed, digest)
+    HashBytes = ~to_array(Hash),
+    Deposit = Bid[deposit],
+    if (HashBytes \== hash(Value, Fake, SaltBytes)) {  % !bid.matches(revealed, digest)
         Refund = 0
-    } else if ((Fake =:= 0, Deposit >= Value, (HBid == null ; Value > HBid))) {   % placeBid: highestBid == null || value > highestBid
-        place_bid(Caller, Value, !HBdr, !HBid, !B), % placeBid(bidder, revealed.value)
+    } else if ((Fake =:= 0, Deposit >= Value, (HBid == null ; Value > HBid))) {
+        place_bid(Caller, Value, !HBdr, !HBid, !B),
         Refund = Deposit - Value
     } else { Refund = Deposit },
-    transfer(this, Caller, Refund, !B).             % bidder.receive(refundFor(...)): always executed
+    transfer(this, Caller, Refund, !B).  % always executed
 
-% placeBid: the previous highest bidder is refunded, the new bid is recorded.
+% placeBid(bidder, value)
 place_bid(Bidder, Value, !HBdr, !HBid, !B) :-
     if (HBdr \== null) {
-        transfer(this, HBdr, HBid, !B)              % highestBidder.receive(highestBid)
+        transfer(this, HBdr, HBid, !B)
     },
-    HBid := Value,                                  % highestBid = value
-    HBdr := Bidder,                                 % highestBidder = bidder
-    emit(bid_increase).                             % event(new BidIncrease(bidder, value))
+    HBid := Value,
+    HBdr := Bidder,
+    emit(bid_increase).
 
 % auctionEnd()
 auction_end(Bene, Now, REnd, HBid, !HBdr, !B, Winner) :-
-    require(Now >= REnd),                           % onlyAfter(revealEnd)
-    Winner = HBdr,                                  % winner = highestBidder
+    require(Now >= REnd),
+    Winner = HBdr,
     if (Winner \== null) {
-        transfer(this, Bene, HBid, !B),             % beneficiary.receive(highestBid)
-        emit(auction_end),                          % event(new AuctionEnd(winner, highestBid))
-        HBdr := null                                % highestBidder = null
+        transfer(this, Bene, HBid, !B),
+        emit(auction_end),
+        HBdr := null
     }.
 
-% --- Test: alice bids (deposit 200, value 150), bob bids (deposit 100, value 100);
-% both reveal; alice wins; end. ---
-% Expected: [alice, bob, bene, this] = [850, 1000, 150, 0].
+% Test: alice bids (deposit 200, value 150), bob (deposit 100, value 100); both reveal; end. Expected [850, 1000, 150, 0].
 goal([A, Bo, Be, T]) :-
     B0 = [bal(alice, 1000), bal(bob, 1000), bal(bene, 0), bal(this, 0)],
     init(100, 0, BEnd, H0),

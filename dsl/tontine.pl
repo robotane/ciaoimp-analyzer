@@ -1,16 +1,12 @@
 % Tontine (Java: io.hotmoka.examples.tontine.Tontine), collective savings fund.
-% The creator fixes the contribution; members join by paying exactly it. Each round,
-% the creator credits the next member (circular queue, in order of membership) with one
-% contribution; a member withdraws its balance; the creator refunds all members (linear loop).
-% State: Soldes = soldes, StorageTreeMap<PayableContract, BigInteger>, tree map kv(Member, Balance);
-%        Membres = membres, StorageLinkedList<PayableContract>, list of addresses;
-%        Tour = round counter; Createur and Cotis (creator, contribution) are read only.
-% B: coin balances, list of bal(Address, Amount).
+% Members join by paying the contribution; the creator credits the next member each round (circular
+% queue) and can refund everybody.
+% Soldes: tree map kv(Member, Balance); Membres: list of addresses; Tour: round counter. B: coin balances.
 
 :- module(_, [init/7, rejoindre/9, distribuer/9, retrait/5, rembourser_tous/7, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
-:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+:- fun_eval(arith(true)).
 
 :- regtype addrs/1.
 addrs([]).
@@ -30,50 +26,49 @@ addrs([A|T]) :- atm(A), addrs(T).
 % Tontine(cotisation): the creator and the contribution are fixed
 init(Creator, Cotis, Creator, Cotis, [], [], 0).
 
-:- payable(rejoindre).                          % @Payable: the amount sent is received first
+:- payable(rejoindre).
 
 % @FromContract rejoindre(amount)
 rejoindre(Caller, Amount, Cotis, !Soldes, !Membres, !B) :-
-    require(Amount =:= Cotis),                      % require(compareTo(amount, cotisation) == 0)
-    S0 = ~map_get(Caller, Soldes, none),            % soldes.containsKey(membre)
-    require(S0 == none),                            % require(!soldes.containsKey(membre))
-    map_put(Caller, 0, !Soldes),                    % soldes.put(membre, ZERO): new key
-    list_add(Caller, !Membres),                     % membres.add(membre): one new list node
-    emit(adhesion).                                 % event(new Adhesion(membre))
+    require(Amount =:= Cotis),
+    S0 = ~map_get(Caller, Soldes, none),
+    require(S0 == none),
+    map_put(Caller, 0, !Soldes),
+    list_add(Caller, !Membres),
+    emit(adhesion).
 
 % @FromContract distribuer()
 distribuer(Caller, Createur, Cotis, !Soldes, !Membres, !Tour) :-
-    require(Caller == Createur),                    % require(caller() == createur)
-    list_remove_first(Ben, Membres, Rest),          % beneficiaire = membres.removeFirst()
+    require(Caller == Createur),
+    list_remove_first(Ben, Membres, Rest),
     Membres := Rest,
-    list_add(Ben, !Membres),                        % membres.add(beneficiaire)
-    S = ~map_get(Ben, Soldes, 0),                   % soldes.getOrDefault(beneficiaire, ZERO)
-    S1 = S + Cotis,                                 % add(solde, cotisation)
-    map_put(Ben, S1, !Soldes),                      % soldes.put(beneficiaire, ...)
-    Tour := Tour + 1,                               % tour++
-    emit(distribution).                             % event(new Distribution(beneficiaire, tour))
+    list_add(Ben, !Membres),
+    S = ~map_get(Ben, Soldes, 0),
+    S1 = S + Cotis,
+    map_put(Ben, S1, !Soldes),
+    Tour := Tour + 1,
+    emit(distribution).
 
 % @FromContract retrait()
 retrait(Caller, !Soldes, !B) :-
-    S = ~map_get(Caller, Soldes, 0),                % soldes.getOrDefault(membre, ZERO)
-    require(S > 0),                                 % require(solde > 0)
-    map_put(Caller, 0, !Soldes),                    % soldes.put(membre, ZERO)
-    transfer(this, Caller, S, !B),                  % membre.receive(solde)
-    emit(retrait).                                  % event(new Retrait(membre, solde))
+    S = ~map_get(Caller, Soldes, 0),
+    require(S > 0),
+    map_put(Caller, 0, !Soldes),
+    transfer(this, Caller, S, !B),
+    emit(retrait).
 
 % @FromContract rembourserTous()
 rembourser_tous(Caller, Createur, Membres, !Soldes, !B) :-
-    require(Caller == Createur),                    % require(caller() == createur)
-    for (M in list(Membres)) {                      % membres.forEach(membre -> ...)
-        S = ~map_get(M, Soldes, 0),                 % soldes.getOrDefault(membre, ZERO)
-        map_put(M, 0, !Soldes),                     % soldes.put(membre, ZERO)
-        transfer(this, M, S, !B)                    % membre.receive(solde)
+    require(Caller == Createur),
+    for (M in list(Membres)) {
+        S = ~map_get(M, Soldes, 0),
+        map_put(M, 0, !Soldes),
+        transfer(this, M, S, !B)
     },
-    emit(remboursement).                            % event(new Remboursement(tour))
+    emit(remboursement).
 
-% --- Test: contribution 100; alice (creator), bob and carol join; round 1 credits alice, she withdraws;
-% round 2 credits bob; the creator refunds everybody ---
-% Expected: [alice, bob, carol, this] = [900 + 100, 900 + 100, 900, 100].
+% Test: contribution 100; alice, bob, carol join; two rounds, alice withdraws, the creator refunds all.
+% Expected [1000, 1000, 900, 100].
 goal([A, Bo, C, T]) :-
     B0 = [bal(alice, 1000), bal(bob, 1000), bal(carol, 1000), bal(this, 0)],
     init(alice, 100, Cr, Co, _S0, _M0, _T0),

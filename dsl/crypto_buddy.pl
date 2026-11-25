@@ -1,19 +1,12 @@
 % CryptoBuddy (Java: io.hotmoka.tutorial.examples.erc20.CryptoBuddy, an ERC20).
-% State: Bal = balances, StorageTreeMap<Contract, UnsignedBigInteger>, tree map kv(Holder, Amount);
-%        Own = the OUTER map of allowances (owner -> inner map), a tree set kv(Owner, 1);
-%        Al = the INNER maps of allowances, all in one tree map kv(al(Owner, Spender), Amount)
-%        (CiaoPP cannot see the length of a map stored in a term: the inner maps are flattened,
-%        so the descent in an inner map is priced on the total number of allowances).
-% Each UnsignedBigInteger add/subtract creates a new storage object (its gas is in ubi_add/ubi_sub);
-% the tree Node of a new key is part of the cost of map_put.
-% The work of the inherited methods follows the Takamaka library
-% io.takamaka.code.tokens (standard ERC20 implementation).
-% Only the measured operations are written (the constructor, mint and burn are not).
+% Bal: balances, tree map kv(Holder, Amount); Own: outer allowance map, tree set kv(Owner, 1);
+% Al: inner allowance maps flattened in one tree map kv(al(Owner, Spender), Amount), because CiaoPP
+% cannot see the length of a map stored in a term. Only the measured operations are written.
 
 :- module(_, [token_transfer/5, approve/7, transfer_from/10, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
-:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+:- fun_eval(arith(true)).
 
 :- entry token_transfer(Caller, To, Amount, Bal0, Bal) :
     (atm(Caller), atm(To), int(Amount), map(Bal0), var(Bal)).
@@ -33,35 +26,35 @@ approve(Caller, Spender, Amount, !Own, !Al) :-
 
 % ERC20.transferFrom(sender, recipient, amount)
 transfer_from(Caller, Sender, To, Amount, !Bal, !Own, !Al) :-
-    transfer_(Sender, To, Amount, !Bal),            % _transfer(sender, recipient, amount)
-    map_get(Sender, Own, none, _),                  % allowance(sender, caller()): allowances.get(owner)
-    A = ~map_get(al(Sender, Caller), Al, 0),        %   .getOrDefault(spender)
-    require(A >= Amount),                           % require of subtract: no negative result
-    An = ~ubi_sub(A, Amount),                       % .subtract(amount)
-    approve_(Sender, Caller, An, !Own, !Al).        % _approve(sender, caller(), ...)
+    transfer_(Sender, To, Amount, !Bal),
+    map_get(Sender, Own, none, _),  % allowances.get(owner)
+    A = ~map_get(al(Sender, Caller), Al, 0),  % inner get
+    require(A >= Amount),
+    An = ~ubi_sub(A, Amount),
+    approve_(Sender, Caller, An, !Own, !Al).
 
 % _transfer(sender, recipient, amount)
 transfer_(Sender, To, Amount, !Bal) :-
-    B1 = ~map_get(Sender, Bal, 0),                  % balanceOf(sender)
-    require(B1 >= Amount),                          % require of subtract: no negative result
-    B1n = ~ubi_sub(B1, Amount),                     % .subtract(amount)
-    map_put(Sender, B1n, !Bal),                     % balances.put(sender, ...)
-    B2 = ~map_get(To, Bal, 0),                      % balanceOf(recipient)
-    B2n = ~ubi_add(B2, Amount),                     % .add(amount)
-    map_put(To, B2n, !Bal),                         % balances.put(recipient, ...)
-    emit(transfer).                                 % event(new Transfer(sender, recipient, amount))
+    B1 = ~map_get(Sender, Bal, 0),  % balanceOf(sender)
+    require(B1 >= Amount),  % subtract: no negative result
+    B1n = ~ubi_sub(B1, Amount),
+    map_put(Sender, B1n, !Bal),
+    B2 = ~map_get(To, Bal, 0),
+    B2n = ~ubi_add(B2, Amount),
+    map_put(To, B2n, !Bal),
+    emit(transfer).
 
 % _approve(owner, spender, value)
 approve_(Owner, Spender, Value, !Own, !Al) :-
-    O1 = ~map_get(Owner, Own, none),                % allowances.computeIfAbsent(owner, ...): outer get
+    O1 = ~map_get(Owner, Own, none),
     if (O1 == none) {
-        new_obj(inner_map),                         % new StorageTreeMap<>() for a new owner
-        map_put(Owner, 1, !Own)                     % and its put in the outer map
+        new_obj(inner_map),  % new owner: new inner map
+        map_put(Owner, 1, !Own)
     },
-    map_put(al(Owner, Spender), Value, !Al),        % .put(spender, value): inner map
-    emit(approval).                                 % event(new Approval(owner, spender, value))
+    map_put(al(Owner, Spender), Value, !Al),
+    emit(approval).
 
-% --- Test: alice (1000) approves bob for 500; bob moves 200 of alice to carol ---
+% Test: alice (1000) approves bob for 500; bob moves 200 of alice to carol. Expected [800, 200, 300].
 % Expected: alice 800, carol 200, allowance of bob over alice 300.
 goal([A, C, Allow]) :-
     approve(alice, bob, 500, [], Own1, [], Al1),

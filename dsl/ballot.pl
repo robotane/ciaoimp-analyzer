@@ -1,37 +1,24 @@
 % Ballot (Java: io.hotmoka.examples.voting.Ballot).
-% The chairperson gives the right to vote; voters vote for a proposal or delegate
-% their vote; winnerName returns the proposal with the fewest votes (as the Java).
-% State: Chair (chairperson, read only);
-%        Pa = papers, StorageTreeMap<Contract, VotingPaper>, tree map
-%             kv(Voter, paper(Weight, HasVoted, Delegate, VotedProposal))
-%             (Delegate = null or an address, VotedProposal = -1 or the index of a proposal);
-%        Pr = proposals, StorageLinkedList<Proposal>, list of proposal(Index, Name, VoteCount)
-%             (Index = position in the list: it only serves to find, without gas, the
-%             proposal that a paper references (votedProposal); it is not a field of Proposal).
-% Fields of the storage objects (a paper, a proposal) are read and written as in Java,
-% V = Obj[field] and Obj[field] := V (see hotmoka_tr.pl: the first read of a paper on a path
-% loads it); the object is mutated in place in Java, its re-insertion in the Prolog map/list
-% is map_set/list_set (no gas: no tree or list access).
+% Voters vote for a proposal or delegate their vote; the winner has the fewest votes.
+% Pa: papers, tree map kv(Voter, paper(Weight, HasVoted, Delegate, VotedProposal)); Pr: proposals, list.
+% Objects are mutated in place in Java: map_set/list_set after the field writes, no gas.
 
 :- module(_, [init/4, give_right/5, vote/6, delegate/6, winner/2, goal/1, goal_chain/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
 
-:- fun_eval(arith(true)).                       % arithmetic is computed, as in Java
+:- fun_eval(arith(true)).
 
 :- class(paper(weight, hasVoted, delegate, votedProposal)).
-:- class(proposal(index, name, voteCount)).
+:- class(proposal(index, name, voteCount)).  % index is not a Java field: finds the proposal without gas
+:- storage(Pa, map(object)).  % default only in give_right
+:- storage(Pr, list).
 
-:- regtype paper_obj/1.                         % a VotingPaper
+:- regtype paper_obj/1.
 paper_obj(paper(W, HV, D, VP)) :- int(W), int(HV), atm(D), int(VP).
 
-% papers.get returns a VotingPaper: reading its fields (P[weight]...) has a known type (this
-% replaces the type tests of the former paper_fields/5; the groundness of the paper comes from
-% map_get, see hotmoka_gas.pl). The default of give_right is itself a
-% paper (a sentinel of weight -1 for an absent key); in vote, delegate and follow the key is
-% present (Java would stop on a NullPointerException otherwise). A union type with an atom
-% (none) for the default makes the non-failure analysis of CiaoPP run for minutes.
+% Reading paper fields needs a known type. The default of give_right is a paper (weight -1 if
+% absent); an atom default makes the CiaoPP analysis run for minutes.
 :- trust success map_get(_, _, _, P) => paper_obj(P).
-% proposals.get(i) returns a Proposal.
 :- trust success list_get(_, _, P) => proposal(P).
 
 :- regtype props/1.
@@ -51,143 +38,118 @@ proposal(proposal(I, Name, Count)) :- int(I), atm(Name), int(Count).
 
 % Ballot(proposalNames): the chairperson has a paper with the right to vote.
 init(Chair, Names, [kv(Chair, paper(1, 0, null, -1))], Props) :-
-    new_obj(paper),                                 % new VotingPaper(), giveRightToVote()
+    new_obj(paper),
     Props = ~init_props(Names, 0).
 
 init_props([], _, []).
 init_props([N|T], I, [proposal(I, N, 0)|RT]) :-
-    new_obj(proposal),                              % proposals.add(new Proposal(name))
+    new_obj(proposal),
     I1 = I + 1,
     RT = ~init_props(T, I1).
 
 % @FromContract giveRightToVote(to)
 give_right(Caller, Chair, To, !Pa) :-
-    require(Caller == Chair),                       % require(caller() == chairperson)
-    P0 = ~map_get(To, Pa, paper(-1, 0, null, -1)),  % papers.computeIfAbsent(to, VotingPaper::new): tree get
-    if (P0 == paper(-1, 0, null, -1)) {             % absent key (sentinel default)
-        new_obj(paper),                             % new VotingPaper() (not yet in the tree)
-        map_put(To, paper(1, 0, null, -1), !Pa)     % computeIfAbsent puts the new key; giveRightToVote(): weight = 1
+    require(Caller == Chair),
+    P0 = Pa[To, paper(-1, 0, null, -1)],  % sentinel default
+    if (P0 == paper(-1, 0, null, -1)) {
+        new_obj(paper),
+        Pa[To] := paper(1, 0, null, -1)
     } else {
-        HV = P0[hasVoted],                          % paper.hasVoted(): loads the paper
-        require(HV =:= 0),                          % require(!paper.hasVoted())
-        W = P0[weight],
-        require(W =:= 0),                           % require(!paper.hasRightToVote())
-        P0[weight] := 1,                            % paper.giveRightToVote(): weight = 1 (in place)
-        map_set(To, P0, !Pa)                        % (the paper is mutated in place in Java)
+        require(P0[hasVoted] =:= 0),
+        require(P0[weight] =:= 0),
+        P0[weight] := 1,
+        map_set(To, P0, !Pa)  % in place in Java: no gas
     }.
 
 % @FromContract voteFor(proposalIndex)
 vote(Caller, Index, !Pa, !Pr) :-
-    P = ~map_get(Caller, Pa, none),                 % getVotingPaperFor(caller()): papers.get(caller)
-    HV = P[hasVoted],                               % paper.hasVoted(): loads the paper
-    require(HV =:= 0),                              % require(!paper.hasVoted())
-    W = P[weight],
-    require(W > 0),                                 % require(paper.hasRightToVote())
-    Prop = ~list_get(Index, Pr),                    % proposals.get(index): walk
-    Cnt = Prop[voteCount],                          % proposal.voteCount: loads the Proposal
-    Cnt1 = Cnt + W,
-    Prop[voteCount] := Cnt1,                        % proposal.voteCount += weight
-    P[hasVoted] := 1,                               % hasVoted = true
-    P[votedProposal] := Index,                      % votedProposal = proposal
-    list_set(Index, Prop, !Pr),                     % (the proposal is mutated in place in Java)
-    map_set(Caller, P, !Pa).                        % (the paper is mutated in place in Java)
+    P = Pa[Caller, none],
+    require(P[hasVoted] =:= 0),
+    require(P[weight] > 0),
+    Prop = Pr[Index],
+    Prop[voteCount] += P[weight],
+    P[hasVoted] := 1,
+    P[votedProposal] := Index,
+    list_set(Index, Prop, !Pr),
+    map_set(Caller, P, !Pa).
 
 % @FromContract delegate(to)
 delegate(To, Caller, !Pa, !Pr) :-
-    PTo = ~map_get(To, Pa, none),                   % delegatedPaper = papers.get(to)
-    WTo0 = PTo[weight],                             % delegatedPaper.hasRightToVote(): loads it
-    require(WTo0 > 0),                              % require(delegatedPaper.hasRightToVote())
-    PC = ~map_get(Caller, Pa, none),                % getVotingPaperFor(caller()): papers.get(caller)
-    HV = PC[hasVoted],                              % paper.hasVoted(): loads it
-    require(HV =:= 0),                              % require(!paper.hasVoted())
+    PTo = Pa[To, none],
+    require(PTo[weight] > 0),
+    PC = Pa[Caller, none],
+    require(PC[hasVoted] =:= 0),
     W = PC[weight],
-    require(W > 0),                                 % require(paper.hasRightToVote())
-    require(To \== Caller),                         % require(delegate != payer)
-                                                    % seen = new StorageTreeSet<>(): temporary, its cost is in tmp_get/tmp_put
-    PTo = ~map_get(To, Pa, none),                   % from = papers.get(delegate): a tree get, and the
-    Del = PTo[delegate],                            % same paper as delegatedPaper (already loaded)
-    Fin = ~follow(Pa, Del, Pa, [], To),             % computeFinalDelegate: the walk, at most one hop per paper
-    % The papers are rebuilt (map_set, no gas) after the costly goals.
-    % Reading the paper of Fin before rebuilding the paper of Caller is the same (Fin \== Caller).
-    PF = ~map_get(Fin, Pa, none),                   % paperOfDelegate = papers.get(delegate)
-    PF = paper(WF, HVF, _, VPF),                    % no load: this paper is already loaded, either
-                                                    % delegatedPaper (no hop) or the last paper read by follow
-    if (HVF =:= 1) {                                % if (paperOfDelegate.hasVoted())
-        set_proposal(VPF, W, !Pr)                   % votedProposal.voteCount += weight
+    require(W > 0),
+    require(To \== Caller),
+    PTo = Pa[To, none],  % second get, as in Java
+    Del = PTo[delegate],
+    Fin = ~follow(Pa, Del, Pa, [], To),
+    % the papers are rebuilt with map_set after the costly goals
+    PF = Pa[Fin, none],
+    PF = paper(WF, HVF, _, VPF),  % already loaded
+    if (HVF =:= 1) {
+        set_proposal(VPF, W, !Pr)
     } else {
         WF1 = WF + W,
-        PF[weight] := WF1,                          % paperOfDelegate.weight += weight
-        map_set(Fin, PF, !Pa)                       % (the paper is mutated in place in Java)
+        PF[weight] := WF1,
+        map_set(Fin, PF, !Pa)
     },
-    PC[hasVoted] := 1,                              % this.hasVoted = true
-    PC[delegate] := Fin,                            % this.delegate = delegate
-    map_set(Caller, PC, !Pa).                       % (the paper is mutated in place in Java)
+    PC[hasVoted] := 1,
+    PC[delegate] := Fin,
+    map_set(Caller, PC, !Pa).
 
-% computeFinalDelegate. Java: from = papers.get(delegate); while (from.delegate != null) {
-% delegate = from.delegate; require(delegate != payer); require(!seen.contains(delegate));
-% seen.add(delegate); from = papers.get(delegate); }
-% Del = from.delegate. A chain has at most one hop per paper: the recursion is over the list of papers.
-% The addresses carried along are not measured (size_metric void).
-% Final = the final delegate (returned along the recursion; not measured: size_metric void).
+% computeFinalDelegate: walk of the chain, at most one hop per paper (recursion on the papers list).
+% Addresses are not measured (size_metric void).
 :- trust comp follow(Ps, Del, Pa, Seen, Last, Final)
    + (size_metric(Ps, length), size_metric(Del, void), size_metric(Pa, length), size_metric(Seen, length),
       size_metric(Last, void), size_metric(Final, void), is_det).
 :- trust comp differ(A, B) + (size_metric(A, void), size_metric(B, void)).
 
-follow([], _, _, _, Last, Last).                    % never reached (a chain visits distinct papers)
+follow([], _, _, _, Last, Last).  % never reached
 follow([_|Rest], Del, Pa, Seen, _, Final) :-
-    differ(Del, null),                              % while (from.delegate != null)
-    InSeen = ~tmp_get(Del, Seen, 0),                % seen.contains(delegate)
-    require(InSeen =:= 0),                          % require(!seen.contains(delegate))
-    tmp_put(Del, 1, Seen, Seen1),                   % seen.add(delegate)
-    From = ~map_get(Del, Pa, none),                 % from = papers.get(delegate)
-    Del1 = ~delegate_of(From),                      % from.delegate: loads the paper
-    Final = ~follow(Rest, Del1, Pa, Seen1, Del).    % delegate = from.delegate
-follow([_|_], null, _, _, Last, Last).              % from.delegate == null: the walk ends
+    differ(Del, null),
+    InSeen = ~tmp_get(Del, Seen, 0),  % seen is a temporary set
+    require(InSeen =:= 0),
+    tmp_put(Del, 1, Seen, Seen1),
+    From = Pa[Del, none],
+    Del1 = ~delegate_of(From),
+    Final = ~follow(Rest, Del1, Pa, Seen1, Del).
+follow([_|_], null, _, _, Last, Last).
 
 differ(A, B) :- A \== B.
 
-% from.delegate, read in a predicate of its own: written in the body of follow, the
-% unification of From (whose size CiaoPP does not know: map_get gives none) makes the size
-% analysis of follow fail (bound inf).
+% In its own predicate: inline, the unification of From makes the size analysis of follow give inf.
 delegate_of(P, D) :-
     D = P[delegate].
 
-% winnerName(): proposals.forEach, one node and one Proposal loaded per element.
-% Java keeps the first proposal with the fewest votes (min == -1 || voteCount < min).
-% The best of the rest is computed on the way back.
+% winnerName(): first proposal with the fewest votes; the best of the rest is computed on the way back.
 winner(Pr, Name) :-
     best(Pr, Name, _).
 
 best([], 'no winner', -1).
 best([P|T], Name, Count) :-
     best(T, N1, C1),
-    load(P),                                        % the list node
-    load(P),                                        % the Proposal (name, voteCount)
+    load(P),  % list node
+    load(P),  % the Proposal
     P = proposal(_, N, C),
     if (C1 =:= -1) { Name = N, Count = C }
     else if (C =< C1) { Name = N, Count = C }
     else { Name = N1, Count = C1 }.
 
-% votedProposal.voteCount += weight: the Proposal is reached through a reference (the walk on
-% the index I0 only finds it in the Prolog list: no cost of its own besides the steps).
+% votedProposal.voteCount += weight: found by index in the Prolog list, no cost besides the steps.
 set_proposal(I0, W, [P|T], [P1|T]) :-
     P = proposal(I, _, _),
     I =:= I0,
-    C = P[voteCount],                               % votedProposal.voteCount (reads the Proposal)
-    C1 = C + W,
-    P[voteCount] := C1,
+    P[voteCount] += W,
     P1 = P.
 set_proposal(I0, W, [P|T], [P|T1]) :-
     P = proposal(I, _, _),
     I =\= I0,
     set_proposal(I0, W, T, T1).
 
-% --- Test: admin creates [prop_a, prop_b, prop_c]; alice, bob, charlie get the right
-% to vote; alice votes prop_a (0); bob delegates to alice (alice then has weight 2 only
-% if she has not voted: she has, so prop_a gets bob's vote); charlie votes prop_b (1);
-% admin votes prop_a (0). Votes: prop_a = 3, prop_b = 1, prop_c = 0. ---
-% Expected winner (fewest votes, first one): prop_c.
+% Test: alice, bob and charlie can vote; alice votes prop_a, bob delegates to alice, charlie votes prop_b,
+% admin votes prop_a. Expected winner (fewest votes): prop_c.
 goal(W) :-
     init(admin, [prop_a, prop_b, prop_c], Pa0, Pr0),
     give_right(admin, admin, alice, Pa0, Pa1),
@@ -199,9 +161,7 @@ goal(W) :-
     vote(admin, 0, Pa6, _, Pr3, Pr4),
     winner(Pr4, W).
 
-% --- Test of a chain: bob delegates to alice (who has not voted), then dan delegates
-% to bob: the final delegate of dan is alice, who gets weight 3 and votes prop_b (1).
-% Expected votes: prop_a 0, prop_b 3, prop_c 0; winner (fewest, first one): prop_a. ---
+% Test: bob delegates to alice, then dan to bob: alice gets weight 3 and votes prop_b. Expected [prop_a, 3].
 goal_chain([W, WA]) :-
     init(admin, [prop_a, prop_b, prop_c], Pa0, Pr0),
     give_right(admin, admin, alice, Pa0, Pa1),

@@ -1,8 +1,6 @@
 % Gradual Ponzi (Java: io.hotmoka.examples.ponzi.GradualPonzi).
-% Each investment (at least 1000) is split equally among all previous investors;
-% the new investor then joins the list (an investor can appear many times).
-% State: Inv = investors, StorageLinkedList<PayableContract>, list of addresses.
-% B: coin balances, list of bal(Address, Amount).
+% Each investment (at least 1000) is split equally among the previous investors, then the new one joins.
+% Inv: investors, list of addresses. B: coin balances, list of bal(Address, Amount).
 
 :- module(_, [init/2, invest/6, goal/1],
           [assertions, nativeprops, regtypes, resdefs, fsyntax, statevars, loops, .(hotmoka_gas)]).
@@ -19,35 +17,33 @@ addrs([A|T]) :- atm(A), addrs(T).
 
 % GradualPonzi(): the creator is the first investor
 init(Creator, Inv) :-
-    Inv = ~list_add(Creator, []).                   % investors.add(caller())
+    Inv = ~list_add(Creator, []).
 
-:- bigint_cost.                                  % gas of the BigInteger operations by bit length
+:- bigint_cost.  % gas of the BigInteger operations by bit length
 
-:- payable(invest).                             % @Payable: the amount sent is received first
+:- payable(invest).
 
 % @FromContract invest(amount)
 invest(Caller, Amount, !Inv, !B) :-
-    require(big_ge(Amount, 1000)),                  % require(compareTo(amount, MINIMUM_INVESTMENT) >= 0)
-    N = ~list_size(Inv),                            % investors.size()
-    big_div(Amount, N, Each),                       % eachInvestorGets = divide(amount, valueOf(size))
-    Held is Amount + Amount,                        % the contract holds the amount received plus its rests (< Amount)
-    for (P in list(Inv)) {                          % investors.forEach(investor -> ...)
-        transfer(this, P, Each, !B),                % investor.receive(each)
-        big_pay(Each, Held)                         % its BigInteger operations (compareTo, subtract, add)
+    require(big_ge(Amount, 1000)),
+    N = ~list_size(Inv),
+    big_div(Amount, N, Each),
+    Held is Amount + Amount,  % bound: amount received plus rests (< Amount)
+    for (P in list(Inv)) {
+        transfer(this, P, Each, !B),
+        big_pay(Each, Held)
     },
-    list_add(Caller, !Inv).                         % investors.add(caller()): one new list node
+    list_add(Caller, !Inv).
 
-% --- Test: alice creates the contract; bob invests 1000, carol invests 2000 ---
-% Expected: bob's 1000 goes to alice; carol's 2000 is split between alice and bob (1000 each):
-% [alice, bob, carol, this] = [4000, 2000, 0, 0].
+% Test: alice creates the contract; bob invests 1000, carol 2000. Expected [4000, 2000, 0, 0].
 goal([A, Bo, C, T]) :-
     B0 = [bal(alice, 2000), bal(bob, 2000), bal(carol, 2000), bal(this, 0)],
     init(alice, Inv0),
     Inv0 == [alice],
-    Inv0b = [alice],                                % (the literal keeps the call types of the analysis typed)
+    Inv0b = [alice],  % literal copy: keeps the call types
     invest(bob, 1000, Inv0b, Inv1, B0, B1),
     Inv1 == [alice, bob],
-    Inv1b = [alice, bob],                           % (the literal keeps the call types of the analysis typed)
+    Inv1b = [alice, bob],
     invest(carol, 2000, Inv1b, _, B1, B2),
     balance(alice, B2, A),
     balance(bob, B2, Bo),
